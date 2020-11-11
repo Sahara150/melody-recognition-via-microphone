@@ -1,0 +1,50 @@
+body {
+    background-color: slategray;
+}
+
+.field {
+    background-color: whitesmoke;
+    height: 10em;
+    width: 30%;
+    margin: 0.5em;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.centered {
+    text-align: center;
+}
+
+.upper-third {
+    margin-top: 5em;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.big {
+    font-size: large;
+}
+
+.flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.btn-dark {
+    background-color: #555555;
+    font-size: medium;
+    border-radius: 8px;
+    padding: 1.2em;
+    box-shadow: none;
+    width: 30%;
+}
+
+    .btn-dark:hover {
+        background-color: gray;
+    }
