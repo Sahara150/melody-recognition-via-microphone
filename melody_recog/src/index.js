@@ -27,18 +27,28 @@ var Recorder = /** @class */ (function (_super) {
         return _this;
     }
     Recorder.prototype.render = function () {
+        var _this = this;
         return (React.createElement("div", { className: "flex" },
             React.createElement("div", { className: "centered upper-third no-background" },
                 React.createElement("span", { className: "bold big" }, "Bitte singe ein A")),
             React.createElement("div", { id: "microphone_container" },
                 React.createElement(react_mic_1.ReactMic, { record: this.state.recording, onStop: this.onStop })),
-            React.createElement("button", { className: "centered btn-dark", id: "RecordButton", onClick: this.changeRecordStatus }, this.state.recording == true ? "STOP RECORDING" : "RECORD")));
+            React.createElement("button", { className: "centered btn-dark", id: "RecordButton", onClick: function () { return _this.changeRecordStatus(); } }, this.state.recording == true ? "STOP RECORDING" : "RECORD")));
     };
     Recorder.prototype.onStop = function (recordedBlob) {
         console.log('recordedBlob is: ', recordedBlob);
+        var reader = new FileReader();
+        reader.addEventListener('loadend', function () {
+            // reader.result contains the contents of blob as a typed array
+            console.log(reader.result);
+        });
+        reader.readAsArrayBuffer(recordedBlob.blob);
     };
     Recorder.prototype.changeRecordStatus = function () {
-        this.setState({ recording: !this.state.recording });
+        console.log(this);
+        console.log(this.state);
+        var recording = this.state.recording;
+        this.setState({ recording: !recording });
     };
     return Recorder;
 }(React.Component));

@@ -18,15 +18,24 @@ class Recorder extends React.Component<{}, RecorderState> {
 				<ReactMic record={this.state.recording}
 					onStop={this.onStop}/>
 					</div>
-			<button className="centered btn-dark" id="RecordButton" onClick={this.changeRecordStatus}>{this.state.recording == true ? "STOP RECORDING" : "RECORD"}</button>
+			<button className="centered btn-dark" id="RecordButton" onClick={()=>this.changeRecordStatus()}>{this.state.recording == true ? "STOP RECORDING" : "RECORD"}</button>
 			
 				</div>)
 	}
 	onStop(recordedBlob: any) {
 		console.log('recordedBlob is: ', recordedBlob);
+		const reader = new FileReader();
+		reader.addEventListener('loadend', () => {
+			// reader.result contains the contents of blob as a typed array
+			console.log(reader.result);
+		});
+		reader.readAsArrayBuffer(recordedBlob.blob);
 	}
 	changeRecordStatus() {
-		this.setState({ recording: !this.state.recording });
+		console.log(this)
+		console.log(this.state)
+		var recording = this.state.recording
+		this.setState({ recording: !recording });
     }
 }
 ReactDOM.render(
