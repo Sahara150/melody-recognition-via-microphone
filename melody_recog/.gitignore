@@ -6,6 +6,7 @@ node_modules/*
 !node_modules/\@types
 node_modules/\@types/*
 !node_modules/\@types/react-mic
+!node_modules/\@types/dsp.js
 .pnp
 .pnp.js
 
