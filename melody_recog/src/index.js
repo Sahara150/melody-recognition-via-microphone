@@ -16,6 +16,7 @@ exports.__esModule = true;
 var React = require("react");
 var ReactDOM = require("react-dom");
 var react_mic_1 = require("@cleandersonlobo/react-mic");
+var Analyzer = require("./Analyzer");
 require("./styles/main.css");
 var Recorder = /** @class */ (function (_super) {
     __extends(Recorder, _super);
@@ -27,7 +28,8 @@ var Recorder = /** @class */ (function (_super) {
          and call metronome method in case there is a reference Note.*/
         _this.state = {
             recording: false,
-            referenceExists: false
+            referenceFrequency: null,
+            referenceBeat: null
         };
         return _this;
     }
@@ -62,13 +64,23 @@ var Recorder = /** @class */ (function (_super) {
         var resultingData = new Float32Array(decoded.length);
         resultingData = decoded.getChannelData(0);
         //Cutting of leading and trailing zeros, cause they are "quiet" samples.
-        var stillZeros = true;
         var firstNonZero = this.getFirstNonZero(resultingData);
         var lastNonZero = this.getLastNonZero(resultingData);
         if (lastNonZero > firstNonZero) {
             resultingData = resultingData.slice(firstNonZero, lastNonZero + 1);
         }
         console.log(resultingData);
+        if (this.state.referenceFrequency != null && this.state.referenceBeat != null) {
+        }
+        else {
+            var refFreq = Analyzer.analyzeRefFrequence(resultingData);
+            var refState = this.state;
+            this.setState({
+                recording: refState.recording,
+                referenceFrequency: refFreq,
+                referenceBeat: refState.referenceBeat
+            });
+        }
         /*TODO: Call analyze method from Analyzer script
                 Important! Give it Recorder as reference, so it can enter the frequency.
                 Here you�ll check later on, if there is a reference note or not and call the corresponding method.
@@ -88,11 +100,16 @@ var Recorder = /** @class */ (function (_super) {
                 return i;
             }
         }
-        return 0;
+        return data.length - 1;
     };
     Recorder.prototype.changeRecordStatus = function () {
         var recording = this.state.recording;
-        this.setState({ recording: !recording });
+        var refState = this.state;
+        this.setState({
+            recording: !recording,
+            referenceFrequency: refState.referenceFrequency,
+            referenceBeat: refState.referenceBeat
+        });
     };
     return Recorder;
 }(React.Component));
