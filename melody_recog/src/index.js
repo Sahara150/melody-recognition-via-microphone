@@ -46,6 +46,11 @@ var Recorder = /** @class */ (function (_super) {
         var _this = this;
         //Fetching data from Blob and decoding it.
         console.log('recordedBlob is: ', recordedBlob);
+        var a = document.createElement('a');
+        a.setAttribute('href', recordedBlob.blobURL);
+        a.setAttribute('download', "test.wav");
+        document.body.appendChild(a);
+        a.click();
         var reader = new FileReader();
         var audioContext = new AudioContext();
         reader.addEventListener('loadend', function () {
@@ -67,7 +72,7 @@ var Recorder = /** @class */ (function (_super) {
         var firstNonZero = this.getFirstNonZero(resultingData);
         var lastNonZero = this.getLastNonZero(resultingData);
         if (lastNonZero > firstNonZero) {
-            resultingData = resultingData.slice(firstNonZero, lastNonZero + 1);
+            resultingData = resultingData.slice(firstNonZero - 1, lastNonZero + 1);
         }
         console.log(resultingData);
         if (this.state.referenceFrequency != null && this.state.referenceBeat != null) {

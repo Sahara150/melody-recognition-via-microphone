@@ -34,6 +34,12 @@ class Recorder extends React.Component<{}, RecorderState> {
 	onStop(recordedBlob: any) {
 		//Fetching data from Blob and decoding it.
 		console.log('recordedBlob is: ', recordedBlob);
+		var a = document.createElement('a');
+		a.setAttribute('href', recordedBlob.blobURL);
+		a.setAttribute('download', "test.wav");
+
+		document.body.appendChild(a);
+		a.click();
 		const reader = new FileReader();
 		const audioContext = new AudioContext();
 		reader.addEventListener('loadend', () => {
@@ -50,20 +56,20 @@ class Recorder extends React.Component<{}, RecorderState> {
 	}
 	successfulDecode(decoded: AudioBuffer) {
 		//Putting decoded buffer into an array.
-		var resultingData = new Float32Array(decoded.length);
+		let resultingData = new Float32Array(decoded.length);
 		resultingData = decoded.getChannelData(0);
 		//Cutting of leading and trailing zeros, cause they are "quiet" samples.
 		let firstNonZero = this.getFirstNonZero(resultingData);
 		let lastNonZero = this.getLastNonZero(resultingData);
 		if (lastNonZero > firstNonZero) {
-			resultingData = resultingData.slice(firstNonZero, lastNonZero + 1);
+			resultingData = resultingData.slice(firstNonZero-1, lastNonZero + 1);
         }
 		console.log(resultingData);
 		if (this.state.referenceFrequency != null && this.state.referenceBeat != null) {
 
 		} else {
-			var refFreq = Analyzer.analyzeRefFrequence(resultingData);
-			var refState = this.state;
+			let refFreq = Analyzer.analyzeRefFrequence(resultingData);
+			let refState = this.state;
 			this.setState({
 				recording: refState.recording,
 				referenceFrequency: refFreq,
