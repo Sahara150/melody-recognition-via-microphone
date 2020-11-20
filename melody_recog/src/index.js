@@ -2,6 +2,8 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import Wad from "web-audio-daw";
 import './styles/main.css';
+import { saveReferenceFrequency } from "./sessionStorageHelper";
+import { getRefs } from "./sessionStorageHelper";
 
 class Recorder extends React.Component {
 	constructor(props /*any*/) {
@@ -10,14 +12,14 @@ class Recorder extends React.Component {
 		window.tuner = new Wad.Poly();
 		window.tuner.setVolume(0); // If you're not using headphones, you can eliminate microphone feedback by muting the output from the tuner.
 		window.tuner.add(window.voice);
-		/*TODO: Check, if there is a reference note.
-		 If it is, change span to "Singe die Melodie ein" 
-		 and extend the changeRecordStatus method to check for it 
-		 and call metronome method in case there is a reference Note.*/
+		let references = getRefs();
+		/*TODO: Implement methods in beats to
+				give back a fitting string for the info text
+				give back the amount of beats given and the speed*/
 		this.state = {
 			recording: false,
-			referenceFrequency: null,
-			referenceBeat: null,
+			referenceFrequency: references.frequency,
+			referenceBeat: references.beat,
 			input: []
 		};
 	}
@@ -25,14 +27,26 @@ class Recorder extends React.Component {
 	render() {
 		
 		return (<div className="flex">
-					<div className="centered upper-third no-background"><span className="bold big">Bitte singe ein A</span></div>
+			<div className="centered upper-third no-background"><span className="bold big">
+				{this.state.referenceFrequency != null && this.state.referenceBeat != null ? "Bitte singe die Melodie ein. Bevor du singen kannst, wird das Metronom dir ... angeben." : "Bitte singe ein A"}
+			</span></div>
 					<div id="microphone_container">
 				<span>{window.tuner.pitch} Hz</span>
 					</div>
 			<button className="centered btn-dark" id="RecordButton" onClick={()=>this.changeRecordStatus()}>{this.state.recording == true ? "STOP RECORDING" : "RECORD"}</button>
-			
+			<button className={this.state.referenceFrequency == null ? "hidden" : "centered btn-dark"} onClick={() => this.deleteOldReferenceFreq()}>Referenzton neu aufnehmen</button>
 				</div>)
 	}
+	deleteOldReferenceFreq() {
+		saveReferenceFrequency(null);
+		let refState = this.state;
+		this.setState({
+			recording: refState.recording,
+			referenceBeat: refState.referenceBeat,
+			referenceFrequency: null,
+			input: refState.input
+        })
+    }
 	changeRecordStatus() {
 		//Fetch recording state from component.
 		let recording = this.state.recording;
@@ -59,6 +73,10 @@ class Recorder extends React.Component {
 			referenceFrequency : refState.referenceFrequency == null || undefined ? window.tuner.pitch : refState.referenceFrequency,
 			input : refState.input
 		});
+		//If there was no referenceFrequency before it now is saved in sessionStorage.
+		if (refState.referenceFrequency == null) {
+			saveReferenceFrequency(window.tuner.pitch);
+        }
 	}
 	startRecording() {
 		console.log("Start recording");
@@ -70,6 +88,7 @@ class Recorder extends React.Component {
 			referenceFrequency : refState.referenceFrequency,
 			input : refState.input
 		});
+		//TODO: If there is a reference beat, call method to know how many beats the metronome gives and give them
 		window.voice.play(); // You must give your browser permission to access your microphone before calling play().
 
 		window.tuner.updatePitch(); // The tuner is now calculating the pitch and note name of its input 60 times per second. These values are stored in <code>tuner.pitch</code> and <code>tuner.noteName</code>.

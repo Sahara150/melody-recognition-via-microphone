@@ -44,10 +44,12 @@ body {
     box-shadow: none;
     width: 30%;
 }
-
-    .btn-dark:hover {
-        background-color: gray;
-    }
+.btn-light {
+    background-color: antiquewhite;
+}
+.btn-dark:hover {
+    background-color: gray;
+}
 
 #microphone_container {
     height: 3em;
