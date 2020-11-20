@@ -1,11 +1,10 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import Wad from "web-audio-daw";
 import './styles/main.css';
 import { saveReferenceFrequency } from "./sessionStorageHelper";
 import { getRefs } from "./sessionStorageHelper";
 
-class Recorder extends React.Component {
+export class Recorder extends React.Component {
 	constructor(props /*any*/) {
 		super(props);
 		window.voice = new Wad({ source: 'mic' }); // At this point, your browser will ask for permission to access your microphone.
@@ -23,19 +22,19 @@ class Recorder extends React.Component {
 			input: []
 		};
 	}
-	
+
 	render() {
-		
+
 		return (<div className="flex">
 			<div className="centered upper-third no-background"><span className="bold big">
 				{this.state.referenceFrequency != null && this.state.referenceBeat != null ? "Bitte singe die Melodie ein. Bevor du singen kannst, wird das Metronom dir ... angeben." : "Bitte singe ein A"}
 			</span></div>
-					<div id="microphone_container">
+			<div id="microphone_container">
 				<span>{window.tuner.pitch} Hz</span>
-					</div>
-			<button className="centered btn-dark" id="RecordButton" onClick={()=>this.changeRecordStatus()}>{this.state.recording == true ? "STOP RECORDING" : "RECORD"}</button>
+			</div>
+			<button className="centered btn-dark" id="RecordButton" onClick={() => this.changeRecordStatus()}>{this.state.recording == true ? "STOP RECORDING" : "RECORD"}</button>
 			<button className={this.state.referenceFrequency == null ? "hidden" : "centered btn-dark"} onClick={() => this.deleteOldReferenceFreq()}>Referenzton neu aufnehmen</button>
-				</div>)
+		</div>)
 	}
 	deleteOldReferenceFreq() {
 		saveReferenceFrequency(null);
@@ -45,8 +44,8 @@ class Recorder extends React.Component {
 			referenceBeat: refState.referenceBeat,
 			referenceFrequency: null,
 			input: refState.input
-        })
-    }
+		})
+	}
 	changeRecordStatus() {
 		//Fetch recording state from component.
 		let recording = this.state.recording;
@@ -61,32 +60,32 @@ class Recorder extends React.Component {
 		//Cancel reading pitch 60 times a second
 		if (window.refreshId != null || undefined) {
 			cancelAnimationFrame(window.refreshId);
-        }
+		}
 		window.tuner.stopUpdatingPitch(); // Stop calculating the pitch if you don't need to know it anymore.
 		console.log(this.state.input);
 		//Stops recording
 		let refState = this.state;
 		this.setState({
-			recording : false,
-			referenceBeat : refState.referenceBeat,
+			recording: false,
+			referenceBeat: refState.referenceBeat,
 			//Checks, if referenceFrequency exists, else uses just sang pitch
-			referenceFrequency : refState.referenceFrequency == null || undefined ? window.tuner.pitch : refState.referenceFrequency,
-			input : refState.input
+			referenceFrequency: refState.referenceFrequency == null || undefined ? window.tuner.pitch : refState.referenceFrequency,
+			input: refState.input
 		});
 		//If there was no referenceFrequency before it now is saved in sessionStorage.
 		if (refState.referenceFrequency == null) {
 			saveReferenceFrequency(window.tuner.pitch);
-        }
+		}
 	}
 	startRecording() {
 		console.log("Start recording");
 		//Starts recording
 		let refState = this.state;
 		this.setState({
-			recording : true,
-			referenceBeat : refState.referenceBeat,
-			referenceFrequency : refState.referenceFrequency,
-			input : refState.input
+			recording: true,
+			referenceBeat: refState.referenceBeat,
+			referenceFrequency: refState.referenceFrequency,
+			input: refState.input
 		});
 		//TODO: If there is a reference beat, call method to know how many beats the metronome gives and give them
 		window.voice.play(); // You must give your browser permission to access your microphone before calling play().
@@ -106,12 +105,6 @@ class Recorder extends React.Component {
 			window.refreshId = requestAnimationFrame(savePitch);
 		};
 		savePitch();
-			// If you sing into your microphone, your pitch will be saved into an array in real time. */
-    }
+		// If you sing into your microphone, your pitch will be saved into an array in real time. */
+	}
 }
-ReactDOM.render(
-    <Recorder />,
-    document.getElementById('root')
-);
-
-
