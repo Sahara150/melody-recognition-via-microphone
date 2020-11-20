@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { ReactMic } from "@cleandersonlobo/react-mic";
+import { ReactMic } from "react-mic";
 import * as Analyzer from "./Analyzer";
 import './styles/main.css';
 
@@ -25,18 +25,22 @@ class Recorder extends React.Component<{}, RecorderState> {
 					<div className="centered upper-third no-background"><span className="bold big">Bitte singe ein A</span></div>
 					<div id="microphone_container">
 				<ReactMic record={this.state.recording}
-					onStop={(recordedBlob)=>this.onStop(recordedBlob)}/>
+					onStop={(recordedBlob: any) => this.onStop(recordedBlob)}
+					onData={(recordedBlob: any) => this.onData(recordedBlob)}/>
 					</div>
 			<button className="centered btn-dark" id="RecordButton" onClick={()=>this.changeRecordStatus()}>{this.state.recording == true ? "STOP RECORDING" : "RECORD"}</button>
 			
 				</div>)
 	}
+	onData(recordedBlob: any) {
+		console.log("On data recorded blob is: " + recordedBlob);
+    }
 	onStop(recordedBlob: any) {
 		//Fetching data from Blob and decoding it.
 		console.log('recordedBlob is: ', recordedBlob);
 		var a = document.createElement('a');
 		a.setAttribute('href', recordedBlob.blobURL);
-		a.setAttribute('download', "test.wav");
+		a.setAttribute('download', "test.webm");
 
 		document.body.appendChild(a);
 		a.click();
@@ -53,6 +57,7 @@ class Recorder extends React.Component<{}, RecorderState> {
 				);
 		});
 		reader.readAsArrayBuffer(recordedBlob.blob);
+		console.log("Blob: " + recordedBlob.blob);
 	}
 	successfulDecode(decoded: AudioBuffer) {
 		//Putting decoded buffer into an array.
@@ -76,8 +81,7 @@ class Recorder extends React.Component<{}, RecorderState> {
 				referenceBeat: refState.referenceBeat
 			});
         }
-		/*TODO: Call analyze method from Analyzer script 
-		        Important! Give it Recorder as reference, so it can enter the frequency. 
+		/*TODO: Call analyze method from Analyzer script. 
 				Here you´ll check later on, if there is a reference note or not and call the corresponding method.
 				*/
 	}

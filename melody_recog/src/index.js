@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
 exports.__esModule = true;
 var React = require("react");
 var ReactDOM = require("react-dom");
-var react_mic_1 = require("@cleandersonlobo/react-mic");
+var react_mic_1 = require("react-mic");
 var Analyzer = require("./Analyzer");
 require("./styles/main.css");
 var Recorder = /** @class */ (function (_super) {
@@ -39,8 +39,11 @@ var Recorder = /** @class */ (function (_super) {
             React.createElement("div", { className: "centered upper-third no-background" },
                 React.createElement("span", { className: "bold big" }, "Bitte singe ein A")),
             React.createElement("div", { id: "microphone_container" },
-                React.createElement(react_mic_1.ReactMic, { record: this.state.recording, onStop: function (recordedBlob) { return _this.onStop(recordedBlob); } })),
+                React.createElement(react_mic_1.ReactMic, { record: this.state.recording, onStop: function (recordedBlob) { return _this.onStop(recordedBlob); }, onData: function (recordedBlob) { return _this.onData(recordedBlob); } })),
             React.createElement("button", { className: "centered btn-dark", id: "RecordButton", onClick: function () { return _this.changeRecordStatus(); } }, this.state.recording == true ? "STOP RECORDING" : "RECORD")));
+    };
+    Recorder.prototype.onData = function (recordedBlob) {
+        console.log("On data recorded blob is: " + recordedBlob);
     };
     Recorder.prototype.onStop = function (recordedBlob) {
         var _this = this;
@@ -48,7 +51,7 @@ var Recorder = /** @class */ (function (_super) {
         console.log('recordedBlob is: ', recordedBlob);
         var a = document.createElement('a');
         a.setAttribute('href', recordedBlob.blobURL);
-        a.setAttribute('download', "test.wav");
+        a.setAttribute('download', "test.webm");
         document.body.appendChild(a);
         a.click();
         var reader = new FileReader();
@@ -63,6 +66,7 @@ var Recorder = /** @class */ (function (_super) {
             });
         });
         reader.readAsArrayBuffer(recordedBlob.blob);
+        console.log("Blob: " + recordedBlob.blob);
     };
     Recorder.prototype.successfulDecode = function (decoded) {
         //Putting decoded buffer into an array.
@@ -86,8 +90,7 @@ var Recorder = /** @class */ (function (_super) {
                 referenceBeat: refState.referenceBeat
             });
         }
-        /*TODO: Call analyze method from Analyzer script
-                Important! Give it Recorder as reference, so it can enter the frequency.
+        /*TODO: Call analyze method from Analyzer script.
                 Here you�ll check later on, if there is a reference note or not and call the corresponding method.
                 */
     };
