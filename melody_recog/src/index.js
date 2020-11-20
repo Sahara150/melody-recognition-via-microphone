@@ -27,7 +27,7 @@ class Recorder extends React.Component {
 		return (<div className="flex">
 					<div className="centered upper-third no-background"><span className="bold big">Bitte singe ein A</span></div>
 					<div id="microphone_container">
-				<span>{window.tuner.pitch}</span>
+				<span>{window.tuner.pitch} Hz</span>
 					</div>
 			<button className="centered btn-dark" id="RecordButton" onClick={()=>this.changeRecordStatus()}>{this.state.recording == true ? "STOP RECORDING" : "RECORD"}</button>
 			
