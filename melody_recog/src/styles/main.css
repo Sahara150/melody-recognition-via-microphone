@@ -48,3 +48,7 @@ body {
     .btn-dark:hover {
         background-color: gray;
     }
+
+#microphone_container {
+    height: 3em;
+}
