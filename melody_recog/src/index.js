@@ -34,39 +34,60 @@ class Recorder extends React.Component {
 				</div>)
 	}
 	changeRecordStatus() {
-		let recording = !this.state.recording;
+		//Fetch recording state from component.
+		let recording = this.state.recording;
+		if (recording) {
+			this.stopRecording();
+		} else {
+			this.startRecording();
+		}
+	}
+	stopRecording() {
+		console.log("Stop recording");
+		//Cancel reading pitch 60 times a second
+		if (window.refreshId != null || undefined) {
+			cancelAnimationFrame(window.refreshId);
+        }
+		window.tuner.stopUpdatingPitch(); // Stop calculating the pitch if you don't need to know it anymore.
+		console.log(this.state.input);
+		//Stops recording
 		let refState = this.state;
 		this.setState({
-			recording: recording,
-			referenceFrequency: refState.referenceFrequency,
-			referenceBeat: refState.referenceBeat,
-			input: refState.input
+			recording : false,
+			referenceBeat : refState.referenceBeat,
+			//Checks, if referenceFrequency exists, else uses just sang pitch
+			referenceFrequency : refState.referenceFrequency == null || undefined ? window.tuner.pitch : refState.referenceFrequency,
+			input : refState.input
 		});
-		if (recording) {
-			window.tuner.stopUpdatingPitch(); // Stop calculating the pitch if you don't need to know it anymore.
-			console.log(this.state.input);
-		} else {
-			window.voice.play(); // You must give your browser permission to access your microphone before calling play().
+	}
+	startRecording() {
+		console.log("Start recording");
+		//Starts recording
+		let refState = this.state;
+		this.setState({
+			recording : true,
+			referenceBeat : refState.referenceBeat,
+			referenceFrequency : refState.referenceFrequency,
+			input : refState.input
+		});
+		window.voice.play(); // You must give your browser permission to access your microphone before calling play().
 
-			window.tuner.updatePitch(); // The tuner is now calculating the pitch and note name of its input 60 times per second. These values are stored in <code>tuner.pitch</code> and <code>tuner.noteName</code>.
+		window.tuner.updatePitch(); // The tuner is now calculating the pitch and note name of its input 60 times per second. These values are stored in <code>tuner.pitch</code> and <code>tuner.noteName</code>.
 
-			var savePitch = () => {
-				let refState = this.state;
-				let input = this.state.input;
-				input.push(window.tuner.pitch);
-				this.setState({
-					recording: refState.recording,
-					referenceFrequency: refState.referenceFrequency,
-					referenceBeat: refState.referenceBeat,
-					input : input
-				});
-				if (refState.recording) {
-					requestAnimationFrame(savePitch);
-					}
-			};
-			savePitch();
-			// If you sing into your microphone, your pitch will be saved into an arry in real time.
-        }
+		var savePitch = () => {
+			let refState = this.state;
+			let input = this.state.input;
+			input.push(window.tuner.pitch);
+			this.setState({
+				recording: true,
+				referenceFrequency: refState.referenceFrequency,
+				referenceBeat: refState.referenceBeat,
+				input: input
+			});
+			window.refreshId = requestAnimationFrame(savePitch);
+		};
+		savePitch();
+			// If you sing into your microphone, your pitch will be saved into an array in real time. */
     }
 }
 ReactDOM.render(
