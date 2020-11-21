@@ -7,7 +7,7 @@ export function saveReferenceFrequency(frequency: number) {
 }
 export function saveReferenceBeat(beat: Beat) {
     let myStorage = window.sessionStorage;
-    myStorage.setItem(beatKey, `${beat}`);
+    myStorage.setItem(beatKey, beat);
 }
 export function getRefs(): { frequency: number | null, beat: Beat | null} {
     let myStorage = window.sessionStorage;
@@ -16,7 +16,7 @@ export function getRefs(): { frequency: number | null, beat: Beat | null} {
     let beatStr = myStorage.getItem(beatKey);
     let beat: Beat | null = null;
     if (beatStr != undefined || null) {
-     beat = beatStr as unknown as Beat;
+        beat = beatStr as Beat;
     }
     return {frequency, beat};
 }

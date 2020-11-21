@@ -1,9 +1,9 @@
 export enum Beat {
-    ThreeHalfs,
-    TwoFourths,
-    ThreeFourths,
-    FourFourths,
-    FiveFourths,
-    SixEights,
-    NineEights
+    ThreeHalfs = "ThreeHalfs",
+    TwoFourths = "TwoFourths",
+    ThreeFourths = "ThreeFourths",
+    FourFourths = "FourFourths",
+    FiveFourths = "FiveFourths",
+    SixEights = "SixEights",
+    NineEights = "NineEights"
 }

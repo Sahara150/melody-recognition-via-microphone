@@ -54,3 +54,9 @@ body {
 #microphone_container {
     height: 3em;
 }
+.align-horizontal {
+    flex-direction: row;
+}
+.container {
+    height: 3em;
+}

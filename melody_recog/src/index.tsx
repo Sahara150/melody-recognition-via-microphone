@@ -26,7 +26,7 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 		if (this.state.referenceFrequency == null) {
 			return <Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
 		} else if (this.state.referenceBeat == null) {
-			return <BeatSettings />
+			return <BeatSettings notifyParent={()=>this.updateReferences() }/>
 		} else {
 			return <Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
         }
