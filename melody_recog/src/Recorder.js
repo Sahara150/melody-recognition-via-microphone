@@ -2,6 +2,7 @@ import * as React from "react";
 import Wad from "web-audio-daw";
 import './styles/main.css';
 import { saveReferenceFrequency } from "./sessionStorageHelper";
+import { returnStringForSingingInfo } from "./beats";
 
 export class Recorder extends React.Component {
 	constructor(props /*any*/) {
@@ -25,7 +26,7 @@ export class Recorder extends React.Component {
 
 		return (<div className="flex">
 			<div className="centered upper-third no-background"><span className="bold big">
-				{this.state.referenceFrequency != null && this.state.referenceBeat != null ? "Bitte singe die Melodie ein. Bevor du singen kannst, wird das Metronom dir ... angeben." : "Bitte singe ein A"}
+				{this.state.referenceFrequency != null && this.state.referenceBeat != null ? `Bitte singe die Melodie ein. Bevor du singen kannst, wird das Metronom dir ${returnStringForSingingInfo(this.state.referenceBeat)} angeben.` : "Bitte singe ein A"}
 			</span></div>
 			<div id="microphone_container">
 				<span>{window.tuner.pitch} Hz</span>
