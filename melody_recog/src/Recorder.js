@@ -2,7 +2,6 @@ import * as React from "react";
 import Wad from "web-audio-daw";
 import './styles/main.css';
 import { saveReferenceFrequency } from "./sessionStorageHelper";
-import { getRefs } from "./sessionStorageHelper";
 
 export class Recorder extends React.Component {
 	constructor(props /*any*/) {
@@ -11,14 +10,13 @@ export class Recorder extends React.Component {
 		window.tuner = new Wad.Poly();
 		window.tuner.setVolume(0); // If you're not using headphones, you can eliminate microphone feedback by muting the output from the tuner.
 		window.tuner.add(window.voice);
-		let references = getRefs();
 		/*TODO: Implement methods in beats to
 				give back a fitting string for the info text
 				give back the amount of beats given and the speed*/
 		this.state = {
 			recording: false,
-			referenceFrequency: references.frequency,
-			referenceBeat: references.beat,
+			referenceFrequency: props.parentState.referenceFrequency,
+			referenceBeat: props.parentState.referenceBeat,
 			input: []
 		};
 	}
@@ -43,8 +41,10 @@ export class Recorder extends React.Component {
 			recording: refState.recording,
 			referenceBeat: refState.referenceBeat,
 			referenceFrequency: null,
-			input: refState.input
+			//Deletes old pitches, if reset.
+			input: []
 		})
+		this.props.notifyParent();
 	}
 	changeRecordStatus() {
 		//Fetch recording state from component.
@@ -70,11 +70,13 @@ export class Recorder extends React.Component {
 			referenceBeat: refState.referenceBeat,
 			//Checks, if referenceFrequency exists, else uses just sang pitch
 			referenceFrequency: refState.referenceFrequency == null || undefined ? window.tuner.pitch : refState.referenceFrequency,
-			input: refState.input
+			//If the referenceTone was sung, deletes input, so it is not reused in the melody
+			input: refState.referenceFrequency == null || undefined ? [] : refState.input
 		});
 		//If there was no referenceFrequency before it now is saved in sessionStorage.
 		if (refState.referenceFrequency == null) {
 			saveReferenceFrequency(window.tuner.pitch);
+			this.props.notifyParent();
 		}
 	}
 	startRecording() {
