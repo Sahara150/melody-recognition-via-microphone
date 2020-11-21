@@ -3,6 +3,7 @@ import Wad from "web-audio-daw";
 import './styles/main.css';
 import { saveReferenceFrequency } from "./sessionStorageHelper";
 import { getAmountOfBeats, returnStringForSingingInfo } from "./beats";
+import { analyzeMelody } from "./Analyzer";
 
 export class Recorder extends React.Component {
 	constructor(props /*any*/) {
@@ -60,7 +61,7 @@ export class Recorder extends React.Component {
 			cancelAnimationFrame(window.refreshId);
 		}
 		window.tuner.stopUpdatingPitch(); // Stop calculating the pitch if you don't need to know it anymore.
-		console.log(this.state.input);
+		console.log(this.state);
 		//Stops recording
 		let refState = this.state;
 		this.setState({
@@ -76,7 +77,7 @@ export class Recorder extends React.Component {
 			saveReferenceFrequency(window.tuner.pitch);
 			this.props.notifyParent();
 		} else {
-			//TODO: Give input to analyzer
+			analyzeMelody(this.state.input);
         }
 	}
 	startRecording() {
@@ -89,7 +90,8 @@ export class Recorder extends React.Component {
 			referenceFrequency: refState.referenceFrequency,
 			input: refState.input
 		});
-		if (this.state.referenceBeat != null) {
+		if (this.state.referenceBeat != null && this.state.referenceFrequency != null) {
+			window.tuner.pitch = undefined;
 			window.ticksLeft = getAmountOfBeats(this.state.referenceBeat);
 			window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
 			window.metronomeID = setInterval(this.outputTick, 1000);
@@ -102,6 +104,10 @@ export class Recorder extends React.Component {
 			let refState = this.state;
 			let input = this.state.input;
 			input.push(window.tuner.pitch);
+			//Setting pitch for melody on undefined again, so breaks are seen as undefined, instead of repeating the last frequency
+			if (refState.referenceFrequency != null) {
+				window.tuner.pitch = undefined;
+			}
 			this.setState({
 				recording: true,
 				referenceFrequency: refState.referenceFrequency,
