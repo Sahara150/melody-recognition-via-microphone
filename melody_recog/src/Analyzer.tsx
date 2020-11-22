@@ -37,14 +37,16 @@ function sumMinorMovements(input: number[]): FrequencyFrames[]{
 		let firstNum = input[currentIndex];
 		let sumOfNums = input[currentIndex];
 		let firstIndex = currentIndex;
-		while (currentIndex < input.length - 1 && ((firstNum == undefined && input[currentIndex + 1] == undefined) || Math.abs(input[currentIndex + 1] - firstNum) < (referenceFrequency / 100.0))) {
+		let amountOfFrames = 1;
+		let averageNum : number | undefined = firstNum;
+		while (currentIndex < input.length - 1 && ((averageNum == undefined && input[currentIndex + 1] == undefined) || Math.abs(input[currentIndex + 1] - averageNum!) < (referenceFrequency / 100.0))) {
 			currentIndex++;
+			amountOfFrames++;
 			if (input[currentIndex] != undefined) {
 				sumOfNums += input[currentIndex];
 			}
+			averageNum = sumOfNums == undefined ? undefined : sumOfNums / amountOfFrames;
 		}
-		let amountOfFrames = currentIndex - firstIndex + 1;
-		let averageNum = sumOfNums == undefined? undefined: sumOfNums / amountOfFrames;
 		let frequencyFrame = new FrequencyFrames(averageNum, amountOfFrames);
 		result.push(frequencyFrame);
     }
