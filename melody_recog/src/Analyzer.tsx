@@ -36,7 +36,6 @@ function sumMinorMovements(input: number[]): FrequencyFrames[]{
 	for (currentIndex; currentIndex < input.length; currentIndex++) {
 		let firstNum = input[currentIndex];
 		let sumOfNums = input[currentIndex];
-		let firstIndex = currentIndex;
 		let amountOfFrames = 1;
 		let averageNum : number | undefined = firstNum;
 		while (currentIndex < input.length - 1 && ((averageNum == undefined && input[currentIndex + 1] == undefined) || Math.abs(input[currentIndex + 1] - averageNum!) < (referenceFrequency / 100.0))) {

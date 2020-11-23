@@ -6,6 +6,8 @@ import { getAmountOfBeats, returnStringForSingingInfo } from "./beats";
 import { analyzeMelody } from "./Analyzer";
 
 export class Recorder extends React.Component {
+	//frequencies above this will be ignored as noice (should be configurable later on)
+	const NOICE_CANCELLING = 3200;
 	constructor(props /*any*/) {
 		super(props);
 		window.voice = new Wad({ source: 'mic' }); // At this point, your browser will ask for permission to access your microphone.
@@ -103,7 +105,7 @@ export class Recorder extends React.Component {
 		var savePitch = () => {
 			let refState = this.state;
 			let input = this.state.input;
-			input.push(window.tuner.pitch);
+			input.push(window.tuner.pitch > this.NOICE_CANCELLING? undefined: window.tuner.pitch);
 			//Setting pitch for melody on undefined again, so breaks are seen as undefined, instead of repeating the last frequency
 			if (refState.referenceFrequency != null) {
 				window.tuner.pitch = undefined;
