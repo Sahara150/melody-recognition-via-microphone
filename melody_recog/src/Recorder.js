@@ -7,7 +7,7 @@ import { analyzeMelody } from "./Analyzer";
 
 export class Recorder extends React.Component {
 	//frequencies above this will be ignored as noice (should be configurable later on)
-	const NOICE_CANCELLING = 3200;
+	NOICE_CANCELLING = 3200;
 	constructor(props /*any*/) {
 		super(props);
 		window.voice = new Wad({ source: 'mic' }); // At this point, your browser will ask for permission to access your microphone.
