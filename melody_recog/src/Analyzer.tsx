@@ -3,6 +3,7 @@ import { getRefs } from "./sessionStorageHelper";
 const FRAME_TRESHOLD = 15;
 const FREQUENCY = getRefs().frequency ?? 0;
 const FREQUENCY_TRESHOLD = FREQUENCY / 40.0;
+const SMOOTHING_TRESHOLD = 5;
 
 export function analyzeMelody(input: number[]) {
 	let firstDefined = getFirstDefined(input);
@@ -61,7 +62,7 @@ function sumMinorMovements(input: number[]): FrequencyFrames[]{
 function smoothSmallGaps(frames : FrequencyFrames[]) : FrequencyFrames[] {
 	let result : FrequencyFrames[] = [];
 	for (let i = 0; i < frames.length; i++) {
-		if (frames[i].amountOfFrames < FRAME_TRESHOLD) {
+		if (frames[i].amountOfFrames < SMOOTHING_TRESHOLD || frames[i].frequency == undefined && frames[i].amountOfFrames <FRAME_TRESHOLD) {
 			//If last saved as relevant note exists
 			if (result.length > 0) {
 				//And this frame is some minor undefinement
@@ -75,10 +76,10 @@ function smoothSmallGaps(frames : FrequencyFrames[]) : FrequencyFrames[] {
 			}
 			//If this is reached, above case decided not to add it to the last frame.
 			if (i < frames.length - 1) {
-				//If the frame is some minor undefinement and the next frame is relevant anyway
-				if ((frames[i].frequency == undefined && frames[i + 1].amountOfFrames > FRAME_TRESHOLD)
+				//If the frame is some minor undefinement and the next frame is not a loner anyway
+				if ((frames[i].frequency == undefined && frames[i + 1].amountOfFrames > SMOOTHING_TRESHOLD)
 					//or if the next frame is relevant and kinda fits the frequency level
-					|| (frames[i + 1].amountOfFrames > FRAME_TRESHOLD && frames[i+1]!=undefined && Math.abs(frames[i+1].frequency!-frames[i].frequency!)<FREQUENCY_TRESHOLD)) {
+					|| (frames[i + 1].amountOfFrames > SMOOTHING_TRESHOLD && frames[i+1]!=undefined && Math.abs(frames[i+1].frequency!-frames[i].frequency!)<FREQUENCY_TRESHOLD)) {
 					//add this frames amount to the next one
 					frames[i + 1].amountOfFrames += frames[i].amountOfFrames;
 					continue;
@@ -98,11 +99,31 @@ function smoothSmallGaps(frames : FrequencyFrames[]) : FrequencyFrames[] {
 				continue;
             }
 		}
-		//If this is reached, it is relevant
+		//If this is reached, it is big enough to not be smoothed
 		result.push(frames[i]);
 	}
 	return result;
 }
+
+function smoothUndefinedGaps(frames: FrequencyFrames[]): FrequencyFrames[] {
+	let result: FrequencyFrames[] = [];
+	for (let i = 0; i < frames.length; i++) {
+		if (frames[i].amountOfFrames < FRAME_TRESHOLD && frames[i].frequency == undefined) {
+			//If last saved as relevant note exists
+			if (result.length > 0) {
+				//just add it to the last frame
+				result[result.length - 1].amountOfFrames += frames[i].amountOfFrames;
+			} else {
+				//add this frames amount to the next one
+				frames[i + 1].amountOfFrames += frames[i].amountOfFrames;
+			}
+		} else {
+			result.push(frames[i]);
+        }
+	}
+	return result;
+}
+
 export class FrequencyFrames {
 	frequency: number | undefined;
 	amountOfFrames!: number;
