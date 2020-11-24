@@ -4,6 +4,7 @@ import { getRefs } from "./sessionStorageHelper";
 import { Recorder } from "./Recorder";
 import { BeatSettings } from "./BeatSettings";
 import { Beat } from "./beats";
+import { TestingAlgorithm } from "./TestingAlgorithm";
 
 class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null}> {
 	constructor(props : any) {
@@ -28,7 +29,10 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 		} else if (this.state.referenceBeat == null) {
 			return <BeatSettings notifyParent={()=>this.updateReferences() }/>
 		} else {
-			return <Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
+			return (<div>
+				<Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
+				<TestingAlgorithm />
+				</div>)
         }
 	}
 }

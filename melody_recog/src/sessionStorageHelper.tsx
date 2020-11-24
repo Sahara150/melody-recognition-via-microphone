@@ -1,4 +1,5 @@
 import {Beat} from "./beats"
+import { FrameNote } from "./notes";
 var frequencyKey = "frequencyRef";
 var beatKey = "beatRef";
 export function saveReferenceFrequency(frequency: number) {
@@ -19,4 +20,13 @@ export function getRefs(): { frequency: number | null, beat: Beat | null} {
         beat = beatStr as Beat;
     }
     return {frequency, beat};
+}
+export function saveFrameArray(notes: FrameNote[], key: string) {
+    let myStorage = window.sessionStorage;
+    myStorage.setItem(key, JSON.stringify(notes));
+}
+export function getFrameArray(key: string): FrameNote[] {
+    let myStorage = window.sessionStorage;
+    let strNotes = myStorage.getItem(key) ?? "[]";
+    return JSON.parse(strNotes);
 }

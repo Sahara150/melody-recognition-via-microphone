@@ -3,7 +3,7 @@ import Wad from "web-audio-daw";
 import './styles/main.css';
 import { saveReferenceFrequency } from "./sessionStorageHelper";
 import { getAmountOfBeats, returnStringForSingingInfo } from "./beats";
-import { analyzeMelody } from "./Analyzer";
+import { startPipeline } from "./Pipeline";
 
 export class Recorder extends React.Component {
 	//frequencies above this will be ignored as noice (should be configurable later on)
@@ -79,7 +79,7 @@ export class Recorder extends React.Component {
 			saveReferenceFrequency(window.tuner.pitch);
 			this.props.notifyParent();
 		} else {
-			analyzeMelody(this.state.input);
+			startPipeline(this.state.input);
         }
 	}
 	startRecording() {

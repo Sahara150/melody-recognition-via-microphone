@@ -1,17 +1,17 @@
 import { CalculateFrameNotes } from "./Calculator";
-import { getRefs } from "./sessionStorageHelper";
+import { getRefs, saveFrameArray } from "./sessionStorageHelper";
 
 const FRAME_TRESHOLD = 15;
 const FREQUENCY = getRefs().frequency ?? 0;
 const FREQUENCY_TRESHOLD = FREQUENCY / 40.0;
-const SMOOTHING_TRESHOLD = 8;
+const SMOOTHING_TRESHOLD = 7;
 
-export function analyzeMelody(input: number[]) {
+export function analyzeMelody(input: number[]) : FrequencyFrames[]{
 	let firstDefined = getFirstDefined(input);
 	let lastDefined = getLastDefined(input);
 	if (firstDefined == lastDefined) {
 		console.log("Nichts eingesungen.");
-		return;
+		return [];
 	} else if (lastDefined > firstDefined) {
 		input = input.slice(firstDefined, lastDefined + 1);
 		let sumMinorFluctuations: FrequencyFrames[] = sumMinorMovements(input);
@@ -21,10 +21,12 @@ export function analyzeMelody(input: number[]) {
 		console.log("The smoothed result: ");
 		console.log(smoothed);
 		console.log("The smoothed interpreted from calculator: ");
-		CalculateFrameNotes(smoothed);
+		saveFrameArray(CalculateFrameNotes(smoothed), "smoothed");
 		console.log("The unsmoothed interpreted from calculator: ");
-		CalculateFrameNotes(unsmoothed);
-    }
+		saveFrameArray(CalculateFrameNotes(unsmoothed),"unsmoothed");
+		return unsmoothed;
+	} 
+	return [];
 }
 
 function getFirstDefined(input: number[]) : number {
