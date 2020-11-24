@@ -1,13 +1,11 @@
 export class FrameNote {
-    value: Note;
+    value: SignedNote;
     octave: number;
     frames: number;
-    chromaticSign : Sign
-    constructor(value: Note, octave: number, frames: number, chromaticSign: Sign) {
-        this.value = value;
+    constructor(octave: number, frames: number, signedNote: SignedNote) {
+        this.value = signedNote;
         this.octave = octave;
         this.frames = frames;
-        this.chromaticSign = chromaticSign;
     }
 }
 export enum Note {
@@ -17,7 +15,19 @@ export enum Note {
     D,
     E,
     F,
-    G
+    G,
+    BREAK
+}
+export class SignedNote {
+    value: Note;
+    sign: Sign;
+    constructor(value: Note, sign: Sign) {
+        this.value = value;
+        this.sign = sign;
+    }
+    equals(other: SignedNote) : boolean {
+        return this.value === other.value && this.sign === other.sign;
+    }
 }
 export enum Sign {
     SHARP,

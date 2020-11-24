@@ -1,9 +1,10 @@
+import { CalculateFrameNotes } from "./Calculator";
 import { getRefs } from "./sessionStorageHelper";
 
 const FRAME_TRESHOLD = 15;
 const FREQUENCY = getRefs().frequency ?? 0;
 const FREQUENCY_TRESHOLD = FREQUENCY / 40.0;
-const SMOOTHING_TRESHOLD = 5;
+const SMOOTHING_TRESHOLD = 8;
 
 export function analyzeMelody(input: number[]) {
 	let firstDefined = getFirstDefined(input);
@@ -15,9 +16,14 @@ export function analyzeMelody(input: number[]) {
 		input = input.slice(firstDefined, lastDefined + 1);
 		let sumMinorFluctuations: FrequencyFrames[] = sumMinorMovements(input);
 		console.log(sumMinorFluctuations);
-		let smoothed : FrequencyFrames[] = smoothSmallGaps(sumMinorFluctuations);
+		let smoothed: FrequencyFrames[] = smoothSmallGaps(sumMinorFluctuations);
+		let unsmoothed: FrequencyFrames[] = smoothUndefinedGaps(sumMinorFluctuations);
 		console.log("The smoothed result: ");
 		console.log(smoothed);
+		console.log("The smoothed interpreted from calculator: ");
+		CalculateFrameNotes(smoothed);
+		console.log("The unsmoothed interpreted from calculator: ");
+		CalculateFrameNotes(unsmoothed);
     }
 }
 
@@ -78,8 +84,8 @@ function smoothSmallGaps(frames : FrequencyFrames[]) : FrequencyFrames[] {
 			if (i < frames.length - 1) {
 				//If the frame is some minor undefinement and the next frame is not a loner anyway
 				if ((frames[i].frequency == undefined && frames[i + 1].amountOfFrames > SMOOTHING_TRESHOLD)
-					//or if the next frame is relevant and kinda fits the frequency level
-					|| (frames[i + 1].amountOfFrames > SMOOTHING_TRESHOLD && frames[i+1]!=undefined && Math.abs(frames[i+1].frequency!-frames[i].frequency!)<FREQUENCY_TRESHOLD)) {
+					//or if the next frame is relevant
+					|| (frames[i + 1].amountOfFrames > SMOOTHING_TRESHOLD && frames[i+1].frequency!=undefined)) {
 					//add this frames amount to the next one
 					frames[i + 1].amountOfFrames += frames[i].amountOfFrames;
 					continue;
