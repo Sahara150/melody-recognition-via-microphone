@@ -80,6 +80,7 @@ export class Recorder extends React.Component {
 			this.props.notifyParent();
 		} else {
 			startPipeline(this.state.input);
+			this.props.notifyParent();
         }
 	}
 	startRecording() {
