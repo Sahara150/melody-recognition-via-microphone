@@ -35,7 +35,7 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 		} else if (this.state.pipelineIsThrough) {
 			return (<div>
 				<Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
-				<TestingAlgorithm parentState={this.state}/>
+				<TestingAlgorithm />
 			</div>)
 		} else {
 			return (<div>

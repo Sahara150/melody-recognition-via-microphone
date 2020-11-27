@@ -83,7 +83,7 @@ export class Recorder extends React.Component {
 			let refState = this.state;
 			//Clearing the input array in case recording is redone.
 			this.setState({
-				recording: refState.recording,
+				recording: false,
 				referenceFrequency: refState.referenceFrequency,
 				referenceBeat: refState.referenceBeat,
 				input : []
