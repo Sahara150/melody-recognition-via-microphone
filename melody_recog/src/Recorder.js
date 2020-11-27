@@ -79,6 +79,7 @@ export class Recorder extends React.Component {
 			saveReferenceFrequency(window.tuner.pitch);
 			this.props.notifyParent();
 		} else {
+			console.log("Raw input: " + this.state.input);
 			startPipeline(this.state.input, this.state.referenceFrequency);
 			let refState = this.state;
 			//Clearing the input array in case recording is redone.

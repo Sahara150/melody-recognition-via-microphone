@@ -21,6 +21,11 @@
     "jsx": "react"
   },
   "include": [
-    "src"
+    "src",
+    "tests"
+  ],
+  "types": [
+    "jest",
+    "node"
   ]
 }
