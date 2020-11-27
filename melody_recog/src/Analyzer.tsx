@@ -16,17 +16,7 @@ export function analyzeMelody(input: number[]) : FrequencyFrames[]{
 		input = input.slice(firstDefined, lastDefined + 1);
 		let sumMinorFluctuations: FrequencyFrames[] = sumMinorMovements(input);
 		console.log(sumMinorFluctuations);
-		let smoothed: FrequencyFrames[] = smoothSmallGaps(sumMinorFluctuations);
-		let unsmoothed: FrequencyFrames[] = smoothUndefinedGaps(sumMinorFluctuations);
-		let equalAlloc: FrequencyFrames[] = equalAllocAlgorithm(sumMinorFluctuations);
-		console.log("The smoothed result: ");
-		console.log(smoothed);
-		console.log("The smoothed interpreted from calculator: ");
-		saveFrameArray(CalculateFrameNotes(smoothed), "smoothed");
-		console.log("The unsmoothed interpreted from calculator: ");
-		saveFrameArray(CalculateFrameNotes(unsmoothed), "unsmoothed");
-		saveFrameArray(CalculateFrameNotes(equalAlloc), "equalAlloc");
-		return unsmoothed;
+		return sumMinorFluctuations;
 	} 
 	return [];
 }
@@ -69,7 +59,7 @@ function sumMinorMovements(input: number[]): FrequencyFrames[]{
     }
 	return result;
 }
-function smoothSmallGaps(frames : FrequencyFrames[]) : FrequencyFrames[] {
+export function smoothSmallGaps(frames : FrequencyFrames[]) : FrequencyFrames[] {
 	let result : FrequencyFrames[] = [];
 	for (let i = 0; i < frames.length; i++) {
 		if (frames[i].amountOfFrames < SMOOTHING_TRESHOLD || frames[i].frequency == undefined && frames[i].amountOfFrames <FRAME_TRESHOLD) {
@@ -115,7 +105,7 @@ function smoothSmallGaps(frames : FrequencyFrames[]) : FrequencyFrames[] {
 	return result;
 }
 
-function smoothUndefinedGaps(frames: FrequencyFrames[]): FrequencyFrames[] {
+export function smoothUndefinedGaps(frames: FrequencyFrames[]): FrequencyFrames[] {
 	let result: FrequencyFrames[] = [];
 	for (let i = 0; i < frames.length; i++) {
 		if (frames[i].amountOfFrames < FRAME_TRESHOLD && frames[i].frequency == undefined) {
@@ -133,7 +123,7 @@ function smoothUndefinedGaps(frames: FrequencyFrames[]): FrequencyFrames[] {
 	}
 	return result;
 }
-function equalAllocAlgorithm(frames: FrequencyFrames[]): FrequencyFrames[] {
+export function equalAllocAlgorithm(frames: FrequencyFrames[]): FrequencyFrames[] {
 	let relevantFrames: FrequencyFrames[] = [];
 	let amountOfFrames = 0;
 	for (let i = 0; i < frames.length; i++) {

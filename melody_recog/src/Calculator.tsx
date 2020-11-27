@@ -1,6 +1,5 @@
 import { FrequencyFrames } from "./Analyzer";
 import { FrameNote, Note, Sign, SignedNote } from "./notes";
-import { getRefs } from "./sessionStorageHelper";
 
 export const LOG_2 = Math.log(2);
 export const SCALE = [
@@ -16,8 +15,7 @@ export const SCALE = [
     new SignedNote(Note.F, Sign.SHARP),
     new SignedNote(Note.G, Sign.NONE),
     new SignedNote(Note.G, Sign.SHARP)]
-export function CalculateFrameNotes(input: FrequencyFrames[]) : FrameNote[] {
-    let frequencyRef = getRefs().frequency ?? 0;
+export function CalculateFrameNotes(input: FrequencyFrames[], refFreq: number) : FrameNote[] {
     let frameNotes: FrameNote[] = [];
     for (let i = 0; i < input.length; i++) {
         if (input[i].frequency == undefined) {
@@ -28,7 +26,7 @@ export function CalculateFrameNotes(input: FrequencyFrames[]) : FrameNote[] {
                 frameNotes.push(note);
             }
         } else {
-            let diff = input[i].frequency! / frequencyRef;
+            let diff = input[i].frequency! / refFreq;
             let halfTones = 12 * Math.log(diff) / LOG_2;
             let octaves: number;
             let value: SignedNote;
