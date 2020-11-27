@@ -4,11 +4,18 @@ import { LOG_2, SCALE } from "./Calculator";
 import { FrameNote, Note } from "./notes";
 import { getFrameArray, getRefs } from "./sessionStorageHelper";
 
-export class TestingAlgorithm extends React.Component {
+export class TestingAlgorithm extends React.Component<{}, {refFrequency: number}> {
+    constructor(props : any) {
+        super(props)
+        this.state = {
+            refFrequency : props.parentState.refFrequency
+        }
+    }
     render() {
         return (<div>
             <button onClick={() => this.playPreSmoothed()} className="btn-dark centered">Spiele vorgeglättete Version</button>
             <button onClick={() => this.playNonSmoothed()} className="btn-dark centered">Spiele ungeglättete Version</button>
+            <button onClick={() => this.playEqualAlloc()} className="btn-dark centered">Spiele gleichverteilte Version</button>
             </div>)
     }
     playPreSmoothed() {
@@ -19,10 +26,13 @@ export class TestingAlgorithm extends React.Component {
         let unSmoothed = getFrameArray("unsmoothed");
         this.play(unSmoothed);
     }
+    playEqualAlloc() {
+        let equalAlloc = getFrameArray("equalAlloc")
+    }
     play(frameNotes : FrameNote[]) {
         let audioContext = new (window.AudioContext)();
         let i = 0;
-        let refFreq = getRefs().frequency ?? 0;
+        let refFreq = this.state.refFrequency;
         function playNote() {
             let actualNote = frameNotes[i];
             let osc = audioContext.createOscillator();

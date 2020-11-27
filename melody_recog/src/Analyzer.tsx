@@ -18,12 +18,14 @@ export function analyzeMelody(input: number[]) : FrequencyFrames[]{
 		console.log(sumMinorFluctuations);
 		let smoothed: FrequencyFrames[] = smoothSmallGaps(sumMinorFluctuations);
 		let unsmoothed: FrequencyFrames[] = smoothUndefinedGaps(sumMinorFluctuations);
+		let equalAlloc: FrequencyFrames[] = equalAllocAlgorithm(sumMinorFluctuations);
 		console.log("The smoothed result: ");
 		console.log(smoothed);
 		console.log("The smoothed interpreted from calculator: ");
 		saveFrameArray(CalculateFrameNotes(smoothed), "smoothed");
 		console.log("The unsmoothed interpreted from calculator: ");
-		saveFrameArray(CalculateFrameNotes(unsmoothed),"unsmoothed");
+		saveFrameArray(CalculateFrameNotes(unsmoothed), "unsmoothed");
+		saveFrameArray(CalculateFrameNotes(equalAlloc), "equalAlloc");
 		return unsmoothed;
 	} 
 	return [];
@@ -130,6 +132,28 @@ function smoothUndefinedGaps(frames: FrequencyFrames[]): FrequencyFrames[] {
         }
 	}
 	return result;
+}
+function equalAllocAlgorithm(frames: FrequencyFrames[]): FrequencyFrames[] {
+	let relevantFrames: FrequencyFrames[] = [];
+	let amountOfFrames = 0;
+	for (let i = 0; i < frames.length; i++) {
+		if (frames[i].amountOfFrames > FRAME_TRESHOLD) {
+			let frame = frames[i];
+			if (relevantFrames.length == 0) {
+				frame.amountOfFrames += amountOfFrames;
+				amountOfFrames = 0;
+				relevantFrames.push(frame);
+			} else {
+				frame.amountOfFrames += amountOfFrames / 2;
+				relevantFrames[relevantFrames.length - 1].amountOfFrames += amountOfFrames / 2;
+				amountOfFrames = 0;
+				relevantFrames.push(frame);
+			}
+		} else {
+			amountOfFrames += frames[i].amountOfFrames;
+        }
+    }
+	return relevantFrames;
 }
 
 export class FrequencyFrames {
