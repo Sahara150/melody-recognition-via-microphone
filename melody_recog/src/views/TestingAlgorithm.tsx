@@ -1,55 +1,70 @@
 import * as React from "react";
-import { unstable_batchedUpdates } from "react-dom";
 import { LOG_2, SCALE } from "../Calculator";
 import { FrameNote, Note } from "../models/notes";
 import { getFrameArray, getRefs } from "../sessionStorageHelper";
 
-export class TestingAlgorithm extends React.Component {
+export class TestingAlgorithm extends React.Component<{}, { playing: boolean }> {
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            playing: false
+        }
+    }
     render() {
         return (<div className="flex align-horizontal">
-            <button onClick={() => this.playPreSmoothed()} className="btn-dark centered">Spiele vorgeglättete Version</button>
-            <button onClick={() => this.playNonSmoothed()} className="btn-dark centered">Spiele ungeglättete Version</button>
-            <button onClick={() => this.playEqualAlloc()} className="btn-dark centered">Spiele gleichverteilte Version</button>
+            <button onClick={() => this.playOrStopPreSmoothed()} className="btn-dark centered">Spiele/Stoppe vorgeglättete Version</button>
+            <button onClick={() => this.playOrStopNonSmoothed()} className="btn-dark centered">Spiele/Stoppe ungeglättete Version</button>
+            <button onClick={() => this.playOrStopEqualAlloc()} className="btn-dark centered">Spiele/Stoppe gleichverteilte Version</button>
             </div>)
     }
-    playPreSmoothed() {
+    playOrStopPreSmoothed() { 
         let preSmoothed = getFrameArray("smoothed");
-        this.play(preSmoothed);
+        this.playOrStop(preSmoothed);
     }
-    playNonSmoothed() {
+    playOrStopNonSmoothed() {
         let unSmoothed = getFrameArray("unsmoothed");
-        this.play(unSmoothed);
+        this.playOrStop(unSmoothed);
     }
-    playEqualAlloc() {
+    playOrStopEqualAlloc() {
         let equalAlloc = getFrameArray("equalAlloc")
-        this.play(equalAlloc);
+        this.playOrStop(equalAlloc);
     }
-    play(frameNotes : FrameNote[]) {
-        let audioContext = new (window.AudioContext)();
-        let i = 0;
-        let refFreq = getRefs().frequency ?? 0;
-        function playNote() {
-            let actualNote = frameNotes[i];
-            if (actualNote.value.value != Note.BREAK) {
-                let osc = audioContext.createOscillator();
-                let halfTones = SCALE.findIndex(val => val.equals(actualNote.value));
-                let octaves = actualNote.octave
-                if (actualNote.value.value > Note.C) {
-                    octaves--;
-                }
-                halfTones += (octaves - 4) * 12
-                console.log("halfTones are " + halfTones);
-                let diff = Math.pow(Math.E, LOG_2*halfTones/12);
-                osc.frequency.value = refFreq * diff;
-                osc.connect(audioContext.destination);
-                osc.start(audioContext.currentTime);
-                osc.stop(audioContext.currentTime + actualNote.frames / 60);
-            }
-            i++;
-            if (i < frameNotes.length) {
-                setTimeout(playNote, actualNote.frames * 1000 / 60);
-            }
+    playOrStop(frameNotes : FrameNote[]) {
+        if (this.state.playing) {
+            this.setState({ playing: false });
+        } else {
+            this.setState({
+                playing: true
+            }, () => this.play(frameNotes));
         }
-        playNote();
+    }
+    play(frameNotes: FrameNote[]) {
+            let audioContext = new (window.AudioContext)();
+            let i = 0;
+            let refFreq = getRefs().frequency ?? 0;
+            const playNote = () => {
+                let actualNote = frameNotes[i];
+                if (actualNote.value.value != Note.BREAK) {
+                    let osc = audioContext.createOscillator();
+                    let halfTones = SCALE.findIndex(val => val.equals(actualNote.value));
+                    let octaves = actualNote.octave
+                    if (actualNote.value.value > Note.C) {
+                        octaves--;
+                    }
+                    halfTones += (octaves - 4) * 12
+                    let diff = Math.pow(Math.E, LOG_2 * halfTones / 12);
+                    osc.frequency.value = refFreq * diff;
+                    osc.connect(audioContext.destination);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + actualNote.frames / 60);
+                }
+                i++;
+                if (i < frameNotes.length && this.state.playing) {
+                    setTimeout(playNote, actualNote.frames * 1000 / 60);
+                } else {
+                    this.setState({ playing: false });
+                }
+            }
+            playNote();
     }
 }

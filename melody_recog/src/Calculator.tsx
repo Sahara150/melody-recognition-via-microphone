@@ -31,7 +31,6 @@ export function CalculateFrameNotes(input: FrequencyFrames[], refFreq: number) :
             let octaves: number;
             let value: SignedNote;
             let noOctaves = mathematicallyCorrectModulo(Math.round(halfTones), 12); //Always positive number, due to mathematically correct modulo in negative range works suitable.
-            console.log("No octaves are " + noOctaves);
             octaves = Math.round((halfTones - noOctaves) / 12) + 4; // Because A already is in the fourth octave
             value = getMusicalValue(noOctaves);
             //This happens, because the octave doesn´t start with A, but with C, so in above case the amount of octaves said is one too low for all notes above C.
@@ -55,7 +54,6 @@ function getMusicalValue(halfTones: number): SignedNote {
     return SCALE[Math.round(halfTones+12)%12]
 }
 function mathematicallyCorrectModulo(dividend: number, divisor: number) {
-    console.log("Amount of halftones is: " + dividend);
     if (dividend >= 0 || dividend%divisor == 0) {
         return dividend % divisor;
     } else {

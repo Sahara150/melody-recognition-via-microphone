@@ -6,6 +6,7 @@ import { Recorder } from "./views/Recorder";
 import { BeatSettings } from "./views/BeatSettings";
 import { Beat } from "./models/beats";
 import { TestingAlgorithm } from "./views/TestingAlgorithm";
+import { ChoosingAlgorithm } from "./views/ChooseAlgorithm";
 
 class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean}> {
 	constructor(props : any) {
@@ -36,7 +37,9 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 		} else if (this.state.pipelineIsThrough) {
 			return (<div>
 				<Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
+				<span className="centered">Du kannst dir die verschiedenen Ergebnisse anhören und dann wählen, welches du verwenden willst oder neu aufnehmen.</span>
 				<TestingAlgorithm />
+				<ChoosingAlgorithm onChange={(chosen)=>this.getChosenAlgorithm(chosen)}/>
 			</div>)
 		} else {
 			return (<div>
@@ -44,6 +47,9 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 				</div>)
 		}
 	}
+	getChosenAlgorithm(chosen: string) {
+		console.log("I just received " + chosen);
+    }
 }
 	ReactDOM.render(
     <Main />,
