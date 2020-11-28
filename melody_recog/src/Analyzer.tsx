@@ -124,6 +124,7 @@ export function smoothUndefinedGaps(frames: FrequencyFrames[]): FrequencyFrames[
 	return result;
 }
 export function equalAllocAlgorithm(frames: FrequencyFrames[]): FrequencyFrames[] {
+	frames = smoothUndefinedGaps(frames);
 	let relevantFrames: FrequencyFrames[] = [];
 	let amountOfFrames = 0;
 	for (let i = 0; i < frames.length; i++) {

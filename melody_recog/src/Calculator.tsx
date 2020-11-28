@@ -37,7 +37,7 @@ export function CalculateFrameNotes(input: FrequencyFrames[], refFreq: number) :
             if (value.value >= Note.C) {
                 octaves++;
             }
-            //Checks if before frameNote has same value, an if so, adds itself to it
+            //Checks if before frameNote has same value, and if so, adds itself to it
             if (frameNotes.length > 0 && frameNotes[frameNotes.length - 1].octave == octaves && frameNotes[frameNotes.length - 1].value.equals(value)) {
                 frameNotes[frameNotes.length - 1].frames += input[i].amountOfFrames;
             } else {
@@ -54,7 +54,7 @@ function getMusicalValue(halfTones: number): SignedNote {
     return SCALE[Math.round(halfTones)%12]
 }
 function mathematicallyCorrectModulo(dividend: number, divisor: number) {
-    if (dividend > divisor) {
+    if (dividend >= 0) {
         return dividend % divisor;
     } else {
         let a = Math.floor(-dividend / divisor) + 1;
