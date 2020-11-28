@@ -1,5 +1,5 @@
-import {Beat} from "./beats"
-import { FrameNote } from "./notes";
+import {Beat} from "./models/beats"
+import { FrameNote } from "./models/notes";
 var frequencyKey = "frequencyRef";
 var beatKey = "beatRef";
 export function saveReferenceFrequency(frequency: number) {

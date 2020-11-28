@@ -1,7 +1,7 @@
 import * as React from "react";
 import { unstable_batchedUpdates } from "react-dom";
 import { LOG_2, SCALE } from "./Calculator";
-import { FrameNote, Note } from "./notes";
+import { FrameNote, Note } from "./models/notes";
 import { getFrameArray, getRefs } from "./sessionStorageHelper";
 
 export class TestingAlgorithm extends React.Component {

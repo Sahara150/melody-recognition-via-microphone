@@ -3,7 +3,7 @@ import * as React from "react";
 import { getFrameArray, getRefs } from "./sessionStorageHelper";
 import { Recorder } from "./Recorder";
 import { BeatSettings } from "./BeatSettings";
-import { Beat } from "./beats";
+import { Beat } from "./models/beats";
 import { TestingAlgorithm } from "./TestingAlgorithm";
 
 class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean}> {

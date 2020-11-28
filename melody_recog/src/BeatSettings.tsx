@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Beat } from "./beats";
+import { Beat } from "./models/beats";
 import { saveReferenceBeat } from "./sessionStorageHelper";
 
 export class BeatSettings extends React.Component<{ notifyParent: Function }, { beatChosen: Beat } > {

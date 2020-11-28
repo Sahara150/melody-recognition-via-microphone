@@ -1,5 +1,6 @@
-import { analyzeMelody, equalAllocAlgorithm, FrequencyFrames, smoothSmallGaps, smoothUndefinedGaps } from "./Analyzer";
+import { analyzeMelody, equalAllocAlgorithm, smoothSmallGaps, smoothUndefinedGaps } from "./Analyzer";
 import { CalculateFrameNotes } from "./Calculator";
+import { FrequencyFrames } from "./models/frequencyframes";
 import { saveFrameArray } from "./sessionStorageHelper";
 
 export function startPipeline(input: number[], refFrequency: number) {

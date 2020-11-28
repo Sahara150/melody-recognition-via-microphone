@@ -1,4 +1,4 @@
-import { CalculateFrameNotes } from "./Calculator";
+import { FrequencyFrames } from "./models/frequencyframes";
 import { getRefs, saveFrameArray } from "./sessionStorageHelper";
 
 const FRAME_TRESHOLD = 15;
@@ -145,13 +145,4 @@ export function equalAllocAlgorithm(frames: FrequencyFrames[]): FrequencyFrames[
         }
     }
 	return relevantFrames;
-}
-
-export class FrequencyFrames {
-	frequency: number | undefined;
-	amountOfFrames!: number;
-	constructor(frequency: number | undefined, amountOfFrames: number) {
-		this.frequency = frequency;
-		this.amountOfFrames = amountOfFrames;
-    }
 }
