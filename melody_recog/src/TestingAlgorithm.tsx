@@ -30,19 +30,21 @@ export class TestingAlgorithm extends React.Component {
         let refFreq = getRefs().frequency ?? 0;
         function playNote() {
             let actualNote = frameNotes[i];
-            let osc = audioContext.createOscillator();
-            let halfTones = SCALE.findIndex(val => val.equals(actualNote.value));
-            let octaves = actualNote.octave
-            if (actualNote.value.value > Note.C) {
-                octaves--;
+            if (actualNote.value.value != Note.BREAK) {
+                let osc = audioContext.createOscillator();
+                let halfTones = SCALE.findIndex(val => val.equals(actualNote.value));
+                let octaves = actualNote.octave
+                if (actualNote.value.value > Note.C) {
+                    octaves--;
+                }
+                halfTones += (octaves - 4) * 12
+                console.log("halfTones are " + halfTones);
+                let diff = Math.pow(Math.E, LOG_2*halfTones/12);
+                osc.frequency.value = refFreq * diff;
+                osc.connect(audioContext.destination);
+                osc.start(audioContext.currentTime);
+                osc.stop(audioContext.currentTime + actualNote.frames / 60);
             }
-            halfTones += (octaves - 4) * 12
-            console.log("halfTones are " + halfTones);
-            let diff = Math.pow(Math.E, LOG_2*halfTones/12);
-            osc.frequency.value = refFreq * diff;
-            osc.connect(audioContext.destination);
-            osc.start(audioContext.currentTime);
-            osc.stop(audioContext.currentTime + actualNote.frames / 60);
             i++;
             if (i < frameNotes.length) {
                 setTimeout(playNote, actualNote.frames * 1000 / 60);

@@ -31,6 +31,7 @@ export function CalculateFrameNotes(input: FrequencyFrames[], refFreq: number) :
             let octaves: number;
             let value: SignedNote;
             let noOctaves = mathematicallyCorrectModulo(halfTones, 12); //Always positive number, due to mathematically correct modulo in negative range works suitable.
+                                                                        //Except it is a too low pitched A4. Than it is a number between 0 and -0.5
             octaves = ((halfTones - noOctaves) / 12) + 4; // Because A already is in the fourth octave
             value = getMusicalValue(noOctaves);
             //This happens, because the octave doesn´t start with A, but with C, so in above case the amount of octaves said is one too low for all notes above C.
@@ -51,11 +52,15 @@ export function CalculateFrameNotes(input: FrequencyFrames[], refFreq: number) :
 //First all notes are described with none or sharp. Flats are used, when the calculator identifies a corresponding key.
 //Therefore also the signs exist instead of adding enharmonic ambiguity notes in the noteEnum.
 function getMusicalValue(halfTones: number): SignedNote {
-    return SCALE[Math.round(halfTones)%12]
+    //+12, because in case A4 is slightly mispitched, it might get a negative amount of halftones.
+    return SCALE[Math.round(halfTones+12)%12]
 }
 function mathematicallyCorrectModulo(dividend: number, divisor: number) {
     if (dividend >= 0) {
         return dividend % divisor;
+    //Special case for A4, if it is sang slightly too low, else it would get mistakenly pitched one octave lower
+    } else if (dividend < 0 && dividend >= -0.5) {
+        return dividend;
     } else {
         let a = Math.floor(-dividend / divisor) + 1;
         return (a * divisor) + dividend;
