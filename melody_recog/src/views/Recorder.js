@@ -1,9 +1,8 @@
 import * as React from "react";
 import Wad from "web-audio-daw";
-import './styles/main.css';
-import { saveReferenceFrequency } from "./sessionStorageHelper";
-import { getAmountOfBeats, returnStringForSingingInfo } from "./models/beats";
-import { startPipeline } from "./Pipeline";
+import { saveReferenceFrequency } from "../sessionStorageHelper";
+import { getAmountOfBeats, returnStringForSingingInfo } from "../models/beats";
+import { startPipeline } from "../Pipeline";
 
 export class Recorder extends React.Component {
 	//frequencies above this will be ignored as noice (should be configurable later on)
