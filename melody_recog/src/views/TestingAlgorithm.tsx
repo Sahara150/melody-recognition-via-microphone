@@ -1,5 +1,5 @@
 import * as React from "react";
-import { LOG_2, SCALE } from "../Calculator";
+import { LOG_2, SCALE } from "../models/calculationData";
 import { FrameNote, Note } from "../models/notes";
 import { getFrameArray, getRefs } from "../sessionStorageHelper";
 

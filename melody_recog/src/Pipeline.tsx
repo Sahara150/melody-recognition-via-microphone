@@ -1,5 +1,5 @@
-import { analyzeMelody, equalAllocAlgorithm, smoothSmallGaps, smoothUndefinedGaps } from "./Analyzer";
-import { CalculateFrameNotes } from "./Calculator";
+import { analyzeMelody, equalAllocAlgorithm, smoothSmallGaps, smoothUndefinedGaps } from "./algorithms/Analyzer";
+import { CalculateFrameNotes } from "./algorithms/Calculator";
 import { FrequencyFrames } from "./models/frequencyframes";
 import { FrameNote } from "./models/notes";
 import { getFrameArray, saveFrameArray } from "./sessionStorageHelper";

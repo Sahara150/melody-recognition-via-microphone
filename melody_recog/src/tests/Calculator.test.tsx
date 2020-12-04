@@ -1,5 +1,5 @@
 import { FrequencyFrames } from "../models/frequencyframes";
-import { CalculateFrameNotes } from "../Calculator";
+import { CalculateFrameNotes } from "../algorithms/Calculator";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 test('EveryFrameNewNoteSimpleScale', () => {

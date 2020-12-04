@@ -1,5 +1,5 @@
-import { FrequencyFrames } from "./models/frequencyframes";
-import { getRefs, saveFrameArray } from "./sessionStorageHelper";
+import { FrequencyFrames } from "../models/frequencyframes";
+import { getRefs, saveFrameArray } from "../sessionStorageHelper";
 
 const FRAME_TRESHOLD = 15;
 const FREQUENCY = getRefs().frequency ?? 0;
