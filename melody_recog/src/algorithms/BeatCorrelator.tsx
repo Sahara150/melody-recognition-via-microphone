@@ -14,6 +14,7 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
     let beatsForNextBar: number = beatsPerBar;
     let filledFramesForNextBeat = 0;
     let i = 0;
+    let fillerBars : Bar[] = [];
     while (i < input.length) {
         let notesForBar: FrameNote[] = fillerForNextBar;
         fillerForNextBar = [];
@@ -45,22 +46,42 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
                     filledFramesForNextBeat = thisFramesSize - beatsFilled * actualFrameSize;
                     beatsLeft -= beatsFilled;
                 } else {
-                    //TODO: Implement successful recognition of notes that go beyond two bars.
                     let partOfNewBar = (beatsFilled - beatsLeft) / beatsFilled;
                     let overFrames = Math.round(notesForBar[notesForBar.length - 1].frames * partOfNewBar);
+                    let initialoverFrames = overFrames;
                     let oldNote = notesForBar[notesForBar.length - 1];
-                    let newNote = new FrameNote(oldNote.octave, overFrames, oldNote.value);
                     oldNote.frames -= overFrames;
+                    let newNote : FrameNote;
+                    actualFrameSize = Math.floor(actualFrameSize);
+                    let tieCount = bars.length;
+                    //Implement successful recognition of notes that go beyond two bars.
+                    while(overFrames >= actualFrameSize*beatsPerBar) {
+                    newNote = new FrameNote(oldNote.octave, actualFrameSize*beatsPerBar, oldNote.value);
+                    overFrames-= actualFrameSize*beatsPerBar;
+                    let bar = new Bar([newNote]);
+                    ties.push(tieCount);
+                    fillerBars.push(bar); 
+                    tieCount++;
+                    }
+                    if(overFrames>0) {
+                    newNote = new FrameNote(oldNote.octave, overFrames, oldNote.value);
                     fillerForNextBar.push(newNote);
-                    let fullBeatsPartOfNewBar = Math.floor(partOfNewBar)
+                    ties.push(tieCount);
+                    }
+                    let fullBeatsPartOfNewBar = Math.floor(overFrames/actualFrameSize);
                     beatsForNextBar = beatsPerBar - fullBeatsPartOfNewBar;
-                    filledFramesForNextBeat = thisFramesSize - oldNote.frames - Math.round(fullBeatsPartOfNewBar*actualFrameSize);
-                    ties.push(bars.length);
+                    filledFramesForNextBeat = thisFramesSize - oldNote.frames - Math.round(fullBeatsPartOfNewBar*actualFrameSize) - (initialoverFrames - overFrames);
                     beatsLeft = 0;
                 }
             }
         }
         bars.push(new Bar(notesForBar));
+        bars = bars.concat(fillerBars);
+        fillerBars = [];
+    }
+    if(fillerForNextBar.length!=0) {
+        let bar = new Bar(fillerForNextBar);
+        bars.push(bar);
     }
     for (let i = 0; i < bars.length; i++) {
         console.log(`Bar ${i + 1}: ${JSON.stringify(bars[i].notes)}`);

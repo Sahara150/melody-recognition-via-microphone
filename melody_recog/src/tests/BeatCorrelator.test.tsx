@@ -3,7 +3,6 @@ import { Bar } from "../models/bars";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 test('ThreeHalfsCorrectFraming', () => {
-    debugger;
     let notes: FrameNote[] = [
         //Bar 1
         new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
@@ -63,7 +62,6 @@ test('ThreeHalfsCorrectFraming', () => {
 });
 
 test('ThreeHalfsTooShortFraming', () => {
-    debugger;
     let notes: FrameNote[] = [
         //Bar 1
         new FrameNote(4, 53, new SignedNote(Note.D, Sign.NONE)),
@@ -124,7 +122,6 @@ test('ThreeHalfsTooShortFraming', () => {
     expect(result.ties).toEqual([3]);
 });
 test('ThreeHalfsTooLongFraming', () => {
-    debugger;
     let notes: FrameNote[] = [
         //Bar 1
         new FrameNote(4, 65, new SignedNote(Note.D, Sign.NONE)),
@@ -181,4 +178,31 @@ test('ThreeHalfsTooLongFraming', () => {
     ]);
     //Tie between bar 4 and 5 is 3, since index starts with 0
     expect(result.ties).toEqual([3]);
+});
+test('NoteOverMultipleBarsCorrectFramingEasy', () => {
+    debugger;
+    let notes = [
+        //Bar 1
+        new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.E, Sign.NONE)),
+        //Bar 2 to 4
+        new FrameNote(4, 360, new SignedNote(Note.F, Sign.NONE))
+    ];
+    let result = GetBarBorders(notes, 2, 60);
+    expect(result.bars).toEqual([
+        new Bar([
+            new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
+            new FrameNote(4, 60, new SignedNote(Note.E, Sign.NONE)),
+        ]),
+        new Bar([
+            new FrameNote(4, 120, new SignedNote(Note.F, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, 120, new SignedNote(Note.F, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, 120, new SignedNote(Note.F, Sign.NONE))
+        ])
+    ]);
+    expect(result.ties).toEqual([1,2]);
 });
