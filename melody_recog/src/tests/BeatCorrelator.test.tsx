@@ -265,11 +265,179 @@ test('NoteOverMultipleBarsTooShortFramingEasy', () => {
 });
 
 test('FourFourthsCorrectFramingLastBarNotFilled', () => {
-
+    let notes = [
+        //Bar 1
+        new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 90, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 30, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.E, Sign.NONE)),
+        //Bar 2
+        new FrameNote(4, 15, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(0, 60, new SignedNote(Note.BREAK, Sign.NONE)),
+        //Bar 3
+        new FrameNote(4, 15, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(4, 30, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 30, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 30, new SignedNote(Note.B, Sign.NONE)),
+        new FrameNote(4, 30, new SignedNote(Note.B, Sign.NONE)),
+        //Bar 4
+        new FrameNote(4, 45, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 90, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(4, 30, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
+        //Bar 5
+        new FrameNote(4, 120, new SignedNote(Note.E, Sign.NONE))
+    ];
+    let result = GetBarBorders(notes, 4, 60);
+    expect(result.bars).toEqual([
+        new Bar([
+            new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
+            new FrameNote(4, 90, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(4, 30, new SignedNote(Note.F, Sign.NONE)),
+            new FrameNote(4, 60, new SignedNote(Note.E, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, 15, new SignedNote(Note.D, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.D, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.D, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.D, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(4, 60, new SignedNote(Note.F, Sign.NONE)),
+            new FrameNote(0, 60, new SignedNote(Note.BREAK, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, 15, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.A, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.A, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.A, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.A, Sign.NONE)),
+            new FrameNote(4, 30, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 30, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 30, new SignedNote(Note.B, Sign.NONE)),
+            new FrameNote(4, 30, new SignedNote(Note.B, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, 45, new SignedNote(Note.A, Sign.NONE)),
+            new FrameNote(4, 15, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 90, new SignedNote(Note.F, Sign.NONE)),
+            new FrameNote(4, 30, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, 120, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(0, 120, new SignedNote(Note.BREAK, Sign.NONE))
+        ])
+    ]);
 });
 test('FourFourthsTooShortFramingLastBarNotFilled', () => {
-
-});
-test('FourFourthsTooLongFramingLastBarNotFilled', () => {
-
+    debugger;
+    let notes = [
+        //Bar 1
+        new FrameNote(4, 56, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 85, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 26, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(4, 53, new SignedNote(Note.E, Sign.NONE)),
+        //Bar 2
+        new FrameNote(4, 14, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 14, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 14, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 14, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 14, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 13, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 13, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 14, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 52, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(0, 58, new SignedNote(Note.BREAK, Sign.NONE)),
+        //Bar 3
+        new FrameNote(4, 14, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 13, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 14, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 14, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 14, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(4, 13, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(4, 13, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(4, 13, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(4, 28, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 29, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 25, new SignedNote(Note.B, Sign.NONE)),
+        new FrameNote(4, 29, new SignedNote(Note.B, Sign.NONE)),
+        //Bar 4
+        new FrameNote(4, 39, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(4, 13, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 82, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(4, 27, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 56, new SignedNote(Note.D, Sign.NONE)),
+        //Bar 5
+        new FrameNote(4, 110, new SignedNote(Note.E, Sign.NONE))
+    ];
+    let result = GetBarBorders(notes, 4, 60);
+    expect(result.bars).toEqual([
+        new Bar([
+            new FrameNote(4, 56, new SignedNote(Note.D, Sign.NONE)),
+            new FrameNote(4, 85, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(4, 26, new SignedNote(Note.F, Sign.NONE)),
+            new FrameNote(4, 53, new SignedNote(Note.E, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, 14, new SignedNote(Note.D, Sign.NONE)),
+            new FrameNote(4, 14, new SignedNote(Note.D, Sign.NONE)),
+            new FrameNote(4, 14, new SignedNote(Note.D, Sign.NONE)),
+            new FrameNote(4, 14, new SignedNote(Note.D, Sign.NONE)),
+            new FrameNote(4, 14, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(4, 13, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(4, 13, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(4, 14, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(4, 52, new SignedNote(Note.F, Sign.NONE)),
+            new FrameNote(0, 58, new SignedNote(Note.BREAK, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, 14, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 13, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 14, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 14, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 14, new SignedNote(Note.A, Sign.NONE)),
+            new FrameNote(4, 13, new SignedNote(Note.A, Sign.NONE)),
+            new FrameNote(4, 13, new SignedNote(Note.A, Sign.NONE)),
+            new FrameNote(4, 13, new SignedNote(Note.A, Sign.NONE)),
+            new FrameNote(4, 28, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 29, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 25, new SignedNote(Note.B, Sign.NONE)),
+            new FrameNote(4, 29, new SignedNote(Note.B, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, 39, new SignedNote(Note.A, Sign.NONE)),
+            new FrameNote(4, 13, new SignedNote(Note.G, Sign.NONE)),
+            new FrameNote(4, 82, new SignedNote(Note.F, Sign.NONE)),
+            new FrameNote(4, 27, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(4, 56, new SignedNote(Note.D, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, 110, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(0, result.bars[4].notes[1].frames, new SignedNote(Note.BREAK, Sign.NONE))
+        ])
+    ]);
+    expect(result.bars[4].notes[1].frames).toBeLessThanOrEqual(115);
+    expect(result.bars[4].notes[1].frames).toBeGreaterThanOrEqual(105);
 });
