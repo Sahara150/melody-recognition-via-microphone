@@ -7,6 +7,7 @@ import { BeatSettings } from "./views/BeatSettings";
 import { Beat } from "./models/beats";
 import { TestingAlgorithm } from "./views/TestingAlgorithm";
 import { ChoosingAlgorithm } from "./views/ChooseAlgorithm";
+import { continuePipeline } from "./Pipeline";
 
 class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean}> {
 	constructor(props : any) {
@@ -49,6 +50,7 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 	}
 	getChosenAlgorithm(chosen: string) {
 		console.log("I just received " + chosen);
+		continuePipeline(chosen);
     }
 }
 	ReactDOM.render(

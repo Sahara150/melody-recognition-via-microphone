@@ -1,9 +1,9 @@
 import { Bar, BarBorders } from "../models/bars";
+import { MAX_DIFF, RING_SIZE } from "../models/config";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
-const RING_SIZE = 5;
 export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize: number): BarBorders{
-    const MAX_DIFF = 8;
+    
     const MIN_FRAME_BORDER = frameSize - (frameSize / MAX_DIFF);
     const MAX_FRAME_BORDER = frameSize + (frameSize / MAX_DIFF);
     let frameSizes: number[] = [];

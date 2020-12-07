@@ -1,4 +1,5 @@
 import { LOG_2, SCALE } from "../models/calculationData";
+import { FRAME_TRESHOLD, SMOOTHING_TRESHOLD } from "../models/config";
 import { FrequencyFrames } from "../models/frequencyframes";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
@@ -34,7 +35,15 @@ export function CalculateFrameNotes(input: FrequencyFrames[], refFreq: number) :
             }
         }
     }
-    return frameNotes;
+    //Cut of the short noice + long break, that sometimes is in the beginning, so the beatCorrelator gets directly begin of melody.
+    let i = 0; 
+    while (i < frameNotes.length && frameNotes[i].frames < SMOOTHING_TRESHOLD) {
+        i++;
+        if (frameNotes.length > i && frameNotes[i].value.value == Note.BREAK && frameNotes[i].frames > FRAME_TRESHOLD) {
+            break;
+        }
+    }
+    return frameNotes.slice(i == 0? i : i+1, frameNotes.length);
 }
 //First all notes are described with none or sharp. Flats are used, when the calculator identifies a corresponding key.
 //Therefore also the signs exist instead of adding enharmonic ambiguity notes in the noteEnum.

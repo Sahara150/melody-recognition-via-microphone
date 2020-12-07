@@ -1,10 +1,10 @@
+import { FRAME_TRESHOLD, SMOOTHING_TRESHOLD } from "../models/config";
 import { FrequencyFrames } from "../models/frequencyframes";
 import { getRefs, saveFrameArray } from "../sessionStorageHelper";
 
-const FRAME_TRESHOLD = 15;
+
 const FREQUENCY = getRefs().frequency ?? 0;
 const FREQUENCY_TRESHOLD = FREQUENCY / 40.0;
-const SMOOTHING_TRESHOLD = 7;
 
 export function analyzeMelody(input: number[]) : FrequencyFrames[]{
 	let firstDefined = getFirstDefined(input);
@@ -62,7 +62,7 @@ function sumMinorMovements(input: number[]): FrequencyFrames[]{
 export function smoothSmallGaps(frames : FrequencyFrames[]) : FrequencyFrames[] {
 	let result : FrequencyFrames[] = [];
 	for (let i = 0; i < frames.length; i++) {
-		if (frames[i].amountOfFrames < SMOOTHING_TRESHOLD || frames[i].frequency == undefined && frames[i].amountOfFrames <FRAME_TRESHOLD) {
+		if (frames[i].amountOfFrames < SMOOTHING_TRESHOLD || frames[i].frequency == undefined && frames[i].amountOfFrames < FRAME_TRESHOLD) {
 			//If last saved as relevant note exists
 			if (result.length > 0) {
 				//And this frame is some minor undefinement

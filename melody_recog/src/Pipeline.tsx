@@ -1,8 +1,12 @@
 import { analyzeMelody, equalAllocAlgorithm, smoothSmallGaps, smoothUndefinedGaps } from "./algorithms/Analyzer";
+import { GetBarBorders } from "./algorithms/BeatCorrelator";
 import { CalculateFrameNotes } from "./algorithms/Calculator";
+import { BarBorders } from "./models/bars";
+import { Beat, getAmountOfBeats } from "./models/beats";
+import { STANDARD_FRAME_SIZE } from "./models/config";
 import { FrequencyFrames } from "./models/frequencyframes";
 import { FrameNote } from "./models/notes";
-import { getFrameArray, saveFrameArray } from "./sessionStorageHelper";
+import { getFrameArray, getRefs, saveFrameArray } from "./sessionStorageHelper";
 
 export function startPipeline(input: number[], refFrequency: number) {
 	let summedFrequencies: FrequencyFrames[] = analyzeMelody(input);
@@ -21,5 +25,7 @@ export function startPipeline(input: number[], refFrequency: number) {
 }
 export function continuePipeline(chosen: string) {
 	let chosenAlg: FrameNote[] = getFrameArray(chosen);
-	//Enter into beatCorrelator or produce MIDI
+	let chosenBeat = getAmountOfBeats(getRefs().beat ?? Beat.FourFourths);
+	let seperatedBars: BarBorders = GetBarBorders(chosenAlg, chosenBeat, STANDARD_FRAME_SIZE);
+	console.log("Seperated bars: " + JSON.stringify(seperatedBars));
 }
