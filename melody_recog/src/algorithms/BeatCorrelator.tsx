@@ -3,8 +3,9 @@ import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 const RING_SIZE = 5;
 export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize: number): BarBorders{
-    const MIN_FRAME_BORDER = frameSize - (frameSize / 8);
-    const MAX_FRAME_BORDER = frameSize + (frameSize / 8);
+    const MAX_DIFF = 8;
+    const MIN_FRAME_BORDER = frameSize - (frameSize / MAX_DIFF);
+    const MAX_FRAME_BORDER = frameSize + (frameSize / MAX_DIFF);
     let frameSizes: number[] = [];
     let beatsLeft = beatsPerBar;
     let bars: Bar[] = [];
@@ -55,13 +56,15 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
                     actualFrameSize = Math.floor(actualFrameSize);
                     let tieCount = bars.length;
                     //Implement successful recognition of notes that go beyond two bars.
-                    while(overFrames >= actualFrameSize*beatsPerBar) {
-                    newNote = new FrameNote(oldNote.octave, actualFrameSize*beatsPerBar, oldNote.value);
-                    overFrames-= actualFrameSize*beatsPerBar;
-                    let bar = new Bar([newNote]);
-                    ties.push(tieCount);
-                    fillerBars.push(bar); 
-                    tieCount++;
+                    while (overFrames >= actualFrameSize * beatsPerBar) {
+                        //Checks if the frames over are less than the smallest beat and if so just adds them to the last bar.
+                        let framesUsed = overFrames - (actualFrameSize * beatsPerBar) < actualFrameSize/MAX_DIFF ? overFrames : actualFrameSize*beatsPerBar;
+                        newNote = new FrameNote(oldNote.octave, framesUsed, oldNote.value);
+                        overFrames-= framesUsed;
+                        let bar = new Bar([newNote]);
+                        ties.push(tieCount);
+                        fillerBars.push(bar); 
+                        tieCount++;
                     }
                     if(overFrames>0) {
                     newNote = new FrameNote(oldNote.octave, overFrames, oldNote.value);

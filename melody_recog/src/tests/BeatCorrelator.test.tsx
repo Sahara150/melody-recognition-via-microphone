@@ -206,3 +206,70 @@ test('NoteOverMultipleBarsCorrectFramingEasy', () => {
     ]);
     expect(result.ties).toEqual([1,2]);
 });
+test('NoteOverMultipleBarsTooShortFramingEasy', () => {
+    debugger;
+    let notes = [
+        //Bar 1
+        new FrameNote(4, 55, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 53, new SignedNote(Note.E, Sign.NONE)),
+        //Bar 2 to 4
+        new FrameNote(4, 330, new SignedNote(Note.F, Sign.NONE))
+    ];
+    let result = GetBarBorders(notes, 2, 60);
+    expect(result.bars).toEqual([
+        new Bar([
+            new FrameNote(4, 55, new SignedNote(Note.D, Sign.NONE)),
+            new FrameNote(4, 53, new SignedNote(Note.E, Sign.NONE)),
+        ]),
+        new Bar([
+            //Exact splitting doesn´t really matter and depends on the average of before values
+            new FrameNote(4, result.bars[1].notes[0].frames, new SignedNote(Note.F, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, result.bars[2].notes[0].frames, new SignedNote(Note.F, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, result.bars[3].notes[0].frames, new SignedNote(Note.F, Sign.NONE))
+        ])
+    ]);
+    expect(result.ties).toEqual([1, 2]);
+});
+
+test('NoteOverMultipleBarsTooShortFramingEasy', () => {
+    debugger;
+    let notes = [
+        //Bar 1
+        new FrameNote(4, 64, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 66, new SignedNote(Note.E, Sign.NONE)),
+        //Bar 2 to 4
+        new FrameNote(4, 378, new SignedNote(Note.F, Sign.NONE))
+    ];
+    let result = GetBarBorders(notes, 2, 60);
+    expect(result.bars).toEqual([
+        new Bar([
+            new FrameNote(4, 64, new SignedNote(Note.D, Sign.NONE)),
+            new FrameNote(4, 66, new SignedNote(Note.E, Sign.NONE)),
+        ]),
+        new Bar([
+            //Exact splitting doesn´t really matter and depends on the average of before values
+            new FrameNote(4, result.bars[1].notes[0].frames, new SignedNote(Note.F, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, result.bars[2].notes[0].frames, new SignedNote(Note.F, Sign.NONE))
+        ]),
+        new Bar([
+            new FrameNote(4, result.bars[3].notes[0].frames, new SignedNote(Note.F, Sign.NONE))
+        ])
+    ]);
+    expect(result.ties).toEqual([1, 2]);
+});
+
+test('FourFourthsCorrectFramingLastBarNotFilled', () => {
+
+});
+test('FourFourthsTooShortFramingLastBarNotFilled', () => {
+
+});
+test('FourFourthsTooLongFramingLastBarNotFilled', () => {
+
+});
