@@ -108,3 +108,36 @@ test('Breaks included, different octaves', () => {
         new FrameNote(0, 10, new SignedNote(Note.A, Sign.NONE))
     ])
 });
+test('Hungarian Dance', () => {
+    let notes = [
+        new FrequencyFrames(328, 30),
+        new FrequencyFrames(331, 15),
+        new FrequencyFrames(291, 10),
+        new FrequencyFrames(299, 5),
+        new FrequencyFrames(328, 30),
+        new FrequencyFrames(331, 15),
+        new FrequencyFrames(291, 10),
+        new FrequencyFrames(299, 5),
+        new FrequencyFrames(349, 30),
+        new FrequencyFrames(352, 15),
+        new FrequencyFrames(329, 15),
+        new FrequencyFrames(246, 30),
+        new FrequencyFrames(243, 15),
+        new FrequencyFrames(260, 10),
+        new FrequencyFrames(262, 5),
+        new FrequencyFrames(218, 60),
+        new FrequencyFrames(222, 60)
+    ];
+    let result = CalculateFrameNotes(notes, 440);
+    expect(result).toEqual([
+        new FrameNote(4, 45, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 45, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 45, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(3, 45, new SignedNote(Note.B, Sign.NONE)),
+        new FrameNote(4, 15, new SignedNote(Note.C, Sign.NONE)),
+        new FrameNote(3, 120, new SignedNote(Note.A, Sign.NONE))
+    ]);
+});
