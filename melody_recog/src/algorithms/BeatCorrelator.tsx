@@ -2,7 +2,7 @@ import { Bar, BarBorders, MetricalBar } from "../models/bars";
 import { Beat, getNumerator, getPositionShift } from "../models/beats";
 import { SCALE } from "../models/calculationData";
 import { MAX_DIFF, RING_SIZE } from "../models/config";
-import { Metric, MetricalNote } from "../models/metric";
+import { Extension, Metric, MetricalNote } from "../models/metric";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize: number): BarBorders{
@@ -114,24 +114,30 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
         let scaledLength = Math.log2(length);
         let assumption = RoundAdapted(scaledLength);
         let shift = getPositionShift(metric);
-        let newNote = new MetricalNote(assumption[0] - shift, assumption[1], input.notes[i].value, input.notes[i].octave);
+        let newNote = new MetricalNote(assumption[0] + shift, assumption[1], assumption[2], input.notes[i].value, input.notes[i].octave);
         notes.push(newNote);
     }
     notes = CheckForMusicalValidity(notes, metric);
     let result: MetricalBar = new MetricalBar(notes);
     return result;
 }
-export function RoundAdapted(scaledLength: number): [number, Metric] {
+export function RoundAdapted(scaledLength: number): [number, Metric, Extension] {
     let lefti = scaledLength % 1;
     //Value is closer to lower length.
     if (lefti < 0.3) {
-        return [Math.floor(scaledLength), Metric.DUOLE];
-    //Out of experience, 0.3 to 0.5 tends to be a triolic higher one
-    //Cause logarithm moves the border a bit
-    } else if (lefti < 0.5) {
-        return [Math.ceil(scaledLength), Metric.TRIOLE];
+        return [Math.floor(scaledLength), Metric.STANDARD, Extension.NODOT];
+        //Out of experience, 0.3 to 0.5 tends to be a triolic higher one
+        //Cause logarithm moves the border a bit
+    } else if (lefti < 0.52) {
+        return [Math.ceil(scaledLength), Metric.TRIOLE, Extension.NODOT];
+        //Dotted lower length is longer than triolic higher length
+    } else if (lefti < 0.7) {
+        return [Math.floor(scaledLength), Metric.STANDARD, Extension.ONEDOT];
+        //Double dotted lower length
+    } else if (lefti < 0.9) {
+        return [Math.floor(scaledLength), Metric.STANDARD, Extension.TWODOTS];
     } else {
-        return [Math.ceil(scaledLength), Metric.DUOLE];
+        return [Math.ceil(scaledLength), Metric.STANDARD, Extension.NODOT];
     }
 }
 export function CheckForMusicalValidity(input: MetricalNote[], metric: Beat): MetricalNote[] {
