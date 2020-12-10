@@ -1,4 +1,5 @@
 import { Bar, BarBorders } from "../models/bars";
+import { Beat } from "../models/beats";
 import { MAX_DIFF, RING_SIZE } from "../models/config";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
@@ -99,4 +100,8 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
     }
     console.log(ties);
     return new BarBorders(bars, ties);
+}
+
+export function GetMusicalBar(input: Bar, metric: Beat) {
+    let result = [];
 }

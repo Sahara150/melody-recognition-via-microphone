@@ -1,3 +1,4 @@
+import { MetricalNote } from "./metric";
 import { FrameNote } from "./notes";
 
 export class Bar {
@@ -14,5 +15,11 @@ export class BarBorders {
     constructor(bars: Bar[], ties: number[]) {
         this.bars = bars;
         this.ties = ties;
+    }
+}
+export class MetricalBar {
+    notes!: MetricalNote[]
+    constructor(notes: MetricalNote[]) {
+        this.notes = notes;
     }
 }
