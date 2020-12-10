@@ -13,4 +13,4 @@ export const SCALE = [
     new SignedNote(Note.F, Sign.NONE),
     new SignedNote(Note.F, Sign.SHARP),
     new SignedNote(Note.G, Sign.NONE),
-    new SignedNote(Note.G, Sign.SHARP)]
+    new SignedNote(Note.G, Sign.SHARP)];

@@ -1,6 +1,8 @@
-import { Bar, BarBorders } from "../models/bars";
-import { Beat } from "../models/beats";
+import { Bar, BarBorders, MetricalBar } from "../models/bars";
+import { Beat, getNumerator, getPositionShift } from "../models/beats";
+import { SCALE } from "../models/calculationData";
 import { MAX_DIFF, RING_SIZE } from "../models/config";
+import { Metric, MetricalNote } from "../models/metric";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize: number): BarBorders{
@@ -102,6 +104,37 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
     return new BarBorders(bars, ties);
 }
 
-export function GetMusicalBar(input: Bar, metric: Beat) {
-    let result = [];
+export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
+    let beats = getNumerator(metric);
+    let totalLength = input.notes.map(a => a.frames).reduce((a, b) => a + b);
+    let notes: MetricalNote[] = [];
+    for (let i = 0; i < input.notes.length; i++) {
+        //Scaling length up, so that it starts with log2 starts with 0.
+        let length = (input.notes[i].frames * beats * 8) / totalLength;
+        let scaledLength = Math.log2(length);
+        let assumption = RoundAdapted(scaledLength);
+        let shift = getPositionShift(metric);
+        let newNote = new MetricalNote(assumption[0] - shift, assumption[1], input.notes[i].value, input.notes[i].octave);
+        notes.push(newNote);
+    }
+    notes = CheckForMusicalValidity(notes, metric);
+    let result: MetricalBar = new MetricalBar(notes);
+    return result;
+}
+export function RoundAdapted(scaledLength: number): [number, Metric] {
+    let lefti = scaledLength % 1;
+    //Value is closer to lower length.
+    if (lefti < 0.3) {
+        return [Math.floor(scaledLength), Metric.DUOLE];
+    //Out of experience, 0.3 to 0.5 tends to be a triolic higher one
+    //Cause logarithm moves the border a bit
+    } else if (lefti < 0.5) {
+        return [Math.ceil(scaledLength), Metric.TRIOLE];
+    } else {
+        return [Math.ceil(scaledLength), Metric.DUOLE];
+    }
+}
+export function CheckForMusicalValidity(input: MetricalNote[], metric: Beat): MetricalNote[] {
+    //TODO: Implement
+    return input;
 }

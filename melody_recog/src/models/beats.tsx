@@ -27,3 +27,20 @@ export function getAmountOfBeats(beat: Beat): number {
     }
     return result;
 }
+export function getNumerator(beat: Beat): number {
+    switch (beat) {
+        case Beat.ThreeHalfs: case Beat.ThreeFourths: return 3;
+        case Beat.TwoFourths: return 2;
+        case Beat.FourFourths: return 4;
+        case Beat.FiveFourths: return 5;
+        case Beat.SixEights: return 6; 
+        case Beat.NineEights: return 9;
+    }
+}
+export function getPositionShift(beat: Beat): number {
+    switch (beat) {
+        case Beat.ThreeHalfs: return 0;
+        case Beat.TwoFourths: case Beat.ThreeFourths: case Beat.FourFourths: case Beat.FiveFourths: return -1;
+        case Beat.SixEights: case Beat.NineEights: return -2;
+    }
+}
