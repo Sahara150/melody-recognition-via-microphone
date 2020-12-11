@@ -1,3 +1,4 @@
+import { LOG_2 } from "./calculationData";
 import { SignedNote } from "./notes";
 
 export enum NoteLength {
@@ -29,4 +30,17 @@ export class MetricalNote {
         this.note = note;
         this.octave = octave;
     }
+}
+//Value is always given in multiple of fourths
+export function getLengthValue(note : MetricalNote) : number {
+    let base = Math.exp(note.length*LOG_2)/4;
+    if (note.metric == Metric.TRIOLE) {
+        base *= 2 / 3;
+    }
+    switch (note.extension) {
+        case Extension.ONEDOT: base *= 3 / 2; break;
+        case Extension.TWODOTS: base *= 7 / 4; break;
+    }
+    base = Math.round(base*100)/100;
+    return base;
 }

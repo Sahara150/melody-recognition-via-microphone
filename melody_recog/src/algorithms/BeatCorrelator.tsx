@@ -1,8 +1,9 @@
 import { Bar, BarBorders, MetricalBar } from "../models/bars";
-import { Beat, getNumerator, getPositionShift } from "../models/beats";
-import { SCALE } from "../models/calculationData";
+import { Beat, getLengthValueDenominator, getNumerator, getPositionShift } from "../models/beats";
+import { ErrorMappingListStandard, ErrorMappingListTriolic, SCALE } from "../models/calculationData";
 import { MAX_DIFF, RING_SIZE } from "../models/config";
-import { Extension, Metric, MetricalNote } from "../models/metric";
+import { ErrorMapping } from "../models/errorCorrection";
+import { Extension, getLengthValue, Metric, MetricalNote } from "../models/metric";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize: number): BarBorders{
@@ -97,10 +98,10 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
         let bar = new Bar(fillerForNextBar);
         bars.push(bar);
     }
-    for (let i = 0; i < bars.length; i++) {
+    /*for (let i = 0; i < bars.length; i++) {
         console.log(`Bar ${i + 1}: ${JSON.stringify(bars[i].notes)}`);
-    }
-    console.log(ties);
+    }*/
+    //console.log(ties);
     return new BarBorders(bars, ties);
 }
 
@@ -121,7 +122,7 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
     let result: MetricalBar = new MetricalBar(notes);
     return result;
 }
-export function RoundAdapted(scaledLength: number): [number, Metric, Extension] {
+function RoundAdapted(scaledLength: number): [number, Metric, Extension] {
     let lefti = scaledLength % 1;
     //Value is closer to lower length.
     if (lefti < 0.3) {
@@ -142,5 +143,38 @@ export function RoundAdapted(scaledLength: number): [number, Metric, Extension] 
 }
 export function CheckForMusicalValidity(input: MetricalNote[], metric: Beat): MetricalNote[] {
     //TODO: Implement
+    let shouldBe = getNumerator(metric) * getLengthValueDenominator(metric);
+    let isCurr = input.map(x=> getLengthValue(x)).reduce((a,b) => a + b);
+    /*for (let i = 0; i < input.length; i++) {
+        isCurr += getLengthValue(input[i]);
+    }*/
+    if(Math.abs(shouldBe-isCurr)>0.02) {
+        let errornousValue = GetProbableError(shouldBe-isCurr);
+        console.log("Errornous value: " + JSON.stringify(errornousValue));
+    }
+    console.log(`Musical sum is ${isCurr} and should be ${shouldBe}.`);
     return input;
+}
+function GetProbableError(diff: number) : ErrorMapping[]{
+    let abs = Math.abs(diff);
+    let logVal = Math.log2(abs);
+    //It is an error with a triolic misassumption
+    if (Math.abs(logVal) % 1 > 0.1) {
+        abs *= 3;
+        logVal = Math.log2(abs);
+        logVal = Math.round(logVal);
+        let errorMapping: ErrorMapping[] = JSON.parse(JSON.stringify(ErrorMappingListTriolic));
+        errorMapping.forEach(val => { val.higherValue.length += logVal; val.lowerValue.length += logVal });
+        return errorMapping.filter(value => !(value.higherValue.length<0 || value.lowerValue.length < 0));
+    } else {
+        logVal += 3;
+        logVal = Math.round(logVal);
+        let errorMapping: ErrorMapping[] = JSON.parse(JSON.stringify(ErrorMappingListStandard));
+        errorMapping.forEach(val => { val.higherValue.length += logVal; val.lowerValue.length += logVal });
+        if (diff > 0) {
+            return errorMapping;
+        } else {
+            return errorMapping.reverse();
+        }
+    }
 }

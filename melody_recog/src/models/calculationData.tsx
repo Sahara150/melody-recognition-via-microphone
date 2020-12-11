@@ -1,3 +1,5 @@
+import { ErrorMapping } from "./errorCorrection";
+import { Extension, Metric, MetricalNote, NoteLength } from "./metric";
 import { Note, Sign, SignedNote } from "./notes";
 
 export const LOG_2 = Math.log(2);
@@ -14,3 +16,31 @@ export const SCALE = [
     new SignedNote(Note.F, Sign.SHARP),
     new SignedNote(Note.G, Sign.NONE),
     new SignedNote(Note.G, Sign.SHARP)];
+export const ErrorMappingListStandard = 
+    //Possible errors, when missing value is 1/8
+    [
+        new ErrorMapping(
+            new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.TWODOTS, new SignedNote(Note.BREAK, Sign.NONE), 0),
+            new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.BREAK, Sign.NONE), 0)
+        ),
+        new ErrorMapping(
+            new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0),
+            new MetricalNote(NoteLength.SIXTEENTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.BREAK, Sign.NONE), 0)
+        ),
+        new ErrorMapping(
+            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0),
+            new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.TWODOTS, new SignedNote(Note.BREAK, Sign.NONE), 0)
+        )
+    ];
+export const ErrorMappingListTriolic =
+    //Possible errors, when missing value is 1/3
+    [
+        new ErrorMapping(
+            new MetricalNote(NoteLength.HALF, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0),
+            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0)
+        ),
+        new ErrorMapping(
+            new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.BREAK, Sign.NONE), 0),
+            new MetricalNote(NoteLength.FULL, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0)
+        )
+    ]

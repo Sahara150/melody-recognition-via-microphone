@@ -37,6 +37,13 @@ export function getNumerator(beat: Beat): number {
         case Beat.NineEights: return 9;
     }
 }
+export function getLengthValueDenominator(beat: Beat) : number {
+    switch (beat) {
+        case Beat.ThreeHalfs: return 2;
+        case Beat.TwoFourths: case Beat.ThreeFourths: case Beat.FourFourths: case Beat.FiveFourths: return 1;
+        case Beat.SixEights: case Beat.NineEights: return 0.5;
+    }
+}
 export function getPositionShift(beat: Beat): number {
     switch (beat) {
         case Beat.ThreeHalfs: return 0;

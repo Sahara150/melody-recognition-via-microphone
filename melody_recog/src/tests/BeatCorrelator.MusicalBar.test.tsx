@@ -1,4 +1,4 @@
-import { GetMusicalBar } from "../algorithms/BeatCorrelator";
+import { CheckForMusicalValidity, GetMusicalBar } from "../algorithms/BeatCorrelator";
 import { Bar, MetricalBar } from "../models/bars";
 import { Beat } from "../models/beats";
 import { Extension, Metric, MetricalNote, NoteLength } from "../models/metric";
@@ -35,4 +35,13 @@ test('TrioleEightsDottedEigthSixteenth', () => {
         new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.G, Sign.NONE), 4),
         new MetricalNote(NoteLength.SIXTEENTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.F, Sign.SHARP), 4)
     ]));
+});
+test('Triole accidently got dotted lower', () => {
+    let bar = new MetricalBar([
+        new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4),
+        new MetricalNote(NoteLength.SIXTEENTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.E, Sign.NONE), 4),
+        new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.F, Sign.NONE), 4),
+        new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.G, Sign.NONE), 4)
+    ]);
+    let result = CheckForMusicalValidity(bar.notes, Beat.TwoFourths);
 });
