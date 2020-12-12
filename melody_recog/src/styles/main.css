@@ -60,3 +60,7 @@ body {
 .container {
     height: 3em;
 }
+.sheet {
+    background: white;
+    margin: 2em;
+}

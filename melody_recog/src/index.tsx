@@ -1,23 +1,27 @@
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import './styles/main.css';
-import { getFrameArray, getRefs } from "./sessionStorageHelper";
+import { getFileURL, getFrameArray, getRefs } from "./sessionStorageHelper";
 import { Recorder } from "./views/Recorder";
 import { BeatSettings } from "./views/BeatSettings";
+//See below
+import { MusicSheetDisplay } from "./views/MusicSheetDisplay";
 import { Beat } from "./models/beats";
 import { TestingAlgorithm } from "./views/TestingAlgorithm";
 import { ChoosingAlgorithm } from "./views/ChooseAlgorithm";
 import { continuePipeline } from "./Pipeline";
 
-class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean}> {
+class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean, file: string |null }> {
 	constructor(props : any) {
 		super(props);
 		let references = getRefs();
 		let pipelineIsThrough = getFrameArray("smoothed").length != 0;
+		let file = getFileURL();
 		this.state = {
 			referenceFrequency: references.frequency,
 			referenceBeat: references.beat,
-			pipelineIsThrough: pipelineIsThrough
+			pipelineIsThrough: pipelineIsThrough,
+			file: file
 		};
 	}
 	updateReferences() {
@@ -35,6 +39,8 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 			return <Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
 		} else if (this.state.referenceBeat == null) {
 			return <BeatSettings notifyParent={() => this.updateReferences()} />
+		} else if (this.state.file != null) {
+			return <MusicSheetDisplay file={this.state.file} autoResize={true} drawTitle={false}/>
 		} else if (this.state.pipelineIsThrough) {
 			return (<div>
 				<Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
@@ -50,7 +56,16 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 	}
 	getChosenAlgorithm(chosen: string) {
 		console.log("I just received " + chosen);
-		continuePipeline(chosen);
+		continuePipeline(chosen, (url) => this.fetchFile(url));
+	}
+	fetchFile(url: string) {
+		let state = this.state;
+		this.setState({
+			referenceFrequency: state.referenceFrequency,
+			referenceBeat: state.referenceBeat,
+			pipelineIsThrough: state.pipelineIsThrough,
+			file: url
+		});
     }
 }
 	ReactDOM.render(
@@ -59,3 +74,15 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 );
 
 
+/*Copyright 2019 PhonicScore
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/

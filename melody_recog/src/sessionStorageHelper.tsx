@@ -2,6 +2,7 @@ import {Beat} from "./models/beats"
 import { FrameNote } from "./models/notes";
 var frequencyKey = "frequencyRef";
 var beatKey = "beatRef";
+var xmlKey = "sheet";
 export function saveReferenceFrequency(frequency: number) {
     let myStorage = window.sessionStorage;
     myStorage.setItem(frequencyKey, `${frequency}`);
@@ -29,4 +30,13 @@ export function getFrameArray(key: string): FrameNote[] {
     let myStorage = window.sessionStorage;
     let strNotes = myStorage.getItem(key) ?? "[]";
     return JSON.parse(strNotes);
+}
+export function saveFileURL(url: string) {
+    let myStorage = window.sessionStorage;
+    myStorage.setItem(xmlKey, url);
+}
+export function getFileURL(): string | null {
+    let myStorage = window.sessionStorage;
+    let result = myStorage.getItem(xmlKey);
+    return result;
 }
