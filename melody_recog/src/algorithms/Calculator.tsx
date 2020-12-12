@@ -1,11 +1,15 @@
+import { Beat } from "../models/beats";
 import { LOG_2, SCALE } from "../models/calculationData";
-import { FRAME_TRESHOLD, SMOOTHING_TRESHOLD } from "../models/config";
+import { GetFrameTreshold, SMOOTHING_TRESHOLD } from "../models/config";
 import { FrequencyFrames } from "../models/frequencyframes";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 
 export function CalculateFrameNotes(input: FrequencyFrames[], refFreq: number) : FrameNote[] {
     let frameNotes: FrameNote[] = [];
+    //Should get higher frame treshold, cause it just uses it to cut of the noice in the beginning
+    //ShouldnÂ´t get to have any dependency to StorageHelper
+    let FRAME_TRESHOLD = GetFrameTreshold(Beat.FourFourths);
     for (let i = 0; i < input.length; i++) {
         if (input[i].frequency == undefined) {
             if (frameNotes.length > 0 && frameNotes[frameNotes.length - 1].value.value == Note.BREAK) {
@@ -22,7 +26,7 @@ export function CalculateFrameNotes(input: FrequencyFrames[], refFreq: number) :
             let noOctaves = mathematicallyCorrectModulo(Math.round(halfTones), 12); //Always positive number, due to mathematically correct modulo in negative range works suitable.
             octaves = Math.round((halfTones - noOctaves) / 12) + 4; // Because A already is in the fourth octave
             value = getMusicalValue(noOctaves);
-            //This happens, because the octave doesn´t start with A, but with C, so in above case the amount of octaves said is one too low for all notes above C.
+            //This happens, because the octave doesnï¿½t start with A, but with C, so in above case the amount of octaves said is one too low for all notes above C.
             if (value.value >= Note.C) {
                 octaves++;
             }

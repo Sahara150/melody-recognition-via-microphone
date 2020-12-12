@@ -1,10 +1,14 @@
-import { FRAME_TRESHOLD, SMOOTHING_TRESHOLD } from "../models/config";
+import { Beat } from "../models/beats";
+import { GetFrameTreshold, SMOOTHING_TRESHOLD } from "../models/config";
 import { FrequencyFrames } from "../models/frequencyframes";
-import { getRefs, saveFrameArray } from "../sessionStorageHelper";
+import { getRefs } from "../sessionStorageHelper";
 
 
+//TODO: Check, if it really is a nice thing to create that dependency
 const FREQUENCY = getRefs().frequency ?? 0;
 const FREQUENCY_TRESHOLD = FREQUENCY / 40.0;
+const BEAT = getRefs().beat ?? Beat.FourFourths;
+const FRAME_TRESHOLD = GetFrameTreshold(BEAT);
 
 export function analyzeMelody(input: number[]) : FrequencyFrames[]{
 	let firstDefined = getFirstDefined(input);

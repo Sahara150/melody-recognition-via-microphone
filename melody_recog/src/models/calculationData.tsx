@@ -20,16 +20,16 @@ export const ErrorMappingListStandard =
     //Possible errors, when missing value is 1/8
     [
         new ErrorMapping(
-            new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.TWODOTS, new SignedNote(Note.BREAK, Sign.NONE), 0),
-            new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.BREAK, Sign.NONE), 0)
+            new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.TWODOTS, new SignedNote(Note.BREAK, Sign.NONE), 0),
+            new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.BREAK, Sign.NONE), 0)
         ),
         new ErrorMapping(
-            new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0),
-            new MetricalNote(NoteLength.SIXTEENTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.BREAK, Sign.NONE), 0)
+            new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0),
+            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.BREAK, Sign.NONE), 0)
         ),
         new ErrorMapping(
-            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0),
-            new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.TWODOTS, new SignedNote(Note.BREAK, Sign.NONE), 0)
+            new MetricalNote(NoteLength.FULL, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0),
+            new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.TWODOTS, new SignedNote(Note.BREAK, Sign.NONE), 0)
         )
     ];
 export const ErrorMappingListTriolic =

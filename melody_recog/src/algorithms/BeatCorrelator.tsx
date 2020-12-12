@@ -1,9 +1,10 @@
+import { isNullishCoalesce } from "typescript";
 import { Bar, BarBorders, MetricalBar } from "../models/bars";
 import { Beat, getLengthValueDenominator, getNumerator, getPositionShift } from "../models/beats";
 import { ErrorMappingListStandard, ErrorMappingListTriolic, SCALE } from "../models/calculationData";
-import { MAX_DIFF, RING_SIZE } from "../models/config";
+import { GetFrameTreshold, MAX_DIFF, RING_SIZE } from "../models/config";
 import { ErrorMapping } from "../models/errorCorrection";
-import { Extension, getLengthValue, Metric, MetricalNote } from "../models/metric";
+import { Extension, getLengthValue, Metric, MetricalNote, NoteLength } from "../models/metric";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize: number): BarBorders{
@@ -106,21 +107,34 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
 }
 
 export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
+    //TODO: If frame is lower than frame-treshold, it should be assigned to the most likely neighbor
     let beats = getNumerator(metric);
     let totalLength = input.notes.map(a => a.frames).reduce((a, b) => a + b);
     let notes: MetricalNote[] = [];
     for (let i = 0; i < input.notes.length; i++) {
-        //Scaling length up, so that it starts with log2 starts with 0.
-        let length = (input.notes[i].frames * beats * 8) / totalLength;
-        let scaledLength = Math.log2(length);
-        let assumption = RoundAdapted(scaledLength);
-        let shift = getPositionShift(metric);
-        let newNote = new MetricalNote(assumption[0] + shift, assumption[1], assumption[2], input.notes[i].value, input.notes[i].octave);
+        //Scaling length up, so that with log2 it starts with 0.
+        let newNote = GetMetricalNote(input.notes[i], beats, metric, totalLength);
+        if(newNote.length < NoteLength.SIXTEENTH) {
+           let dir = AssignmentProbable(input.notes, i, metric);
+           input.notes[i+dir].frames += input.notes[i].frames; 
+           if(dir < 0) {
+            //If before note should have got this added, recalculate before note
+             notes[notes.length-1] = GetMetricalNote(input.notes[i+dir], beats, metric, totalLength);   
+           }
+        } else {
         notes.push(newNote);
+        }
     }
     notes = CheckForMusicalValidity(notes, metric);
     let result: MetricalBar = new MetricalBar(notes);
     return result;
+}
+function GetMetricalNote(note: FrameNote, beats: number, metric: Beat, totalLength: number) : MetricalNote{
+    let length = (note.frames * beats * 8) / totalLength;
+    let scaledLength = Math.log2(length);
+    let assumption = RoundAdapted(scaledLength);
+    let shift = getPositionShift(metric);
+    return new MetricalNote(assumption[0] + shift, assumption[1], assumption[2], note.value, note.octave);
 }
 function RoundAdapted(scaledLength: number): [number, Metric, Extension] {
     let lefti = scaledLength % 1;
@@ -142,14 +156,30 @@ function RoundAdapted(scaledLength: number): [number, Metric, Extension] {
     }
 }
 export function CheckForMusicalValidity(input: MetricalNote[], metric: Beat): MetricalNote[] {
-    //TODO: Implement
     let shouldBe = getNumerator(metric) * getLengthValueDenominator(metric);
-    let isCurr = input.map(x=> getLengthValue(x)).reduce((a,b) => a + b);
-    /*for (let i = 0; i < input.length; i++) {
-        isCurr += getLengthValue(input[i]);
-    }*/
-    if(Math.abs(shouldBe-isCurr)>0.02) {
-        let errornousValue = GetProbableError(shouldBe-isCurr);
+    let isCurr = input.map(x => getLengthValue(x)).reduce((a, b) => a + b);
+    let amountOfErrors = 1;
+    while(Math.abs(shouldBe-isCurr)/amountOfErrors>0.02) {
+        let errornousValue = GetProbableError((shouldBe - isCurr)/amountOfErrors);
+        for (let n = 0; n < errornousValue.length; n++) {
+                let currError = shouldBe > isCurr ? errornousValue[n].lowerValue : errornousValue[n].higherValue;
+                let wouldBe = shouldBe > isCurr ? errornousValue[n].higherValue : errornousValue[n].lowerValue;
+                let errornous = input.filter(val => val.extension == currError.extension && val.length == currError.length && val.metric == currError.metric);
+                let index = 0;
+                while (errornous.length>index) {
+                    let wrongNote = errornous[0];
+                    wrongNote.extension = wouldBe.extension;
+                    wrongNote.length = wouldBe.length;
+                    wrongNote.metric = wouldBe.metric;
+                    isCurr = input.map(x => getLengthValue(x)).reduce((a, b) => a + b);
+                    amountOfErrors--;
+                    index++;
+                    if (amountOfErrors == 0) {
+                        break;
+                    }
+                }
+        }
+        amountOfErrors++;
         console.log("Errornous value: " + JSON.stringify(errornousValue));
     }
     console.log(`Musical sum is ${isCurr} and should be ${shouldBe}.`);
@@ -165,16 +195,42 @@ function GetProbableError(diff: number) : ErrorMapping[]{
         logVal = Math.round(logVal);
         let errorMapping: ErrorMapping[] = JSON.parse(JSON.stringify(ErrorMappingListTriolic));
         errorMapping.forEach(val => { val.higherValue.length += logVal; val.lowerValue.length += logVal });
-        return errorMapping.filter(value => !(value.higherValue.length<0 || value.lowerValue.length < 0));
+        return errorMapping.filter(value => !(value.higherValue.length < NoteLength.SIXTEENTH || value.lowerValue.length < NoteLength.SIXTEENTH || value.higherValue.length > NoteLength.FULL || value.lowerValue.length > NoteLength.FULL));
     } else {
-        logVal += 3;
         logVal = Math.round(logVal);
+        //To align it at 0 for highest value
+        logVal++;
         let errorMapping: ErrorMapping[] = JSON.parse(JSON.stringify(ErrorMappingListStandard));
         errorMapping.forEach(val => { val.higherValue.length += logVal; val.lowerValue.length += logVal });
-        if (diff > 0) {
+        errorMapping = errorMapping.filter(value => !(value.higherValue.length < NoteLength.SIXTEENTH || value.lowerValue.length < NoteLength.SIXTEENTH || value.higherValue.length > NoteLength.FULL || value.lowerValue.length > NoteLength.FULL));
+        if (diff < 0) {
             return errorMapping;
         } else {
-            return errorMapping.reverse();
+            return errorMapping.reverse();;
         }
+    }
+}
+function AssignmentProbable(input : FrameNote[], index: number, metric: Beat) : number {
+    let moduloDivisor : number = 1;
+    switch(metric) {
+        case Beat.SixEights: case Beat.NineEights: moduloDivisor = 10; break;
+        default: moduloDivisor = 15;
+    }
+    if(index > 0 && index<input.length-1) {
+    let addToEarlier = input[index].frames + input[index-1].frames;
+    let addToLater = input[index].frames + input[index+1].frames;
+    addToEarlier %= moduloDivisor;
+    addToLater %= moduloDivisor;
+    addToEarlier = addToEarlier <= moduloDivisor/2 ? addToEarlier: Math.abs(moduloDivisor-addToEarlier);
+    addToLater = addToLater <= moduloDivisor/2 ? addToLater: Math.abs(moduloDivisor-addToLater);
+    if(addToEarlier > addToLater) {
+        return 1;
+    } else {
+        return -1;
+    }
+    //If there exists no note to the right/left of the given index 
+    //it should just return the direction, where a note exists
+    } else {
+        return index <= 0 ? 1 : -1;
     }
 }
