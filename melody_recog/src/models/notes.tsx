@@ -9,14 +9,14 @@ export class FrameNote {
     }
 }
 export enum Note {
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
-    BREAK
+    A = "A",
+    B = "B",
+    C = "C",
+    D = "D",
+    E = "E",
+    F = "F",
+    G = "G",
+    BREAK = "BREAK"
 }
 export class SignedNote {
     value: Note;
@@ -30,7 +30,7 @@ export class SignedNote {
     }
 }
 export enum Sign {
-    SHARP,
-    FLAT,
-    NONE
+    SHARP = 1,
+    FLAT = -1,
+    NONE = 0
 }

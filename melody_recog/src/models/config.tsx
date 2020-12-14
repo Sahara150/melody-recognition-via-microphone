@@ -13,3 +13,10 @@ export function GetFrameTreshold(beat: Beat) {
         default: return 15;
     }
 }
+export const NOTELENGTHSTRINGS = [
+    "16th",
+    "eighth",
+    "quarter",
+    "half",
+    "whole"
+];
