@@ -99,10 +99,10 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
         let bar = new Bar(fillerForNextBar);
         bars.push(bar);
     }
-    /*for (let i = 0; i < bars.length; i++) {
+    for (let i = 0; i < bars.length; i++) {
         console.log(`Bar ${i + 1}: ${JSON.stringify(bars[i].notes)}`);
-    }*/
-    //console.log(ties);
+    }
+    console.log("Ties: " + ties);
     return new BarBorders(bars, ties);
 }
 
@@ -180,9 +180,7 @@ export function CheckForMusicalValidity(input: MetricalNote[], metric: Beat): Me
                 }
         }
         amountOfErrors++;
-        console.log("Errornous value: " + JSON.stringify(errornousValue));
     }
-    console.log(`Musical sum is ${isCurr} and should be ${shouldBe}.`);
     return input;
 }
 function GetProbableError(diff: number) : ErrorMapping[]{
@@ -210,6 +208,8 @@ function GetProbableError(diff: number) : ErrorMapping[]{
         }
     }
 }
+//TODO: Fix this! It is assuming the static frame size of 60.
+//Actual framesize = getBeats/totalLength
 function AssignmentProbable(input : FrameNote[], index: number, metric: Beat) : number {
     let moduloDivisor : number = 1;
     switch(metric) {

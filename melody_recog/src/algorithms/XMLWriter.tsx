@@ -1,11 +1,10 @@
-import { Bar, MetricalBar } from "../models/bars";
+import { MetricalBar } from "../models/bars";
 import { Beat, getDenominator, getNumerator } from "../models/beats";
-import { LOG_2 } from "../models/calculationData";
 import { NOTELENGTHSTRINGS } from "../models/config";
 import { Extension, getLengthValue, Metric, MetricalNote } from "../models/metric";
 import { Note } from "../models/notes";
 
-export function ParseToXML(bars: MetricalBar[], ties: number[], beat: Beat): string {
+export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat): string {
     let result = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>"
                     + "<score-partwise version=\"2.0\">"
                            + "<part-list>";
@@ -19,7 +18,7 @@ export function ParseToXML(bars: MetricalBar[], ties: number[], beat: Beat): str
     //iterating over all parts
     result += "<part id=\"P1\">";
     for (let i = 0; i < bars.length; i++) {
-        result += `<measure number=\"${i + 1}\">`
+        result += `<measure number="${i + 1}">`
         //First measure needs to contain key information
         if (i == 0) {
             result += "<attributes>"
@@ -37,7 +36,7 @@ export function ParseToXML(bars: MetricalBar[], ties: number[], beat: Beat): str
                 //Well known as violin key
                             + "<clef>"
                                 + "<sign>G</sign>"
-                                + "<line>2</line"
+                                + "<line>2</line>"
                             + "</clef>"
                         + "</attributes>";
         }
