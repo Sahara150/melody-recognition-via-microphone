@@ -25,7 +25,8 @@ export function startPipeline(input: number[], refFrequency: number) {
 	//Pausing and waiting for user to choose his best algorithm or restart.
 }
 export function continuePipeline(chosen: string, callbackFunction: (url: string) => void) {
-	let chosenAlg: FrameNote[] = getFrameArray(chosen);
+    let chosenAlg: FrameNote[] = getFrameArray(chosen);
+    console.log("Testinput: " + JSON.stringify(chosenAlg));
 	let metric = getRefs().beat ?? Beat.FourFourths;
 	let chosenBeat = getAmountOfBeats(metric);
 	let seperatedBars: BarBorders = GetBarBorders(chosenAlg, chosenBeat, STANDARD_FRAME_SIZE);

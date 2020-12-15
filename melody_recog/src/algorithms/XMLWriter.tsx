@@ -57,7 +57,7 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat): str
                             + `<octave>${note.octave}</octave>`
                         + "</pitch>";
             }
-            result += `<duration>${Math.round(getLengthValue(note) * 4)}</duration>`;
+            result += `<duration>${getLengthValue(note) * 4}</duration>`;
             let notationNeeded = false;
             if (GetTieEnd(ties, i, o, barNotes)) {
                 result += "<tie type=\"stop\"/>";
@@ -84,13 +84,13 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat): str
             if (notationNeeded) {
                 result += "<notations>";
                 if (GetTieStart(ties, i, o, barNotes)) {
-                    result += "<tied type=\"start\"/>";
+                    result += "<tied type=\"start\" />";
                 } else if (GetTieEnd(ties, i, o, barNotes)) {
-                    result += "<tied type=\"stop\"/>";
+                    result += "<tied type=\"stop\" />";
                 }
                 //TODO: This solution has some severe graphical problems, you´ll need to find out the groups of trioles beforehand
                 if (note.metric == Metric.TRIOLE && (o == 0 || barNotes[o-1].metric != Metric.TRIOLE || o == barNotes.length-1 || barNotes[o+1].metric != Metric.TRIOLE)) {
-                    result += `tuplet placement="above" type="${(o == 0 ||barNotes[o-1].metric != Metric.TRIOLE ? "start": "stop")}" />`
+                    result += `<tuplet placement="above" type="${(o == 0 ||barNotes[o-1].metric != Metric.TRIOLE ? "start": "stop")}" />`
                 }
                 result += "</notations>";
             }
@@ -103,8 +103,8 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat): str
     return result;
 }
 function GetTieStart(ties: number[], barIndex: number, noteIndex: number, notes: MetricalNote[]): boolean {
-    return noteIndex == notes.length - 1 && ties.contains(barIndex) && (!ties.contains(barIndex - 1) || notes.length > 1);
+    return noteIndex == notes.length - 1 && ties.contains(barIndex) && (!ties.contains(barIndex - 1) || notes.length > 1) && notes[noteIndex].note.value != Note.BREAK;
 }
 function GetTieEnd(ties: number[], barIndex: number, noteIndex: number, notes: MetricalNote[]): boolean {
-    return noteIndex == 0 && ties.contains(barIndex - 1) && (!ties.contains(barIndex) || notes.length > 1);
+    return noteIndex == 0 && ties.contains(barIndex - 1) && (!ties.contains(barIndex) || notes.length > 1) && notes[noteIndex].note.value != Note.BREAK;
 }

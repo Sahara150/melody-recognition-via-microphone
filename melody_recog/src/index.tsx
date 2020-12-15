@@ -40,7 +40,10 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 		} else if (this.state.referenceBeat == null) {
 			return <BeatSettings notifyParent={() => this.updateReferences()} />
 		} else if (this.state.file != null) {
-			return <MusicSheetDisplay file={this.state.file} autoResize={true} drawTitle={false}/>
+            return (<div>
+                <MusicSheetDisplay file={this.state.file} autoResize={true} drawTitle={false} />
+                <a href={this.state.file} className="download btn-dark" download="music.xml">Download</a>
+                   </div>)
 		} else if (this.state.pipelineIsThrough) {
 			return (<div>
 				<Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
