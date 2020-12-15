@@ -48,10 +48,11 @@ export class TestingAlgorithm extends React.Component<{}, { playing: boolean }> 
                     let osc = audioContext.createOscillator();
                     let halfTones = SCALE.findIndex(val => val.equals(actualNote.value));
                     let octaves = actualNote.octave
-                    if (actualNote.value.value > Note.C) {
+                    if (actualNote.value.value >= Note.C) {
                         octaves--;
                     }
-                    halfTones += (octaves - 4) * 12
+                    halfTones += (octaves - 4) * 12;
+                    console.log(`The note is ${actualNote.value.value} ${actualNote.value.sign} ${actualNote.octave} and is ${halfTones} above A4.`);
                     let diff = Math.pow(Math.E, LOG_2 * halfTones / 12);
                     osc.frequency.value = refFreq * diff;
                     osc.connect(audioContext.destination);

@@ -1,6 +1,6 @@
 import { isNullishCoalesce } from "typescript";
 import { Bar, BarBorders, MetricalBar } from "../models/bars";
-import { Beat, getLengthValueDenominator, getNumerator, getPositionShift } from "../models/beats";
+import { Beat, getAmountOfBeats, getLengthValueDenominator, getNumerator, getPositionShift } from "../models/beats";
 import { ErrorMappingListStandard, ErrorMappingListTriolic, SCALE } from "../models/calculationData";
 import { GetFrameTreshold, MAX_DIFF, RING_SIZE } from "../models/config";
 import { ErrorMapping } from "../models/errorCorrection";
@@ -99,10 +99,6 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
         let bar = new Bar(fillerForNextBar);
         bars.push(bar);
     }
-    for (let i = 0; i < bars.length; i++) {
-        console.log(`Bar ${i + 1}: ${JSON.stringify(bars[i].notes)}`);
-    }
-    console.log("Ties: " + ties);
     return new BarBorders(bars, ties);
 }
 
@@ -115,7 +111,7 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
         //Scaling length up, so that with log2 it starts with 0.
         let newNote = GetMetricalNote(input.notes[i], beats, metric, totalLength);
         if(newNote.length < NoteLength.SIXTEENTH) {
-           let dir = AssignmentProbable(input.notes, i, metric);
+           let dir = AssignmentProbable(input.notes, i, metric, totalLength/getAmountOfBeats(metric));
            input.notes[i+dir].frames += input.notes[i].frames; 
            if(dir < 0) {
             //If before note should have got this added, recalculate before note
@@ -208,13 +204,11 @@ function GetProbableError(diff: number) : ErrorMapping[]{
         }
     }
 }
-//TODO: Fix this! It is assuming the static frame size of 60.
-//Actual framesize = getBeats/totalLength
-function AssignmentProbable(input : FrameNote[], index: number, metric: Beat) : number {
+function AssignmentProbable(input : FrameNote[], index: number, metric: Beat, assumedFrameRate: number) : number {
     let moduloDivisor : number = 1;
     switch(metric) {
-        case Beat.SixEights: case Beat.NineEights: moduloDivisor = 10; break;
-        default: moduloDivisor = 15;
+        case Beat.SixEights: case Beat.NineEights: moduloDivisor = assumedFrameRate/6; break;
+        default: moduloDivisor = assumedFrameRate/4;
     }
     if(index > 0 && index<input.length-1) {
     let addToEarlier = input[index].frames + input[index-1].frames;

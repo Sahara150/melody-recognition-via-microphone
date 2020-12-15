@@ -5,6 +5,10 @@ import { Extension, getLengthValue, Metric, MetricalNote } from "../models/metri
 import { Note } from "../models/notes";
 
 export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat): string {
+    for (let i = 0; i < bars.length; i++) {
+        console.log(`Bar ${i + 1}: ${JSON.stringify(bars[i].notes)}`);
+    }
+    console.log("Ties: " + ties);
     let result = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>"
                     + "<score-partwise version=\"2.0\">"
                            + "<part-list>";
