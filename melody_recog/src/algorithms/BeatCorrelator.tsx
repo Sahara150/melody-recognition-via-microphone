@@ -117,6 +117,21 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
             //If before note should have got this added, recalculate before note
              notes[notes.length-1] = GetMetricalNote(input.notes[i+dir], beats, metric, totalLength);   
            }
+        } else if (newNote.length == NoteLength.SIXTEENTH && (newNote.extension == Extension.ONEDOT || newNote.extension == Extension.TWODOTS)) {
+            //Dotted and double dotted sixteenths themself might be theoretically allowed,
+            //though they imply, that a 32th or even 64th needs to exist and lead to invalid bars,
+            //because the program is not able to fix that gap
+            //Therefore due to styling decisions a double dotted sixteenth can be seen as approximately an eight
+            if (newNote.extension == Extension.TWODOTS) {
+                newNote.extension = Extension.NODOT;
+                newNote.length = NoteLength.EIGHTH;
+            } else {
+                //One dotted sixteenths will be assumed a triole in this step, 
+                //because it is the closest.
+                newNote.extension = Extension.NODOT;
+                newNote.length = NoteLength.EIGHTH;
+                newNote.metric = Metric.TRIOLE;
+            }
         } else {
         notes.push(newNote);
         }
@@ -150,6 +165,11 @@ function RoundAdapted(scaledLength: number): [number, Metric, Extension] {
     } else {
         return [Math.ceil(scaledLength), Metric.STANDARD, Extension.NODOT];
     }
+}
+function MusicalVariance(input: MetricalNote[], metric: Beat): number {
+    let shouldBe = getNumerator(metric) * getLengthValueDenominator(metric);
+    let isCurr = input.map(x => getLengthValue(x)).reduce((a, b) => a + b);
+    return shouldBe-isCurr;
 }
 export function CheckForMusicalValidity(input: MetricalNote[], metric: Beat): MetricalNote[] {
     let shouldBe = getNumerator(metric) * getLengthValueDenominator(metric);
@@ -189,14 +209,26 @@ function GetProbableError(diff: number) : ErrorMapping[]{
         logVal = Math.round(logVal);
         let errorMapping: ErrorMapping[] = JSON.parse(JSON.stringify(ErrorMappingListTriolic));
         errorMapping.forEach(val => { val.higherValue.length += logVal; val.lowerValue.length += logVal });
-        return errorMapping.filter(value => !(value.higherValue.length < NoteLength.SIXTEENTH || value.lowerValue.length < NoteLength.SIXTEENTH || value.higherValue.length > NoteLength.FULL || value.lowerValue.length > NoteLength.FULL));
+        return errorMapping.filter(value =>
+            !(value.higherValue.length < NoteLength.SIXTEENTH
+            || value.lowerValue.length < NoteLength.SIXTEENTH
+            || value.higherValue.length > NoteLength.FULL 
+            || value.lowerValue.length > NoteLength.FULL
+            || (value.lowerValue.length == NoteLength.SIXTEENTH && value.lowerValue.extension != Extension.NODOT)
+            || (value.higherValue.length == NoteLength.SIXTEENTH && value.higherValue.extension != Extension.NODOT)));
     } else {
         logVal = Math.round(logVal);
         //To align it at 0 for highest value
         logVal++;
         let errorMapping: ErrorMapping[] = JSON.parse(JSON.stringify(ErrorMappingListStandard));
         errorMapping.forEach(val => { val.higherValue.length += logVal; val.lowerValue.length += logVal });
-        errorMapping = errorMapping.filter(value => !(value.higherValue.length < NoteLength.SIXTEENTH || value.lowerValue.length < NoteLength.SIXTEENTH || value.higherValue.length > NoteLength.FULL || value.lowerValue.length > NoteLength.FULL));
+        errorMapping = errorMapping.filter(value =>
+            !(value.higherValue.length < NoteLength.SIXTEENTH
+                || value.lowerValue.length < NoteLength.SIXTEENTH
+                || value.higherValue.length > NoteLength.FULL
+                || value.lowerValue.length > NoteLength.FULL
+                || (value.lowerValue.length == NoteLength.SIXTEENTH && value.lowerValue.extension != Extension.NODOT)
+                || (value.higherValue.length == NoteLength.SIXTEENTH && value.higherValue.extension != Extension.NODOT)));
         if (diff < 0) {
             return errorMapping;
         } else {

@@ -31,6 +31,17 @@ export class MetricalNote {
         this.octave = octave;
     }
 }
+export class Triole extends MetricalNote {
+    trioleType!: NoteLength;
+    isStart!: boolean;
+    isEnd!: boolean;
+    constructor(note: MetricalNote, trioleType: NoteLength, isStart: boolean = false, isEnd: boolean = false) {
+        super(note.length, note.metric, note.extension, note.note, note.octave);
+        this.trioleType = trioleType;
+        this.isStart = isStart;
+        this.isEnd = isEnd;
+    }
+}
 //Value is always given in multiple of fourths
 export function getLengthValue(note : MetricalNote) : number {
     let base = Math.exp(note.length*LOG_2)/4;

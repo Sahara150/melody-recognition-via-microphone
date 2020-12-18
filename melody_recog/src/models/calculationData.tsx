@@ -32,6 +32,7 @@ export const ErrorMappingListStandard =
             new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.TWODOTS, new SignedNote(Note.BREAK, Sign.NONE), 0)
         )
     ];
+//TODO: Remove errorMapping triolic. Triols have to be recognized beforehand.
 export const ErrorMappingListTriolic =
     //Possible errors, when missing value is 1/3
     [

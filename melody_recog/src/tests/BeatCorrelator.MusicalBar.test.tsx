@@ -38,17 +38,17 @@ test('TrioleEightsDottedEigthSixteenth', () => {
 });
 test('Triole accidently got dotted lower', () => {
     let bar = new MetricalBar([
-        new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4),
-        new MetricalNote(NoteLength.SIXTEENTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.E, Sign.NONE), 4),
-        new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.F, Sign.NONE), 4),
-        new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.G, Sign.NONE), 4)
+        new MetricalNote(NoteLength.QUARTER, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4),
+        new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.E, Sign.NONE), 4),
+        new MetricalNote(NoteLength.QUARTER, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.F, Sign.NONE), 4),
+        new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.G, Sign.NONE), 4)
     ]);
-    let result = CheckForMusicalValidity(bar.notes, Beat.TwoFourths);
+    let result = CheckForMusicalValidity(bar.notes, Beat.FourFourths);
     expect(result).toEqual([
-        new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4),
-        new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4),
-        new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.F, Sign.NONE), 4),
-        new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.G, Sign.NONE), 4)]);
+        new MetricalNote(NoteLength.QUARTER, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4),
+        new MetricalNote(NoteLength.QUARTER, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4),
+        new MetricalNote(NoteLength.QUARTER, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.F, Sign.NONE), 4),
+        new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.G, Sign.NONE), 4)]);
 });
 test('One dotted got to two dotted', () => {
     debugger;
