@@ -518,12 +518,11 @@ test('All my little ducks real input', () => {
             new FrameNote(4, 25, new SignedNote(Note.D, Sign.NONE)),
             new FrameNote(0, 30, new SignedNote(Note.BREAK, Sign.NONE)),
             new FrameNote(4, 24, new SignedNote(Note.D, Sign.NONE)),
-            //TODO: Fix error in beatcorrelator.
             //Should be around 30
             new FrameNote(0, result.bars[6].notes[4].frames, new SignedNote(Note.BREAK, Sign.NONE))
             ])
     ]);
     expect(result.ties).toEqual([
-        1, 3, 4, 5
+        1, 4, 5
     ])
 });

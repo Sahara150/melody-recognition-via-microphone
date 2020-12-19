@@ -75,14 +75,18 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
                         newNote = new FrameNote(oldNote.octave, framesUsed, oldNote.value);
                         overFrames-= framesUsed;
                         let bar = new Bar([newNote]);
-                        ties.push(tieCount);
+                        if(newNote.value.value != Note.BREAK) {
+                            ties.push(tieCount);
+                        }
                         fillerBars.push(bar); 
                         tieCount++;
                     }
                     if(overFrames>0) {
-                    newNote = new FrameNote(oldNote.octave, overFrames, oldNote.value);
-                    fillerForNextBar.push(newNote);
-                    ties.push(tieCount);
+                        newNote = new FrameNote(oldNote.octave, overFrames, oldNote.value);
+                        fillerForNextBar.push(newNote);
+                        if(newNote.value.value != Note.BREAK) {
+                            ties.push(tieCount);
+                        }   
                     }
                     let fullBeatsPartOfNewBar = Math.floor(overFrames/actualFrameSize);
                     beatsForNextBar = beatsPerBar - fullBeatsPartOfNewBar;
