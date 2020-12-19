@@ -36,9 +36,9 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
             }
             if (thisFramesSize < MAX_FRAME_BORDER) {
                 //The input is over, but the last beat not yet filled.
-                if (thisFramesSize < MAX_DIFF) {
+                if (thisFramesSize < MIN_FRAME_BORDER) {
                     let actualFrameSize = frameSizes.length == 0 ? frameSize : frameSizes.reduce((a, b) => a + b) / frameSizes.length;
-                    let newNote = new FrameNote(0, Math.round(actualFrameSize*beatsLeft), new SignedNote(Note.BREAK, Sign.NONE));
+                    let newNote = new FrameNote(0, Math.round(actualFrameSize*beatsLeft-thisFramesSize), new SignedNote(Note.BREAK, Sign.NONE));
                     notesForBar.push(newNote);
                     beatsLeft = 0;
                 } else {
