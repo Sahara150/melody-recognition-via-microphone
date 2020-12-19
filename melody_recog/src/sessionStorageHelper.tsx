@@ -1,4 +1,5 @@
 import {Beat} from "./models/beats"
+import { FrameAdaption } from "./models/frameAdaption";
 import { FrameNote } from "./models/notes";
 var frequencyKey = "frequencyRef";
 var beatKey = "beatRef";
@@ -39,4 +40,8 @@ export function getFileURL(): string | null {
     let myStorage = window.sessionStorage;
     let result = myStorage.getItem(xmlKey);
     return result;
+}
+export function getFrameAdaptions(): FrameAdaption[] {
+    //TODO: Implement
+    return [];
 }

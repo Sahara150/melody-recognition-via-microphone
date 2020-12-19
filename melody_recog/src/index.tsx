@@ -1,7 +1,7 @@
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import './styles/main.css';
-import { getFileURL, getFrameArray, getRefs } from "./sessionStorageHelper";
+import { getFileURL, getFrameAdaptions, getFrameArray, getRefs } from "./sessionStorageHelper";
 import { Recorder } from "./views/Recorder";
 import { BeatSettings } from "./views/BeatSettings";
 //See below
@@ -10,18 +10,22 @@ import { Beat } from "./models/beats";
 import { TestingAlgorithm } from "./views/TestingAlgorithm";
 import { ChoosingAlgorithm } from "./views/ChooseAlgorithm";
 import { continuePipeline } from "./Pipeline";
+import { FrameAdaption } from "./models/frameAdaption";
+import { FrameRateAdaption } from "./views/FrameRateAdaption";
 
-class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean, file: string |null }> {
+class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean, file: string |null, frameAdaptions: FrameAdaption[] }> {
 	constructor(props : any) {
 		super(props);
 		let references = getRefs();
 		let pipelineIsThrough = getFrameArray("smoothed").length != 0;
 		let file = getFileURL();
+		let frameAdaptions = getFrameAdaptions();
 		this.state = {
 			referenceFrequency: references.frequency,
 			referenceBeat: references.beat,
 			pipelineIsThrough: pipelineIsThrough,
-			file: file
+			file: file,
+			frameAdaptions: frameAdaptions
 		};
 	}
 	updateReferences() {
@@ -41,8 +45,9 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 			return <BeatSettings notifyParent={() => this.updateReferences()} />
 		} else if (this.state.file != null) {
             return (<div>
-                <MusicSheetDisplay file={this.state.file} autoResize={true} drawTitle={false} />
-                <a href={this.state.file} className="download btn-dark" download="music.xml">Download</a>
+				<MusicSheetDisplay file={this.state.file} autoResize={true} drawTitle={false} />
+				<FrameRateAdaption onChange={() => this.startBeatCorrelationNew} framesAdapted={this.state.frameAdaptions}/>
+                <a href={this.state.file} className="download btn btn-dark" download="music.xml">Download</a>
                    </div>)
 		} else if (this.state.pipelineIsThrough) {
 			return (<div>
@@ -67,8 +72,20 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 			referenceFrequency: state.referenceFrequency,
 			referenceBeat: state.referenceBeat,
 			pipelineIsThrough: state.pipelineIsThrough,
-			file: url
+			file: url,
+			frameAdaptions: state.frameAdaptions
 		});
+	}
+	startBeatCorrelationNew(frameAdaptions: FrameAdaption[]) {
+		let state = this.state;
+		this.setState({
+			referenceFrequency: state.referenceFrequency,
+			referenceBeat: state.referenceBeat,
+			pipelineIsThrough: state.pipelineIsThrough,
+			file: state.file,
+			frameAdaptions: frameAdaptions
+		});
+		//TODO: Save frame adaptions and restart correlation
     }
 }
 	ReactDOM.render(

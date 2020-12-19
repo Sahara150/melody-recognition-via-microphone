@@ -524,5 +524,9 @@ test('All my little ducks real input', () => {
     ]);
     expect(result.ties).toEqual([
         1, 4, 5
-    ])
+    ]);
+    expect(result.bars[1].notes[2].frames + result.bars[2].notes[0].frames).toEqual(178);
+    expect(result.bars[3].notes[1].frames + result.bars[4].notes[0].frames).toEqual(221);
+    expect(result.bars[4].notes[1].frames + result.bars[5].notes[0].frames).toEqual(94);
+    expect(result.bars[5].notes[3].frames + result.bars[6].notes[0].frames).toEqual(222);
 });

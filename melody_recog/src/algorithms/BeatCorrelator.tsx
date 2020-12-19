@@ -1,7 +1,6 @@
-import { isNullishCoalesce } from "typescript";
 import { Bar, BarBorders, MetricalBar } from "../models/bars";
 import { Beat, getAmountOfBeats, getLengthValueDenominator, getNumerator, getPositionShift } from "../models/beats";
-import { ErrorMappingListStandard, ErrorMappingListTriolic, SCALE } from "../models/calculationData";
+import { ErrorMappingListStandard, ErrorMappingListTriolic, LOG_2, SCALE } from "../models/calculationData";
 import { GetFrameTreshold, MAX_DIFF, RING_SIZE } from "../models/config";
 import { ErrorMapping } from "../models/errorCorrection";
 import { Extension, getLengthValue, Metric, MetricalNote, NoteLength } from "../models/metric";
@@ -107,10 +106,10 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
 }
 
 export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
-    //TODO: If frame is lower than frame-treshold, it should be assigned to the most likely neighbor
     let beats = getNumerator(metric);
     let totalLength = input.notes.map(a => a.frames).reduce((a, b) => a + b);
     let notes: MetricalNote[] = [];
+    let mirror: FrameNote[] = [];
     for (let i = 0; i < input.notes.length; i++) {
         //Scaling length up, so that with log2 it starts with 0.
         let newNote = GetMetricalNote(input.notes[i], beats, metric, totalLength);
@@ -119,16 +118,19 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
            input.notes[i+dir].frames += input.notes[i].frames; 
            if(dir < 0) {
             //If before note should have got this added, recalculate before note
+             input.notes[i+dir].frames += input.notes[i].frames;
+             mirror[mirror.length-1].frames += input.notes[i].frames;
              notes[notes.length-1] = GetMetricalNote(input.notes[i+dir], beats, metric, totalLength);   
            }
-        } else if (newNote.length == NoteLength.SIXTEENTH && (newNote.extension == Extension.ONEDOT || newNote.extension == Extension.TWODOTS)) {
-            //Dotted and double dotted sixteenths themself might be theoretically allowed,
+        } else if (newNote.length == NoteLength.SIXTEENTH && (newNote.extension == Extension.ONEDOT || newNote.extension == Extension.TWODOTS)
+                || newNote.length == NoteLength.EIGHTH && newNote.extension == Extension.TWODOTS) {
+            //Dotted and double dotted sixteenths as double dotted eighths themself might be theoretically allowed,
             //though they imply, that a 32th or even 64th needs to exist and lead to invalid bars,
             //because the program is not able to fix that gap
             //Therefore due to styling decisions a double dotted sixteenth can be seen as approximately an eight
             if (newNote.extension == Extension.TWODOTS) {
                 newNote.extension = Extension.NODOT;
-                newNote.length = NoteLength.EIGHTH;
+                newNote.length += 1;
             } else {
                 //One dotted sixteenths will be assumed a triole in this step, 
                 //because it is the closest.
@@ -136,10 +138,14 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
                 newNote.length = NoteLength.EIGHTH;
                 newNote.metric = Metric.TRIOLE;
             }
+            mirror.push(input.notes[i])
+            notes.push(newNote);
         } else {
+        mirror.push(input.notes[i]);
         notes.push(newNote);
         }
     }
+    //notes = GroupTriols(notes, metric, mirror);
     notes = CheckForMusicalValidity(notes, metric);
     let result: MetricalBar = new MetricalBar(notes);
     return result;
@@ -168,6 +174,76 @@ function RoundAdapted(scaledLength: number): [number, Metric, Extension] {
         return [Math.floor(scaledLength), Metric.STANDARD, Extension.TWODOTS];
     } else {
         return [Math.ceil(scaledLength), Metric.STANDARD, Extension.NODOT];
+    }
+}
+function GroupTriols(input: MetricalNote[], metric: Beat, mirrorInput: FrameNote[]) : MetricalNote[]{
+    for(let i = 0; i<input.length-2;i++) {
+        if(!CheckIfMoveOn(input.slice(i, i+3))) {
+            if(input[i].metric != Metric.TRIOLE && (i > input.length-3 || (i < input.length-3 && input[i+3].metric != Metric.TRIOLE))) {
+                //If it did not continue, despite the first being no triole,
+                //the second and third have to be a triole.
+                let fillTriole = CheckFillTriole(input.slice(i+1,i+3));
+                if(!fillTriole.isFull) {
+                    //First should be one type lower than the other two
+                    //TODO: CORRECT!
+                    let sameType = CheckSameType(input.slice(i,i+3));
+
+                }
+            }
+            //Check what is the case
+            //a) First is no triole, fourth note is -> move on
+            //b) First is no triole, second is one, third is one
+            // -> Check if second and third have same type and first is one type lower
+            // -> If no, move on
+            //c) First is no triole, second is one, third is none
+            // -> Correct second, (use input to find out, if to higher or to lower)
+            // -> move on
+            //d) First is no triole, second is none, third is one -> move on
+            //e) First is triole, second is triole, third is triole 
+            // -> Check if all have same type
+            // -> If no, check if first and second differ exactly 1
+            // -> If yes, choose lower as notetype and group them
+            // -> If no, choose average as notetype and "fill triole"
+            // 
+        }
+    }
+    return input;
+}
+function CheckIfMoveOn(input: MetricalNote[]) : boolean {
+    let amount = input.filter(val => val.metric == Metric.TRIOLE).length;
+    if ( amount > 0) {
+        if(input[0].metric != Metric.TRIOLE && amount < 2) {
+            return true;
+        } 
+        return false;
+    } else {
+        return true;
+    }
+}
+function CheckSameType(input: MetricalNote[]) : boolean {
+    let lastLength = input[0].length;
+    return input.every(val => val.length == lastLength);
+}
+function CheckFillTriole(input: MetricalNote[]) : {isFull: boolean, type: NoteLength} {
+    let noteTypeEqual = CheckSameType(input);
+    if(noteTypeEqual) {
+        let isFull = input.length == 3;
+        let type = input[0].length;
+        return {isFull: isFull, type: type};
+    } else {
+        if(input.length == 2 && Math.abs(input[0].length - input[1].length) == 1) {
+            let type = Math.min(input[0].length, input[1].length);
+            return {isFull: true, type: type};
+        } else {
+            let type = (input[0].length + input[1].length)/2;
+            let amount : number = 0;
+            for(let i = 0;i <input.length; i++) {
+                amount += Math.exp((input[i].length - type) *LOG_2);
+            }
+            amount -= 3;
+            let isFull = amount >= -0.25 && amount<=0.25;
+            return {isFull : isFull, type : type};
+        }
     }
 }
 function MusicalVariance(input: MetricalNote[], metric: Beat): number {
@@ -236,7 +312,7 @@ function GetProbableError(diff: number) : ErrorMapping[]{
         if (diff < 0) {
             return errorMapping;
         } else {
-            return errorMapping.reverse();;
+            return errorMapping.reverse();
         }
     }
 }
