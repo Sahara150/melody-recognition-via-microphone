@@ -1,6 +1,6 @@
 import { Bar, BarBorders, MetricalBar } from "../models/bars";
 import { Beat, getAmountOfBeats, getLengthValueDenominator, getNumerator, getPositionShift } from "../models/beats";
-import { ErrorMappingListStandard, ErrorMappingListTriolic, LOG_2, SCALE } from "../models/calculationData";
+import { ErrorMappingListStandard, LOG_2 } from "../models/calculationData";
 import { GetFrameTreshold, MAX_DIFF, QUANTISIZE, RING_SIZE } from "../models/config";
 import { ErrorMapping } from "../models/errorCorrection";
 import { Extension, getLengthValue, Metric, MetricalNote, NoteLength, Triole } from "../models/metric";
@@ -109,7 +109,6 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
     let beats = getNumerator(metric);
     let totalLength = input.notes.map(a => a.frames).reduce((a, b) => a + b);
     let notes: MetricalNote[] = [];
-    let mirror: FrameNote[] = [];
     let isTriole: boolean = false;
     let trioleIndex: number;
     for (let i = 0; i < input.notes.length; i++) {
@@ -168,16 +167,13 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
                     newNote.length = NoteLength.EIGHTH;
                     newNote.metric = Metric.TRIOLE;
                 }
-                mirror.push(input.notes[i])
                 notes.push(newNote);
             } else {
-            mirror.push(input.notes[i]);
             notes.push(newNote);
             }
             isTriole = notes[notes.length - 1].metric == Metric.TRIOLE;
         }
     }
-    //notes = GroupTriols(notes, metric, mirror);
     notes = CheckForMusicalValidity(notes, metric);
     let result: MetricalBar = new MetricalBar(notes);
     return result;
@@ -219,50 +215,6 @@ function RoundAdapted(scaledLength: number, isTriole: boolean): [number, Metric,
         return [Math.ceil(scaledLength), Metric.STANDARD, Extension.NODOT];
     }
 }
-function GroupTriols(input: MetricalNote[], metric: Beat, mirrorInput: FrameNote[]) : MetricalNote[]{
-    for(let i = 0; i<input.length-2;i++) {
-        if(!CheckIfMoveOn(input.slice(i, i+3))) {
-            if(input[i].metric != Metric.TRIOLE && (i > input.length-3 || (i < input.length-3 && input[i+3].metric != Metric.TRIOLE))) {
-                //If it did not continue, despite the first being no triole,
-                //the second and third have to be a triole.
-                let fillTriole = CheckFillTriole(input.slice(i+1,i+3));
-                if(!fillTriole.isFull) {
-                    //First should be one type lower than the other two
-                    //TODO: CORRECT!
-                    let sameType = CheckSameType(input.slice(i,i+3));
-
-                }
-            }
-            //Check what is the case
-            //a) First is no triole, fourth note is -> move on
-            //b) First is no triole, second is one, third is one
-            // -> Check if second and third have same type and first is one type lower
-            // -> If no, move on
-            //c) First is no triole, second is one, third is none
-            // -> Correct second, (use input to find out, if to higher or to lower)
-            // -> move on
-            //d) First is no triole, second is none, third is one -> move on
-            //e) First is triole, second is triole, third is triole 
-            // -> Check if all have same type
-            // -> If no, check if first and second differ exactly 1
-            // -> If yes, choose lower as notetype and group them
-            // -> If no, choose average as notetype and "fill triole"
-            // 
-        }
-    }
-    return input;
-}
-function CheckIfMoveOn(input: MetricalNote[]) : boolean {
-    let amount = input.filter(val => val.metric == Metric.TRIOLE).length;
-    if ( amount > 0) {
-        if(input[0].metric != Metric.TRIOLE && amount < 2) {
-            return true;
-        } 
-        return false;
-    } else {
-        return true;
-    }
-}
 function CheckSameType(input: MetricalNote[]) : boolean {
     let lastLength = input[0].length;
     return input.every(val => val.length == lastLength);
@@ -288,11 +240,6 @@ function CheckFillTriole(input: MetricalNote[]) : {isFull: boolean, type: NoteLe
             return {isFull : isFull, type : type};
         }
     }
-}
-function MusicalVariance(input: MetricalNote[], metric: Beat): number {
-    let shouldBe = getNumerator(metric) * getLengthValueDenominator(metric);
-    let isCurr = input.map(x => getLengthValue(x)).reduce((a, b) => a + b);
-    return shouldBe-isCurr;
 }
 export function CheckForMusicalValidity(input: MetricalNote[], metric: Beat): MetricalNote[] {
     let shouldBe = getNumerator(metric) * getLengthValueDenominator(metric);
@@ -325,22 +272,7 @@ export function CheckForMusicalValidity(input: MetricalNote[], metric: Beat): Me
 function GetProbableError(diff: number) : ErrorMapping[]{
     let abs = Math.abs(diff);
     let logVal = Math.log2(abs);
-    //It is an error with a triolic misassumption
-    if (Math.abs(logVal) % 1 > 0.1) {
-        abs *= 3;
-        logVal = Math.log2(abs);
-        logVal = Math.round(logVal);
-        let errorMapping: ErrorMapping[] = JSON.parse(JSON.stringify(ErrorMappingListTriolic));
-        errorMapping.forEach(val => { val.higherValue.length += logVal; val.lowerValue.length += logVal });
-        return errorMapping.filter(value =>
-            !(value.higherValue.length < NoteLength.SIXTEENTH
-            || value.lowerValue.length < NoteLength.SIXTEENTH
-            || value.higherValue.length > NoteLength.FULL 
-            || value.lowerValue.length > NoteLength.FULL
-            || (value.lowerValue.length == NoteLength.SIXTEENTH && value.lowerValue.extension != Extension.NODOT)
-            || (value.higherValue.length == NoteLength.SIXTEENTH && value.higherValue.extension != Extension.NODOT)));
-    } else {
-        logVal = Math.round(logVal);
+    logVal = Math.round(logVal);
         //To align it at 0 for highest value
         logVal++;
         let errorMapping: ErrorMapping[] = JSON.parse(JSON.stringify(ErrorMappingListStandard));
@@ -357,7 +289,6 @@ function GetProbableError(diff: number) : ErrorMapping[]{
         } else {
             return errorMapping.reverse();
         }
-    }
 }
 function AssignmentProbable(input : FrameNote[], index: number, metric: Beat, assumedFrameRate: number) : number {
     let moduloDivisor : number = 1;
