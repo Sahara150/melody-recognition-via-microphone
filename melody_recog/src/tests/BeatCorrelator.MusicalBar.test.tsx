@@ -1,7 +1,7 @@
 import { CheckForMusicalValidity, GetMusicalBar } from "../algorithms/BeatCorrelator";
 import { Bar, MetricalBar } from "../models/bars";
 import { Beat } from "../models/beats";
-import { Extension, Metric, MetricalNote, NoteLength } from "../models/metric";
+import { Extension, Metric, MetricalNote, NoteLength, Triole } from "../models/metric";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 test('ThreeHalfNotes', () => {
@@ -28,10 +28,11 @@ test('TrioleEightsDottedEigthSixteenth', () => {
         new FrameNote(4, 13, new SignedNote(Note.F, Sign.SHARP))
     ]);
     let result = GetMusicalBar(bar, Beat.TwoFourths);
+    console.log(result);
     expect(result).toEqual(new MetricalBar([
-        new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4),
-        new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4),
-        new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.F, Sign.SHARP), 4),
+        new Triole(new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4), NoteLength.EIGHTH, true),
+        new Triole(new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4), NoteLength.EIGHTH),
+        new Triole(new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.F, Sign.SHARP), 4), NoteLength.EIGHTH, false, true),
         new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.G, Sign.NONE), 4),
         new MetricalNote(NoteLength.SIXTEENTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.F, Sign.SHARP), 4)
     ]));

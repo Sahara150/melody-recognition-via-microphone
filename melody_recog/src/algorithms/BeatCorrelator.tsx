@@ -1,9 +1,9 @@
 import { Bar, BarBorders, MetricalBar } from "../models/bars";
 import { Beat, getAmountOfBeats, getLengthValueDenominator, getNumerator, getPositionShift } from "../models/beats";
 import { ErrorMappingListStandard, ErrorMappingListTriolic, LOG_2, SCALE } from "../models/calculationData";
-import { GetFrameTreshold, MAX_DIFF, RING_SIZE } from "../models/config";
+import { GetFrameTreshold, MAX_DIFF, QUANTISIZE, RING_SIZE } from "../models/config";
 import { ErrorMapping } from "../models/errorCorrection";
-import { Extension, getLengthValue, Metric, MetricalNote, NoteLength } from "../models/metric";
+import { Extension, getLengthValue, Metric, MetricalNote, NoteLength, Triole } from "../models/metric";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize: number): BarBorders{
@@ -110,39 +110,71 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
     let totalLength = input.notes.map(a => a.frames).reduce((a, b) => a + b);
     let notes: MetricalNote[] = [];
     let mirror: FrameNote[] = [];
+    let isTriole: boolean = false;
+    let trioleIndex: number;
     for (let i = 0; i < input.notes.length; i++) {
-        //Scaling length up, so that with log2 it starts with 0.
-        let newNote = GetMetricalNote(input.notes[i], beats, metric, totalLength);
-        if(newNote.length < NoteLength.SIXTEENTH) {
-           let dir = AssignmentProbable(input.notes, i, metric, totalLength/getAmountOfBeats(metric));
-           input.notes[i+dir].frames += input.notes[i].frames; 
-           if(dir < 0) {
-            //If before note should have got this added, recalculate before note
-             input.notes[i+dir].frames += input.notes[i].frames;
-             mirror[mirror.length-1].frames += input.notes[i].frames;
-             notes[notes.length-1] = GetMetricalNote(input.notes[i+dir], beats, metric, totalLength);   
-           }
-        } else if (newNote.length == NoteLength.SIXTEENTH && (newNote.extension == Extension.ONEDOT || newNote.extension == Extension.TWODOTS)
-                || newNote.length == NoteLength.EIGHTH && newNote.extension == Extension.TWODOTS) {
-            //Dotted and double dotted sixteenths as double dotted eighths themself might be theoretically allowed,
-            //though they imply, that a 32th or even 64th needs to exist and lead to invalid bars,
-            //because the program is not able to fix that gap
-            //Therefore due to styling decisions a double dotted sixteenth can be seen as approximately an eight
-            if (newNote.extension == Extension.TWODOTS) {
-                newNote.extension = Extension.NODOT;
-                newNote.length += 1;
-            } else {
-                //One dotted sixteenths will be assumed a triole in this step, 
-                //because it is the closest.
-                newNote.extension = Extension.NODOT;
-                newNote.length = NoteLength.EIGHTH;
-                newNote.metric = Metric.TRIOLE;
+        if (isTriole) {
+            trioleIndex = notes.length - 1;
+            let start = i;
+            let trioles: MetricalNote[] = [notes[trioleIndex]];
+            while (!CheckFillTriole(trioles).isFull && i<input.notes.length) {
+                let newNote = GetMetricalNote(input.notes[i], beats, metric, totalLength, isTriole);
+                i++;
+                if (newNote.metric == Metric.TRIOLE) {
+                    trioles.push(newNote);
+                } else {
+                    break;
+                }
             }
-            mirror.push(input.notes[i])
-            notes.push(newNote);
+            let filledTriole = CheckFillTriole(trioles);
+            if(filledTriole.isFull) {
+                let mappedTrioles : MetricalNote[] = trioles.map((val, index) => new Triole(val, filledTriole.type, index == 0, index == trioles.length - 1));
+                notes.pop();
+                for(let o= 0; o<mappedTrioles.length; o++) {
+                    notes.push(mappedTrioles[o]);
+                }
+                isTriole = false;
+                i--;
+            } else {
+                i = start--;
+                isTriole = false;
+                let startNote = trioles[0];
+                startNote.metric = Metric.STANDARD;
+                startNote.extension = startNote.length < NoteLength.EIGHTH ? Extension.NODOT : Extension.ONEDOT;
+                startNote.length--;
+                if (startNote.length < NoteLength.SIXTEENTH) {
+                    notes.pop();
+                    AssignToNeighbor(input, metric, totalLength, i, notes);
+                }
+            }
         } else {
-        mirror.push(input.notes[i]);
-        notes.push(newNote);
+            //Scaling length up, so that with log2 it starts with 0.
+            let newNote = GetMetricalNote(input.notes[i], beats, metric, totalLength, false);
+            if (newNote.length <NoteLength.SIXTEENTH) {
+                AssignToNeighbor(input, metric, totalLength, i, notes);
+            } else if (newNote.length == NoteLength.SIXTEENTH && (newNote.extension == Extension.ONEDOT || newNote.extension == Extension.TWODOTS)
+                    || newNote.length == NoteLength.EIGHTH && newNote.extension == Extension.TWODOTS) {
+                //Dotted and double dotted sixteenths as double dotted eighths themself might be theoretically allowed,
+                //though they imply, that a 32th or even 64th needs to exist and lead to invalid bars,
+                //because the program is not able to fix that gap
+                //Therefore due to styling decisions a double dotted sixteenth can be seen as approximately an eight
+                if (newNote.extension == Extension.TWODOTS) {
+                    newNote.extension = Extension.NODOT;
+                    newNote.length += 1;
+                } else {
+                    //One dotted sixteenths will be assumed a triole in this step, 
+                    //because it is the closest.
+                    newNote.extension = Extension.NODOT;
+                    newNote.length = NoteLength.EIGHTH;
+                    newNote.metric = Metric.TRIOLE;
+                }
+                mirror.push(input.notes[i])
+                notes.push(newNote);
+            } else {
+            mirror.push(input.notes[i]);
+            notes.push(newNote);
+            }
+            isTriole = notes[notes.length - 1].metric == Metric.TRIOLE;
         }
     }
     //notes = GroupTriols(notes, metric, mirror);
@@ -150,21 +182,32 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
     let result: MetricalBar = new MetricalBar(notes);
     return result;
 }
-function GetMetricalNote(note: FrameNote, beats: number, metric: Beat, totalLength: number) : MetricalNote{
-    let length = (note.frames * beats * 8) / totalLength;
+function GetMetricalNote(note: FrameNote, beats: number, metric: Beat, totalLength: number, isTriole: boolean) : MetricalNote{
+    let length = (note.frames * beats * QUANTISIZE) / totalLength;
     let scaledLength = Math.log2(length);
-    let assumption = RoundAdapted(scaledLength);
+    let assumption = RoundAdapted(scaledLength, isTriole);
     let shift = getPositionShift(metric);
     return new MetricalNote(assumption[0] + shift, assumption[1], assumption[2], note.value, note.octave);
 }
-function RoundAdapted(scaledLength: number): [number, Metric, Extension] {
+function AssignToNeighbor(input: Bar, metric: Beat, totalLength: number, index: number, notes: MetricalNote[]){
+        let dir = AssignmentProbable(input.notes, index, metric, totalLength / getAmountOfBeats(metric));
+        input.notes[index + dir].frames += input.notes[index].frames;
+        if (dir < 0) {
+            //If before note should have got this added, recalculate before note
+            notes[notes.length - 1] = GetMetricalNote(input.notes[index + dir], getNumerator(metric), metric, totalLength, false);
+        }
+}
+function RoundAdapted(scaledLength: number, isTriole: boolean): [number, Metric, Extension] {
     let lefti = scaledLength % 1;
+    //When before note is a triole, the likeliness raises, that this one is also one, so the band is increased.
+    let lowerHold = isTriole ? 0.25 : 0.3;
+    let higherHold = isTriole ? 0.6 : 0.5;
     //Value is closer to lower length.
-    if (lefti < 0.3) {
+    if (lefti < lowerHold) {
         return [Math.floor(scaledLength), Metric.STANDARD, Extension.NODOT];
         //Out of experience, 0.3 to 0.5 tends to be a triolic higher one
         //Cause logarithm moves the border a bit
-    } else if (lefti < 0.52) {
+    } else if (lefti < higherHold) {
         return [Math.ceil(scaledLength), Metric.TRIOLE, Extension.NODOT];
         //Dotted lower length is longer than triolic higher length
     } else if (lefti < 0.7) {
@@ -323,17 +366,17 @@ function AssignmentProbable(input : FrameNote[], index: number, metric: Beat, as
         default: moduloDivisor = assumedFrameRate/4;
     }
     if(index > 0 && index<input.length-1) {
-    let addToEarlier = input[index].frames + input[index-1].frames;
-    let addToLater = input[index].frames + input[index+1].frames;
-    addToEarlier %= moduloDivisor;
-    addToLater %= moduloDivisor;
-    addToEarlier = addToEarlier <= moduloDivisor/2 ? addToEarlier: Math.abs(moduloDivisor-addToEarlier);
-    addToLater = addToLater <= moduloDivisor/2 ? addToLater: Math.abs(moduloDivisor-addToLater);
-    if(addToEarlier > addToLater) {
-        return 1;
-    } else {
-        return -1;
-    }
+        let addToEarlier = input[index].frames + input[index-1].frames;
+        let addToLater = input[index].frames + input[index+1].frames;
+        addToEarlier %= moduloDivisor;
+        addToLater %= moduloDivisor;
+        addToEarlier = addToEarlier <= moduloDivisor/2 ? addToEarlier: Math.abs(moduloDivisor-addToEarlier);
+        addToLater = addToLater <= moduloDivisor/2 ? addToLater: Math.abs(moduloDivisor-addToLater);
+        if(addToEarlier > addToLater) {
+            return 1;
+        } else {
+            return -1;
+        }
     //If there exists no note to the right/left of the given index 
     //it should just return the direction, where a note exists
     } else {
