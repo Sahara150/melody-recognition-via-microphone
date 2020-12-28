@@ -1,7 +1,7 @@
 import { MetricalBar } from "../models/bars";
 import { Beat, getDenominator, getNumerator } from "../models/beats";
 import { NOTELENGTHSTRINGS } from "../models/config";
-import { Extension, getLengthValue, Metric, MetricalNote } from "../models/metric";
+import { Extension, getLengthValue, Metric, MetricalNote, Triole } from "../models/metric";
 import { Note } from "../models/notes";
 
 export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat): string {
@@ -74,12 +74,14 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat): str
                 case Extension.ONEDOT: result += "<dot/>"; break;
                 default: break;
             }
-            if (note.metric == Metric.TRIOLE) {
+            if (note.metric == Metric.TRIOLE && note instanceof Triole) {
+                let trioleNote = note as Triole;
                 result += "<time-modification>"
                             + "<actual-notes>3</actual-notes>"
                             + "<normal-notes>2</normal-notes>"
+                            + `<normal-type>${NOTELENGTHSTRINGS[trioleNote.trioleType]}</normal-type>`
                         + "</time-modification>";
-                notationNeeded = true;
+                notationNeeded = trioleNote.isStart ||trioleNote.isEnd ? true : notationNeeded;
             }
             if (notationNeeded) {
                 result += "<notations>";
@@ -88,9 +90,8 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat): str
                 } else if (GetTieEnd(ties, i, o, barNotes)) {
                     result += "<tied type=\"stop\" />";
                 }
-                //TODO: This solution has some severe graphical problems, you´ll need to find out the groups of trioles beforehand
-                if (note.metric == Metric.TRIOLE && (o == 0 || barNotes[o-1].metric != Metric.TRIOLE || o == barNotes.length-1 || barNotes[o+1].metric != Metric.TRIOLE)) {
-                    result += `<tuplet placement="above" type="${(o == 0 ||barNotes[o-1].metric != Metric.TRIOLE ? "start": "stop")}" />`
+                if (note.metric == Metric.TRIOLE && note instanceof Triole && (note as Triole).isStart || (note as Triole).isEnd) {
+                    result += `<tuplet placement="above" type="${((note as Triole).isStart ? "start": "stop")}" />`
                 }
                 result += "</notations>";
             }

@@ -135,16 +135,9 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
                 isTriole = false;
                 i--;
             } else {
-                i = start--;
+                i = --start;
                 isTriole = false;
-                let startNote = trioles[0];
-                startNote.metric = Metric.STANDARD;
-                startNote.extension = startNote.length < NoteLength.EIGHTH ? Extension.NODOT : Extension.ONEDOT;
-                startNote.length--;
-                if (startNote.length < NoteLength.SIXTEENTH) {
-                    notes.pop();
-                    AssignToNeighbor(input, metric, totalLength, i, notes);
-                }
+                UndoErrornousTriole(input, notes, i, metric, totalLength);
             }
         } else {
             //Scaling length up, so that with log2 it starts with 0.
@@ -171,12 +164,28 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
             } else {
             notes.push(newNote);
             }
-            isTriole = notes[notes.length - 1].metric == Metric.TRIOLE;
+            isTriole = notes.length > 0 && notes[notes.length - 1].metric == Metric.TRIOLE;
+            if(isTriole && i == input.notes.length-1) {
+                //If the last note is recognized as triolic in this branch, 
+                //beforehand note has to be not triolic and therefore this
+                //has to be a misassumption.
+                UndoErrornousTriole(input, notes, i, metric, totalLength);
+            }
         }
     }
     notes = CheckForMusicalValidity(notes, metric);
     let result: MetricalBar = new MetricalBar(notes);
     return result;
+}
+function UndoErrornousTriole(input: Bar, notes: MetricalNote[], index: number, metric: Beat, totalLength: number) {
+    let startNote = notes[notes.length-1];
+    startNote.metric = Metric.STANDARD;
+    startNote.length--;
+    startNote.extension = startNote.length < NoteLength.EIGHTH ? Extension.NODOT : Extension.ONEDOT;
+    if (startNote.length < NoteLength.SIXTEENTH) {
+        notes.pop();
+        AssignToNeighbor(input, metric, totalLength, index, notes);
+    }
 }
 function GetMetricalNote(note: FrameNote, beats: number, metric: Beat, totalLength: number, isTriole: boolean) : MetricalNote{
     let length = (note.frames * beats * QUANTISIZE) / totalLength;
@@ -283,7 +292,9 @@ function GetProbableError(diff: number) : ErrorMapping[]{
                 || value.higherValue.length > NoteLength.FULL
                 || value.lowerValue.length > NoteLength.FULL
                 || (value.lowerValue.length == NoteLength.SIXTEENTH && value.lowerValue.extension != Extension.NODOT)
-                || (value.higherValue.length == NoteLength.SIXTEENTH && value.higherValue.extension != Extension.NODOT)));
+                || (value.higherValue.length == NoteLength.SIXTEENTH && value.higherValue.extension != Extension.NODOT)
+                || (value.lowerValue.length == NoteLength.EIGHTH && value.lowerValue.extension == Extension.TWODOTS)
+                || (value.higherValue.length == NoteLength.EIGHTH && value.higherValue.extension == Extension.TWODOTS)));
         if (diff < 0) {
             return errorMapping;
         } else {

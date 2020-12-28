@@ -1,4 +1,4 @@
-import { CheckForMusicalValidity, GetMusicalBar } from "../algorithms/BeatCorrelator";
+import { CheckForMusicalValidity, GetBarBorders, GetMusicalBar } from "../algorithms/BeatCorrelator";
 import { Bar, MetricalBar } from "../models/bars";
 import { Beat } from "../models/beats";
 import { Extension, Metric, MetricalNote, NoteLength, Triole } from "../models/metric";
@@ -118,4 +118,58 @@ test('All my little ducks real time data', () => {
             new FrameNote(4, 55, new SignedNote(Note.BREAK, Sign.NONE)),
             new FrameNote(4, 55, new SignedNote(Note.BREAK, Sign.NONE))
         ])
+});
+test('Real data test', () => {
+    debugger;
+    let allBars = [
+        {"notes":
+            [
+                {"value":{"value":"D","sign":0},"octave":4,"frames":63},
+                {"value":{"value":"F","sign":1},"octave":4,"frames":13},
+                {"value":{"value":"G","sign":0},"octave":4,"frames":103.5},
+                {"value":{"value":"F","sign":1},"octave":4,"frames":60}
+            ]
+        },
+        {"notes":
+            [
+                {"value":{"value":"F","sign":1},"octave":4,"frames":17},
+                {"value":{"value":"E","sign":0},"octave":4,"frames":39},
+                {"value":{"value":"BREAK","sign":0},"octave":0,"frames":32},
+                {"value":{"value":"D","sign":0},"octave":4,"frames":45},
+                {"value":{"value":"G","sign":0},"octave":4,"frames":100}
+            ]
+        },
+        {"notes":
+            [
+                {"value":{"value":"A","sign":0},"octave":4,"frames":106},
+                {"value":{"value":"BREAK","sign":0},"octave":0,"frames":58},
+                {"value":{"value":"B","sign":0},"octave":4,"frames":60.5},
+                {"value":{"value":"A","sign":0},"octave":4,"frames":22}
+            ]
+        },
+        //TODO: Test remaining
+        {"notes":[{"value":{"value":"A","sign":0},"octave":4,"frames":9},{"value":{"value":"G","sign":0},"octave":4,"frames":65.5},{"value":{"value":"A","sign":0},"octave":4,"frames":99.5},{"value":{"value":"F","sign":1},"octave":4,"frames":10},{"value":{"value":"BREAK","sign":0},"octave":0,"frames":34.5}]},{"notes":[{"value":{"value":"BREAK","sign":0},"octave":0,"frames":31},{"value":{"value":"E","sign":0},"octave":4,"frames":45.5},{"value":{"value":"D","sign":1},"octave":4,"frames":15},{"value":{"value":"E","sign":0},"octave":4,"frames":70.5},{"value":{"value":"F","sign":1},"octave":4,"frames":9},{"value":{"value":"G","sign":0},"octave":4,"frames":10},{"value":{"value":"F","sign":1},"octave":4,"frames":12}]},{"notes":[{"value":{"value":"E","sign":0},"octave":4,"frames":13},{"value":{"value":"D","sign":0},"octave":4,"frames":72.5},{"value":{"value":"BREAK","sign":0},"octave":0,"frames":157}]}];
+    let bars = allBars as Bar[];
+    let result : MetricalBar[] = [];
+    bars.forEach(val => {
+        result.push(GetMusicalBar(val, Beat.FourFourths));
+    });
+    expect(result[0].notes).toEqual([
+        new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.D, Sign.NONE), 4),
+        new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.G, Sign.NONE), 4),
+        new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.F, Sign.SHARP), 4)
+    ]);
+    expect(result[1].notes).toEqual([
+        new MetricalNote(NoteLength.SIXTEENTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.F, Sign.SHARP), 4),
+        new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.E, Sign.NONE), 4),
+        new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE),0),
+        new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.D, Sign.NONE), 4),
+        new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.TWODOTS, new SignedNote(Note.G, Sign.NONE),4)
+    ]);
+    expect(result[2].notes).toEqual([
+        new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.TWODOTS, new SignedNote(Note.A, Sign.NONE), 4),
+        new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0),
+        new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.B, Sign.NONE), 4),
+        new MetricalNote(NoteLength.SIXTEENTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.A, Sign.NONE), 4)     
+    ]);
 });
