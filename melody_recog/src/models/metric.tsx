@@ -1,6 +1,5 @@
-import { LOG_2 } from "./calculationData";
 import { SignedNote } from "./notes";
-
+const LOG_2 = Math.log(2);
 export enum NoteLength {
     SIXTEENTH,
     EIGHTH,

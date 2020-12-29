@@ -1,6 +1,6 @@
 import { ErrorMapping } from "./errorCorrection";
-import { Extension, Metric, MetricalNote, NoteLength } from "./metric";
 import { Note, Sign, SignedNote } from "./notes";
+import { Extension, Metric, MetricalNote, NoteLength } from "./metric";
 
 export const LOG_2 = Math.log(2);
 export const SCALE = [

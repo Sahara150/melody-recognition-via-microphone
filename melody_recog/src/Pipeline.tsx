@@ -5,7 +5,6 @@ import { GetKeyAndModifyNotes } from "./algorithms/KeyRecognizer";
 import { WriteToXML } from "./algorithms/XMLWriter";
 import { BarBorders, MetricalBar } from "./models/bars";
 import { Beat, getAmountOfBeats } from "./models/beats";
-import { STANDARD_FRAME_SIZE } from "./models/config";
 import { FrequencyFrames } from "./models/frequencyframes";
 import { FrameNote } from "./models/notes";
 import { getFrameArray, getRefs, saveFileURL, saveFrameArray } from "./sessionStorageHelper";
@@ -35,7 +34,7 @@ export function continuePipeline(chosen: string, callbackFunction: (url: string)
 	seperatedBars.bars.forEach(element => {
 		metricalBars.push(GetMusicalBar(element, metric))		
 	});
-	let key = GetKeyAndModifyNotes(metricalBars.flatMap(val => val.notes));
+	let key = GetKeyAndModifyNotes(metricalBars);
     let xml = WriteToXML(metricalBars, seperatedBars.ties, metric, key.fifths);
 	let url = createBlobOfXML(xml);
 	callbackFunction(url);
