@@ -1,7 +1,7 @@
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import './styles/main.css';
-import { getFileURL, getFrameSize, getFrameArray, getRefs, setFrameSize } from "./sessionStorageHelper";
+import { getFileURL, getFrameSize, getFrameArray, getRefs, setFrameSize, setChosenAlg, getChosenAlg } from "./sessionStorageHelper";
 import { Recorder } from "./views/Recorder";
 import { BeatSettings } from "./views/BeatSettings";
 //See below
@@ -63,7 +63,8 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 	}
 	getChosenAlgorithm(chosen: string) {
 		console.log("I just received " + chosen);
-		continuePipeline(chosen, (url) => this.fetchFile(url));
+		setChosenAlg(chosen);
+		continuePipeline(chosen, (url) => this.fetchFile(url), this.state.frameSize);
 	}
 	fetchFile(url: string) {
 		let state = this.state;
@@ -87,7 +88,7 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 	}
 	startBeatCorrelationNew() {
 		setFrameSize(this.state.frameSize);
-			//TODO: Save frame adaptions and restart correlation
+		continuePipeline(getChosenAlg() ?? "smoothed", (url) => this.fetchFile(url), this.state.frameSize);
     }
 }
 	ReactDOM.render(

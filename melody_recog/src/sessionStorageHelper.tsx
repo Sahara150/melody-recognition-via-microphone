@@ -5,6 +5,7 @@ var frequencyKey = "frequencyRef";
 var beatKey = "beatRef";
 var xmlKey = "sheet";
 var frameSizeKey = "frameSize";
+var chosenAlgKey = "chosenAlg";
 export function saveReferenceFrequency(frequency: number) {
     let myStorage = window.sessionStorage;
     myStorage.setItem(frequencyKey, `${frequency}`);
@@ -54,4 +55,12 @@ export function getFrameSize(): number {
 export function setFrameSize(size: number) {
     let myStorage = window.sessionStorage;
     myStorage.setItem(frameSizeKey, size.toString());
+}
+export function getChosenAlg(): string | null {
+    let myStorage = window.sessionStorage;
+    return myStorage.getItem(chosenAlgKey);
+}
+export function setChosenAlg(chosen: string) {
+    let myStorage = window.sessionStorage;
+    myStorage.setItem(chosenAlgKey, chosen);
 }

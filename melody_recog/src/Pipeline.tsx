@@ -24,12 +24,12 @@ export function startPipeline(input: number[], refFrequency: number) {
 	saveFrameArray(calculateEqualAlloc, "equalAlloc");
 	//Pausing and waiting for user to choose his best algorithm or restart.
 }
-export function continuePipeline(chosen: string, callbackFunction: (url: string) => void) {
+export function continuePipeline(chosen: string, callbackFunction: (url: string) => void, frameSize: number) {
     let chosenAlg: FrameNote[] = getFrameArray(chosen);
     console.log("Testinput: " + JSON.stringify(chosenAlg));
 	let metric = getRefs().beat ?? Beat.FourFourths;
 	let chosenBeat = getAmountOfBeats(metric);
-	let seperatedBars: BarBorders = GetBarBorders(chosenAlg, chosenBeat, STANDARD_FRAME_SIZE);
+	let seperatedBars: BarBorders = GetBarBorders(chosenAlg, chosenBeat, frameSize);
 	let metricalBars: MetricalBar[] = [];
 	seperatedBars.bars.forEach(element => {
 		metricalBars.push(GetMusicalBar(element, metric))		
