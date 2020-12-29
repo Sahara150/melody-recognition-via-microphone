@@ -239,13 +239,13 @@ function CheckFillTriole(input: MetricalNote[]) : {isFull: boolean, type: NoteLe
             let type = Math.min(input[0].length, input[1].length);
             return {isFull: true, type: type};
         } else {
-            let type = (input[0].length + input[1].length)/2;
+            let type = Math.round((input[0].length + input[1].length)/2);
             let amount : number = 0;
             for(let i = 0;i <input.length; i++) {
                 amount += Math.exp((input[i].length - type) *LOG_2);
             }
             amount -= 3;
-            let isFull = amount >= -0.25 && amount<=0.25;
+            let isFull = amount >= -0.125 && amount<=0.125;
             return {isFull : isFull, type : type};
         }
     }

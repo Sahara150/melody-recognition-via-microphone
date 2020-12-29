@@ -17,7 +17,7 @@ export const SCALE = [
     new SignedNote(Note.G, Sign.NONE),
     new SignedNote(Note.G, Sign.SHARP)];
 export const ErrorMappingListStandard = 
-    //Possible errors, when missing value is 1/8
+    //Possible errors, when missing value is 1/2
     [
         new ErrorMapping(
             new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.TWODOTS, new SignedNote(Note.BREAK, Sign.NONE), 0),
@@ -26,6 +26,10 @@ export const ErrorMappingListStandard =
         new ErrorMapping(
             new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0),
             new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.BREAK, Sign.NONE), 0)
+        ),
+        new ErrorMapping(
+            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.BREAK, Sign.NONE),0),
+            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE),0)
         ),
         new ErrorMapping(
             new MetricalNote(NoteLength.FULL, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0),

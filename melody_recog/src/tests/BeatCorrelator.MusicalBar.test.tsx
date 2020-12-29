@@ -19,7 +19,6 @@ test('ThreeHalfNotes', () => {
 });
 
 test('TrioleEightsDottedEigthSixteenth', () => {
-    debugger;
     let bar = new Bar([
         new FrameNote(4, 18, new SignedNote(Note.D, Sign.NONE)),
         new FrameNote(4, 19, new SignedNote(Note.E, Sign.NONE)),
@@ -28,7 +27,6 @@ test('TrioleEightsDottedEigthSixteenth', () => {
         new FrameNote(4, 13, new SignedNote(Note.F, Sign.SHARP))
     ]);
     let result = GetMusicalBar(bar, Beat.TwoFourths);
-    console.log(result);
     expect(result).toEqual(new MetricalBar([
         new Triole(new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4), NoteLength.EIGHTH, true),
         new Triole(new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4), NoteLength.EIGHTH),
@@ -38,7 +36,6 @@ test('TrioleEightsDottedEigthSixteenth', () => {
     ]));
 });
 test('One dotted got to two dotted', () => {
-    debugger;
     let bar = new MetricalBar([
         new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.TWODOTS, new SignedNote(Note.D, Sign.NONE), 4),
         new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4),
@@ -52,7 +49,6 @@ test('One dotted got to two dotted', () => {
     ]);
 });
 test('Two times one dotted quarter got double dotted', () => {
-    debugger;
     let bar = new MetricalBar([
         new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.TWODOTS, new SignedNote(Note.D, Sign.NONE), 4),
         new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4),
@@ -147,8 +143,34 @@ test('Real data test', () => {
                 {"value":{"value":"A","sign":0},"octave":4,"frames":22}
             ]
         },
-        //TODO: Test remaining
-        {"notes":[{"value":{"value":"A","sign":0},"octave":4,"frames":9},{"value":{"value":"G","sign":0},"octave":4,"frames":65.5},{"value":{"value":"A","sign":0},"octave":4,"frames":99.5},{"value":{"value":"F","sign":1},"octave":4,"frames":10},{"value":{"value":"BREAK","sign":0},"octave":0,"frames":34.5}]},{"notes":[{"value":{"value":"BREAK","sign":0},"octave":0,"frames":31},{"value":{"value":"E","sign":0},"octave":4,"frames":45.5},{"value":{"value":"D","sign":1},"octave":4,"frames":15},{"value":{"value":"E","sign":0},"octave":4,"frames":70.5},{"value":{"value":"F","sign":1},"octave":4,"frames":9},{"value":{"value":"G","sign":0},"octave":4,"frames":10},{"value":{"value":"F","sign":1},"octave":4,"frames":12}]},{"notes":[{"value":{"value":"E","sign":0},"octave":4,"frames":13},{"value":{"value":"D","sign":0},"octave":4,"frames":72.5},{"value":{"value":"BREAK","sign":0},"octave":0,"frames":157}]}];
+        {"notes":
+            [
+                {"value":{"value":"A","sign":0},"octave":4,"frames":9},
+                {"value":{"value":"G","sign":0},"octave":4,"frames":65.5},
+                {"value":{"value":"A","sign":0},"octave":4,"frames":99.5},
+                {"value":{"value":"F","sign":1},"octave":4,"frames":10},
+                {"value":{"value":"BREAK","sign":0},"octave":0,"frames":34.5}
+            ]
+        },
+        {"notes":
+            [
+                {"value":{"value":"BREAK","sign":0},"octave":0,"frames":31},
+                {"value":{"value":"E","sign":0},"octave":4,"frames":45.5},
+                {"value":{"value":"D","sign":1},"octave":4,"frames":15},
+                {"value":{"value":"E","sign":0},"octave":4,"frames":70.5},
+                {"value":{"value":"F","sign":1},"octave":4,"frames":9},
+                {"value":{"value":"G","sign":0},"octave":4,"frames":10},
+                {"value":{"value":"F","sign":1},"octave":4,"frames":12}
+            ]
+        },
+        {"notes":
+            [
+                {"value":{"value":"E","sign":0},"octave":4,"frames":13},
+                {"value":{"value":"D","sign":0},"octave":4,"frames":72.5},
+                {"value":{"value":"BREAK","sign":0},"octave":0,"frames":157}
+            ]
+        }
+    ];
     let bars = allBars as Bar[];
     let result : MetricalBar[] = [];
     bars.forEach(val => {
@@ -172,4 +194,26 @@ test('Real data test', () => {
         new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.B, Sign.NONE), 4),
         new MetricalNote(NoteLength.SIXTEENTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.A, Sign.NONE), 4)     
     ]);
+    expect(result[3].notes).toEqual([
+        new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.G, Sign.NONE), 4),
+        new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.A, Sign.NONE),4),
+        new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0)
+    ]);
+    expect(result[4].notes).toEqual([
+        new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.BREAK, Sign.NONE),0),
+        new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.E, Sign.NONE), 4),
+        new MetricalNote(NoteLength.SIXTEENTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.D, Sign.SHARP), 4),         
+        new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.E, Sign.NONE),4),
+        new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.F, Sign.SHARP),4)
+    ]);
+    expect(result[5].notes).toEqual([
+       new Triole(new MetricalNote(NoteLength.HALF, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.D, Sign.NONE),4), NoteLength.HALF, true),
+       new Triole(new MetricalNote(NoteLength.FULL, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE),0), NoteLength.HALF, false, true)
+    ]);
+});
+//TODO: Find a solution for this honey
+test('Note bigger than a full note, but too small for dotted', () => {
+    let input = new Bar([new FrameNote(4, 300, new SignedNote(Note.D, Sign.NONE))]);
+    let result = GetMusicalBar(input, Beat.FiveFourths);
+    console.log(result);
 });

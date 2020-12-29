@@ -180,7 +180,6 @@ test('ThreeHalfsTooLongFraming', () => {
     expect(result.ties).toEqual([3]);
 });
 test('NoteOverMultipleBarsCorrectFramingEasy', () => {
-    debugger;
     let notes = [
         //Bar 1
         new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
@@ -207,7 +206,6 @@ test('NoteOverMultipleBarsCorrectFramingEasy', () => {
     expect(result.ties).toEqual([1,2]);
 });
 test('NoteOverMultipleBarsTooShortFramingEasy', () => {
-    debugger;
     let notes = [
         //Bar 1
         new FrameNote(4, 55, new SignedNote(Note.D, Sign.NONE)),
@@ -236,7 +234,6 @@ test('NoteOverMultipleBarsTooShortFramingEasy', () => {
 });
 
 test('NoteOverMultipleBarsTooShortFramingEasy', () => {
-    debugger;
     let notes = [
         //Bar 1
         new FrameNote(4, 64, new SignedNote(Note.D, Sign.NONE)),
@@ -352,7 +349,6 @@ test('FourFourthsCorrectFramingLastBarNotFilled', () => {
     ]);
 });
 test('FourFourthsTooShortFramingLastBarNotFilled', () => {
-    debugger;
     let notes = [
         //Bar 1
         new FrameNote(4, 56, new SignedNote(Note.D, Sign.NONE)),
