@@ -1,6 +1,7 @@
 import { analyzeMelody, equalAllocAlgorithm, smoothSmallGaps, smoothUndefinedGaps } from "./algorithms/Analyzer";
 import { GetBarBorders, GetMusicalBar } from "./algorithms/BeatCorrelator";
 import { CalculateFrameNotes } from "./algorithms/Calculator";
+import { GetKeyAndModifyNotes } from "./algorithms/KeyRecognizer";
 import { WriteToXML } from "./algorithms/XMLWriter";
 import { BarBorders, MetricalBar } from "./models/bars";
 import { Beat, getAmountOfBeats } from "./models/beats";
@@ -33,8 +34,9 @@ export function continuePipeline(chosen: string, callbackFunction: (url: string)
 	let metricalBars: MetricalBar[] = [];
 	seperatedBars.bars.forEach(element => {
 		metricalBars.push(GetMusicalBar(element, metric))		
-    });
-    let xml = WriteToXML(metricalBars, seperatedBars.ties, metric);
+	});
+	let key = GetKeyAndModifyNotes(metricalBars.flatMap(val => val.notes));
+    let xml = WriteToXML(metricalBars, seperatedBars.ties, metric, key.fifths);
 	let url = createBlobOfXML(xml);
 	callbackFunction(url);
 }

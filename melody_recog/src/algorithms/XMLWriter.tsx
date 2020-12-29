@@ -1,10 +1,11 @@
 import { MetricalBar } from "../models/bars";
 import { Beat, getDenominator, getNumerator } from "../models/beats";
 import { NOTELENGTHSTRINGS } from "../models/config";
+import { Key } from "../models/keys";
 import { Extension, getLengthValue, Metric, MetricalNote, Triole } from "../models/metric";
 import { Note } from "../models/notes";
 
-export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat): string {
+export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat, key: number): string {
     for (let i = 0; i < bars.length; i++) {
         console.log(`Bar ${i + 1}: ${JSON.stringify(bars[i].notes)}`);
     }
@@ -31,7 +32,7 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat): str
                             + "<key>"
                 //Here the correct number for the key would be entered,
                 //when key recognition is implemented
-                                + "<fifths>0</fifths>"
+                                + `<fifths>${key}</fifths>`
                             + "</key>"
                             + "<time>"
                                 + `<beats>${getNumerator(beat)}</beats>`
