@@ -1,7 +1,7 @@
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import './styles/main.css';
-import { getFileURL, getFrameAdaptions, getFrameArray, getRefs } from "./sessionStorageHelper";
+import { getFileURL, getFrameSize, getFrameArray, getRefs, setFrameSize } from "./sessionStorageHelper";
 import { Recorder } from "./views/Recorder";
 import { BeatSettings } from "./views/BeatSettings";
 //See below
@@ -10,22 +10,21 @@ import { Beat } from "./models/beats";
 import { TestingAlgorithm } from "./views/TestingAlgorithm";
 import { ChoosingAlgorithm } from "./views/ChooseAlgorithm";
 import { continuePipeline } from "./Pipeline";
-import { FrameAdaption } from "./models/frameAdaption";
 import { FrameRateAdaption } from "./views/FrameRateAdaption";
 
-class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean, file: string |null, frameAdaptions: FrameAdaption[] }> {
+class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean, file: string |null, frameSize: number }> {
 	constructor(props : any) {
 		super(props);
 		let references = getRefs();
 		let pipelineIsThrough = getFrameArray("smoothed").length != 0;
 		let file = getFileURL();
-		let frameAdaptions = getFrameAdaptions();
+		let frameAdaptions = getFrameSize();
 		this.state = {
 			referenceFrequency: references.frequency,
 			referenceBeat: references.beat,
 			pipelineIsThrough: pipelineIsThrough,
 			file: file,
-			frameAdaptions: frameAdaptions
+			frameSize: frameAdaptions
 		};
 	}
 	updateReferences() {
@@ -46,7 +45,7 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 		} else if (this.state.file != null) {
             return (<div>
 				<MusicSheetDisplay file={this.state.file} autoResize={true} drawTitle={false} />
-				<FrameRateAdaption onChange={() => this.startBeatCorrelationNew} framesAdapted={this.state.frameAdaptions}/>
+				<FrameRateAdaption onChange={(size) => this.updateChosenFrameSize(size)} frameSize={this.state.frameSize} onSubmit={() => this.startBeatCorrelationNew() }/>
                 <a href={this.state.file} className="download btn btn-dark" download="music.xml">Download</a>
                    </div>)
 		} else if (this.state.pipelineIsThrough) {
@@ -73,19 +72,22 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 			referenceBeat: state.referenceBeat,
 			pipelineIsThrough: state.pipelineIsThrough,
 			file: url,
-			frameAdaptions: state.frameAdaptions
+			frameSize: state.frameSize
 		});
 	}
-	startBeatCorrelationNew(frameAdaptions: FrameAdaption[]) {
+	updateChosenFrameSize(frameAdaption: number) {
 		let state = this.state;
 		this.setState({
 			referenceFrequency: state.referenceFrequency,
 			referenceBeat: state.referenceBeat,
 			pipelineIsThrough: state.pipelineIsThrough,
 			file: state.file,
-			frameAdaptions: frameAdaptions
+			frameSize: frameAdaption
 		});
-		//TODO: Save frame adaptions and restart correlation
+	}
+	startBeatCorrelationNew() {
+		setFrameSize(this.state.frameSize);
+			//TODO: Save frame adaptions and restart correlation
     }
 }
 	ReactDOM.render(

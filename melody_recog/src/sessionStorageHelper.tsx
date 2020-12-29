@@ -1,9 +1,10 @@
 import {Beat} from "./models/beats"
-import { FrameAdaption } from "./models/frameAdaption";
+import { STANDARD_FRAME_SIZE } from "./models/config";
 import { FrameNote } from "./models/notes";
 var frequencyKey = "frequencyRef";
 var beatKey = "beatRef";
 var xmlKey = "sheet";
+var frameSizeKey = "frameSize";
 export function saveReferenceFrequency(frequency: number) {
     let myStorage = window.sessionStorage;
     myStorage.setItem(frequencyKey, `${frequency}`);
@@ -41,7 +42,16 @@ export function getFileURL(): string | null {
     let result = myStorage.getItem(xmlKey);
     return result;
 }
-export function getFrameAdaptions(): FrameAdaption[] {
-    //TODO: Implement
-    return [];
+export function getFrameSize(): number {
+    let myStorage = window.sessionStorage;
+    let result = myStorage.getItem(frameSizeKey);
+    if (result) {
+        return result as unknown as number;
+    } else {
+        return STANDARD_FRAME_SIZE; 
+    }
+}
+export function setFrameSize(size: number) {
+    let myStorage = window.sessionStorage;
+    myStorage.setItem(frameSizeKey, size.toString());
 }

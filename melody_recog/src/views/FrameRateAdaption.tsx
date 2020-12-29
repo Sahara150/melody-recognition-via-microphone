@@ -1,45 +1,35 @@
 import React from "react";
-import { FrameAdaption } from "../models/frameAdaption";
 
-export class FrameRateAdaption extends React.Component<{ onChange: (update: FrameAdaption[]) => void, framesAdapted: FrameAdaption[] }, { framesAdapted: FrameAdaption[] }> {
+export class FrameRateAdaption extends React.Component<{ onChange: (update: number) => void, frameSize: number, onSubmit: () => void }, { frameSize: number }> {
     constructor(props: any) {
         super(props);
         this.state = {
-            framesAdapted: props.framesAdapted
+            frameSize : props.frameSize
         };
     }
     render() {
-        return (<><ul>
-            {this.state.framesAdapted.map(function(adaption, index) {
-                return <li key={index}>
-                    <label htmlFor={index + "frames"}>Anzahl an Frames: </label>
-                    <input type="number" id={index + "frames"} value={adaption.frameSize} />
-                    <label htmlFor={index + "tempo"}>Entspricht Geschwindigkeit(bpm) </label>
-                    <input type="number" id={index + "tempo"} value={3600 / adaption.frameSize} />
-                    <label htmlFor={index + "beginningBar"}>Starttakt:</label>
-                    <input type="number" id={index + "beginningBar"} value={adaption.beginningBar} />
-                    <label htmlFor={index + "endBar"}>Endtakt (inklusiv):</label>
-                    <input type="number" id={index + "endBar"} value={adaption.endBar} />
-                </li>;
-            })}
-        </ul>
-            <button className="btn btn-dark" onClick={() => this.addItem()}>Neue Anpassung hinzufügen.</button></>
+        return (<div className={"flex float-left"}>
+                    <label htmlFor={"frames"}>Anzahl an Frames: </label>
+            <input type="number" id={"frames"} value={this.state.frameSize} onChange={(e) => this.onValueChange(e) }/>
+                    <label htmlFor={"tempo"}>Entspricht Geschwindigkeit(bpm) </label>
+            <input type="number" id={"tempo"} value={3600 / this.state.frameSize} onChange={(e) => this.onValueChange(e)} />
+            <button className={"btn btn-dark"} onClick={() => this.onSubmit() }>Rhythmus neu berechnen</button>
+                </div>
         )
     }
     onValueChange(event: React.ChangeEvent<HTMLInputElement>) {
-        /*let chosen = event.target.value as string;
+        let frameSize: number;
+        if (event.target.id == "frames") {
+            frameSize = event.target.value as unknown as number;
+        } else {
+            frameSize = 3600 / (event.target.value as unknown as number);
+        }
         this.setState({
-            chosen: chosen
-        })*/
-    }
-    addItem() {
-        console.log("Got called.");
-        let list = this.state.framesAdapted;
-        list.push(new FrameAdaption(60, 0, 0));
-        this.setState({
-            framesAdapted: list
+            frameSize: frameSize
         });
-        this.props.onChange(list);
-        this.forceUpdate();
+        this.props.onChange(frameSize);
+    }
+    onSubmit() {
+        this.props.onSubmit();
     }
 }
