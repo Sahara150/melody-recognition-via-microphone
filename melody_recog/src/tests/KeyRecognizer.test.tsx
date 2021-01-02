@@ -165,3 +165,22 @@ test('c minor', () => {
         ])
     ]);
 });
+test('e major', () => {
+    let input = [
+        new MetricalBar([
+            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.E, Sign.NONE),4),
+            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.F, Sign.SHARP),4),
+            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.G, Sign.SHARP),4),
+            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.A, Sign.NONE),4)
+        ]),
+        new MetricalBar([
+            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.B, Sign.NONE),4),
+            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.C, Sign.SHARP),5),
+            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.D, Sign.SHARP),5),
+            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.E, Sign.NONE),5)
+        ])
+    ];
+    let result = GetKeyAndModifyNotes(input);
+    expect(result.fifths).toEqual(4);
+    expect(result.key).toEqual(new Key(new SignedNote(Note.E, Sign.NONE), Mode.MAJOR));
+});
