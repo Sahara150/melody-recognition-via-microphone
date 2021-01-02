@@ -9,7 +9,6 @@ import { Note, Sign } from "../models/notes";
 
 //TODO: Find a solution for the Single-Responsibility-Problem here.
 export function GetKeyAndModifyNotes(input: MetricalBar[]): { fifths: number, key: Key } {
-    console.log("Das kommt hier an : " + JSON.stringify(input))
     let breaksExcluded = input[input.length-1].notes.filter(val => val.note.value != Note.BREAK);
     let baseNote = breaksExcluded[breaksExcluded.length - 1];
     let index = CIRCLE_OF_FIFTHS.findIndex(val => val.equals(baseNote.note));
@@ -30,8 +29,14 @@ export function GetKeyAndModifyNotes(input: MetricalBar[]): { fifths: number, ke
 //Calculates how many notes drop out of the key
 function GetDiscorrelation(input: MetricalNote[], signs: Note[]): number {
     let discorrelation: number = 0;
-    for (let i = 0; i < signs.length; i++) {
-        discorrelation += input.filter(val => val.note.value == signs[i] && val.note.sign == Sign.NONE).length;
+    for (let item in Note) {
+        let note = item as Note;
+        let needsSign = signs.includes(note);
+        if(needsSign) {
+            discorrelation += input.filter(val => val.note.value == note && val.note.sign == Sign.NONE).length;
+        }  else {
+            discorrelation += input.filter(val => val.note.value == note && val.note.sign != Sign.NONE).length;
+        }  
     }
     return discorrelation;
 }
