@@ -178,13 +178,24 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
     return result;
 }
 function UndoErrornousTriole(input: Bar, notes: MetricalNote[], index: number, metric: Beat, totalLength: number) {
-    let startNote = notes[notes.length-1];
+    let startNote = notes[notes.length - 1];
     startNote.metric = Metric.STANDARD;
     startNote.length--;
-    startNote.extension = startNote.length < NoteLength.EIGHTH ? Extension.NODOT : Extension.ONEDOT;
-    if (startNote.length < NoteLength.SIXTEENTH) {
-        notes.pop();
-        AssignToNeighbor(input, metric, totalLength, index, notes);
+    if (startNote.length < NoteLength.FULL) {
+        startNote.extension = startNote.length < NoteLength.EIGHTH ? Extension.NODOT : Extension.ONEDOT;
+        if (startNote.length < NoteLength.SIXTEENTH) {
+            notes.pop();
+            AssignToNeighbor(input, metric, totalLength, index, notes);
+        }
+    } else {
+        startNote.extension = Extension.NODOT;
+        //When somebody plays a note the whole 5/4s bar, there�s no possibility to represent it with one note,
+        //so it is split into a full and a quarter note, which then easily can be connected in later editing to 
+        //still ensure a valid bar in this special case.
+        if (metric == Beat.FiveFourths) {
+            let newNote = new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, startNote.note, startNote.octave);
+            notes.push(newNote);
+        }
     }
 }
 function GetMetricalNote(note: FrameNote, beats: number, metric: Beat, totalLength: number, isTriole: boolean) : MetricalNote{

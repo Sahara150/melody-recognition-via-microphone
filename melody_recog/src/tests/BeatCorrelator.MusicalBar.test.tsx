@@ -211,9 +211,13 @@ test('Real data test', () => {
        new Triole(new MetricalNote(NoteLength.FULL, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE),0), NoteLength.HALF, false, true)
     ]);
 });
-//TODO: Find a solution for this honey
+//A full five/fourths bar note should be split in a full and a quarter, that can easily be connected in post edit.
 test('Note bigger than a full note, but too small for dotted', () => {
+    debugger;
     let input = new Bar([new FrameNote(4, 300, new SignedNote(Note.D, Sign.NONE))]);
     let result = GetMusicalBar(input, Beat.FiveFourths);
-    console.log(result);
+    expect(result.notes).toEqual([
+        new MetricalNote(NoteLength.FULL, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4),
+        new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4)
+    ]);
 });
