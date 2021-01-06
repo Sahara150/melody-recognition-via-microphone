@@ -7,7 +7,7 @@ import { BarBorders, MetricalBar } from "./models/bars";
 import { Beat, getAmountOfBeats } from "./models/beats";
 import { FrequencyFrames } from "./models/frequencyframes";
 import { FrameNote } from "./models/notes";
-import { getFrameArray, getRefs, saveFileURL, saveFrameArray } from "./sessionStorageHelper";
+import { getFrameArray, getRefs, saveFileURL, saveFrameArray } from "./helper/sessionStorageHelper";
 
 export function startPipeline(input: number[], refFrequency: number) {
 	let summedFrequencies: FrequencyFrames[] = analyzeMelody(input);

@@ -1,7 +1,7 @@
 import { Beat } from "../models/beats";
 import { GetFrameTreshold, SMOOTHING_TRESHOLD } from "../models/config";
 import { FrequencyFrames } from "../models/frequencyframes";
-import { getRefs } from "../sessionStorageHelper";
+import { getRefs } from "../helper/sessionStorageHelper";
 
 
 //TODO: Check, if it really is a nice thing to create that dependency

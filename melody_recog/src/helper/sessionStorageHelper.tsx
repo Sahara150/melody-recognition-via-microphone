@@ -1,6 +1,6 @@
-import {Beat} from "./models/beats"
-import { STANDARD_FRAME_SIZE } from "./models/config";
-import { FrameNote } from "./models/notes";
+import {Beat} from "../models/beats"
+import { STANDARD_FRAME_SIZE } from "../models/config";
+import { FrameNote } from "../models/notes";
 var frequencyKey = "frequencyRef";
 var beatKey = "beatRef";
 var xmlKey = "sheet";

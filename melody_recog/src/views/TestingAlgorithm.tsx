@@ -1,7 +1,7 @@
 import * as React from "react";
 import { LOG_2, SCALE } from "../models/calculationData";
 import { FrameNote, Note } from "../models/notes";
-import { getFrameArray, getRefs } from "../sessionStorageHelper";
+import { getFrameArray, getRefs } from "../helper/sessionStorageHelper";
 
 export class TestingAlgorithm extends React.Component<{}, { playing: boolean }> {
     constructor(props: any) {

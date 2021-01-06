@@ -1,6 +1,6 @@
 import * as React from "react";
 import Wad from "web-audio-daw";
-import { saveReferenceFrequency } from "../sessionStorageHelper";
+import { saveReferenceFrequency } from "../helper/sessionStorageHelper";
 import { getAmountOfBeats, returnStringForSingingInfo } from "../models/beats";
 import { startPipeline } from "../Pipeline";
 import { NOICE_CANCELLING } from "../models/config"

@@ -2,6 +2,7 @@
 //Therefore the key recognizer assumes, the last note fits the key and checks,
 //if the notes correlate more with minor or major key.
 
+import { ConvertSharpsToFlats } from "../helper/enharmonicAmbiguity";
 import { MetricalBar } from "../models/bars";
 import { CIRCLE_OF_FIFTHS, CIRCLE_SIZE, ENHARMONIC_AMBIGUITY_AFTER, ENHARMONIC_AMBIGUITY_BEFORE, FLATS, Key, MAJOR_KEY_SHIFT, MINOR_KEY_SHIFT, Mode, SHARPS } from "../models/keys";
 import { MetricalNote } from "../models/metric";
@@ -22,7 +23,7 @@ export function GetKeyAndModifyNotes(input: MetricalBar[]): { fifths: number, ke
     let prep = minorDiscorrelation < majorDiscorrelation ? { mode: Mode.MINOR, key: minorKey, signs: minorArray } : { mode: Mode.MAJOR, key: majorKey, signs: majorArray };
     let key = new Key(baseNote.note, prep.mode);
     if (prep.key < 0) {
-        ConvertInputToFlatNotes(input, prep.signs);
+        ConvertSharpsToFlats(allNotes, prep.signs);
     }
     return { fifths: prep.key, key: key };
 }
@@ -32,21 +33,11 @@ function GetDiscorrelation(input: MetricalNote[], signs: Note[]): number {
     for (let item in Note) {
         let note = item as Note;
         let needsSign = signs.includes(note);
-        if(needsSign) {
+        if (needsSign) {
             discorrelation += input.filter(val => val.note.value == note && val.note.sign == Sign.NONE).length;
-        }  else {
+        } else {
             discorrelation += input.filter(val => val.note.value == note && val.note.sign != Sign.NONE).length;
-        }  
+        }
     }
     return discorrelation;
-}
-function ConvertInputToFlatNotes(input: MetricalBar[], signs: Note[]) {
-    for(let o = 0; o < input.length; o++) {
-        for (let i = 0; i < signs.length; i++) {
-            let ambiguity = ENHARMONIC_AMBIGUITY_BEFORE[i];
-            let resolved = ENHARMONIC_AMBIGUITY_AFTER[i];
-            let ambiguos = input[o].notes.filter(val => val.note.value == ambiguity.value && val.note.sign == ambiguity.sign);
-            ambiguos.forEach(val => val.note = resolved);
-        }   
-    }
-}
+}   
