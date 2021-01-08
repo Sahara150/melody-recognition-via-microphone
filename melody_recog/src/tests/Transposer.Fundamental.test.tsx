@@ -1,45 +1,97 @@
 import { TransposeFundamentalNote } from "../algorithms/Transposer";
-import { MetricalBar } from "../models/bars";
 import { Mode } from "../models/keys";
-import { Extension, Metric, MetricalNote, NoteLength } from "../models/metric";
-import { Note, Sign, SignedNote } from "../models/notes";
+import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 test('Transpose A major to G major', () => {
+    debugger;
+    let input = [
+        new FrameNote(4, 60, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.B, Sign.NONE)),
+        new FrameNote(5, 60, new SignedNote(Note.C, Sign.SHARP)),
+        new FrameNote(5, 60, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(5, 60, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(5, 60, new SignedNote(Note.F, Sign.SHARP)),
+        new FrameNote(5, 60, new SignedNote(Note.G, Sign.SHARP)),
+        new FrameNote(5, 60, new SignedNote(Note.A, Sign.NONE))
+    ];
+    TransposeFundamentalNote(input, new SignedNote(Note.A, Sign.NONE), new SignedNote(Note.G, Sign.NONE), Mode.MAJOR);
+    expect(input).toEqual([
+        new FrameNote(5, 60, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(5, 60, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(5, 60, new SignedNote(Note.B, Sign.NONE)),
+        new FrameNote(6, 60, new SignedNote(Note.C, Sign.NONE)),
+        new FrameNote(6, 60, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(6, 60, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(6, 60, new SignedNote(Note.F, Sign.SHARP)),
+        new FrameNote(6, 60, new SignedNote(Note.G, Sign.NONE))
+    ]);
 });
-test('Transpose A major to F# major', () => {
-
+test('Transpose A major to G-flat/F# major', () => {
+    debugger;
+    let input = [
+        new FrameNote(4, 60, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.B, Sign.NONE)),
+        new FrameNote(5, 60, new SignedNote(Note.C, Sign.SHARP)),
+        new FrameNote(5, 60, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(5, 60, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(5, 60, new SignedNote(Note.F, Sign.SHARP)),
+        new FrameNote(5, 60, new SignedNote(Note.G, Sign.SHARP)),
+        new FrameNote(5, 60, new SignedNote(Note.A, Sign.NONE))
+    ];
+    TransposeFundamentalNote(input, new SignedNote(Note.A, Sign.NONE), new SignedNote(Note.F, Sign.SHARP), Mode.MAJOR);
+    expect(input).toEqual([
+        new FrameNote(5, 60, new SignedNote(Note.G, Sign.FLAT)),
+        new FrameNote(5, 60, new SignedNote(Note.A, Sign.FLAT)),
+        new FrameNote(5, 60, new SignedNote(Note.B, Sign.FLAT)),
+        new FrameNote(6, 60, new SignedNote(Note.C, Sign.FLAT)),
+        new FrameNote(6, 60, new SignedNote(Note.D, Sign.FLAT)),
+        new FrameNote(6, 60, new SignedNote(Note.E, Sign.FLAT)),
+        new FrameNote(6, 60, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(6, 60, new SignedNote(Note.G, Sign.FLAT))
+    ]);
 });
 test('Transpose F minor to C minor', () => {
+    let input = [
+        new FrameNote(0, 120, new SignedNote(Note.BREAK, Sign.NONE)),
+        new FrameNote(4, 30, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(4, 30, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 30, new SignedNote(Note.A, Sign.FLAT)),
+        new FrameNote(5, 30, new SignedNote(Note.C, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(0, 120, new SignedNote(Note.BREAK, Sign.NONE))
+    ];
+    TransposeFundamentalNote(input, new SignedNote(Note.F, Sign.NONE), new SignedNote(Note.C, Sign.NONE), Mode.MINOR);
+    expect(input).toEqual([
+        new FrameNote(0, 120, new SignedNote(Note.BREAK, Sign.NONE)),
+        new FrameNote(4, 30, new SignedNote(Note.C, Sign.NONE)),
+        new FrameNote(4, 30, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 30, new SignedNote(Note.E, Sign.FLAT)),
+        new FrameNote(4, 30, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.C, Sign.NONE)),
+        new FrameNote(0, 120, new SignedNote(Note.BREAK, Sign.NONE))
+    ]);
 });
 test('Transpose A minor to F minor', () => {
     debugger;
     let input = [
-        new MetricalBar([
-            new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0),
-            new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.A, Sign.NONE), 3),
-            new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.B, Sign.NONE), 3),
-            new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.C, Sign.NONE), 4),
-            new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4)
-        ]),
-        new MetricalBar([
-            new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.A, Sign.NONE), 3),
-            new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.BREAK, Sign.NONE), 0)
-        ])
+            new FrameNote(0, 120, new SignedNote(Note.BREAK, Sign.NONE)),
+            new FrameNote(3, 30, new SignedNote(Note.A, Sign.NONE)),
+            new FrameNote(3, 30, new SignedNote(Note.B, Sign.NONE)),
+            new FrameNote(4, 30, new SignedNote(Note.C, Sign.NONE)),
+            new FrameNote(4, 30, new SignedNote(Note.E, Sign.NONE)),
+            new FrameNote(3, 60, new SignedNote(Note.A, Sign.NONE)),
+            new FrameNote(0, 120,new SignedNote(Note.BREAK, Sign.NONE)),
     ];
-    TransposeFundamentalNote(input.flatMap(val => val.notes), new SignedNote(Note.A, Sign.NONE), new SignedNote(Note.F, Sign.NONE), Mode.MINOR);
+    TransposeFundamentalNote(input, new SignedNote(Note.A, Sign.NONE), new SignedNote(Note.F, Sign.NONE), Mode.MINOR);
     expect(input).toEqual(
         [
-            new MetricalBar([
-                new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.BREAK, Sign.NONE), 0),
-                new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.F, Sign.NONE), 4),
-                new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.G, Sign.NONE), 4),
-                new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.A, Sign.FLAT), 4),
-                new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.C, Sign.NONE), 5)
-            ]),
-            new MetricalBar([
-                new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.F, Sign.NONE), 4),
-                new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.BREAK, Sign.NONE), 0)
-            ])
+                new FrameNote(0, 120, new SignedNote(Note.BREAK, Sign.NONE)),
+                new FrameNote(4, 30,  new SignedNote(Note.F, Sign.NONE)),
+                new FrameNote(4, 30, new SignedNote(Note.G, Sign.NONE)),
+                new FrameNote(4, 30, new SignedNote(Note.A, Sign.FLAT)),
+                new FrameNote(5, 30, new SignedNote(Note.C, Sign.NONE)),
+                new FrameNote(4, 60, new SignedNote(Note.F, Sign.NONE)),
+                new FrameNote(0, 120, new SignedNote(Note.BREAK, Sign.NONE))
         ]
     );
 });

@@ -1,7 +1,7 @@
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import './styles/main.css';
-import { getFileURL, getFrameSize, getFrameArray, getRefs, setFrameSize, setChosenAlg, getChosenAlg } from "./helper/sessionStorageHelper";
+import { getFileURL, getFrameSize, getFrameArray, getRefs, setFrameSize, setChosenAlg, getChosenAlg, getKey, setKey } from "./helper/sessionStorageHelper";
 import { Recorder } from "./views/Recorder";
 import { BeatSettings } from "./views/BeatSettings";
 //See below
@@ -9,22 +9,28 @@ import { MusicSheetDisplay } from "./views/MusicSheetDisplay";
 import { Beat } from "./models/beats";
 import { TestingAlgorithm } from "./views/TestingAlgorithm";
 import { ChoosingAlgorithm } from "./views/ChooseAlgorithm";
-import { continuePipeline } from "./Pipeline";
+import { continuePipeline, transposeFundamental } from "./Pipeline";
 import { FrameRateAdaption } from "./views/FrameRateAdaption";
+import { Key } from "./models/keys";
+import { TransposeComponent } from "./views/TransposeComponent";
+import { SignedNote } from "./models/notes";
 
-class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean, file: string |null, frameSize: number }> {
-	constructor(props : any) {
+class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean, file: string |null, frameSize: number, key : Key }> {
+	constructor(props: any) {
+		//TODO: Save key beforehand and fetch key here
 		super(props);
 		let references = getRefs();
 		let pipelineIsThrough = getFrameArray("smoothed").length != 0;
 		let file = getFileURL();
 		let frameAdaptions = getFrameSize();
+		let key = getKey();
 		this.state = {
 			referenceFrequency: references.frequency,
 			referenceBeat: references.beat,
 			pipelineIsThrough: pipelineIsThrough,
 			file: file,
-			frameSize: frameAdaptions
+			frameSize: frameAdaptions,
+			key : key
 		};
 	}
 	updateReferences() {
@@ -45,8 +51,11 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 		} else if (this.state.file != null) {
             return (<div>
 				<MusicSheetDisplay file={this.state.file} autoResize={true} drawTitle={false} />
-				<FrameRateAdaption onChange={(size) => this.updateChosenFrameSize(size)} frameSize={this.state.frameSize} onSubmit={() => this.startBeatCorrelationNew() }/>
-                <a href={this.state.file} className="download btn btn-dark" download="music.xml">Download</a>
+				<div className="flex flex-row">
+				<FrameRateAdaption onChange={(size) => this.updateChosenFrameSize(size)} frameSize={this.state.frameSize} onSubmit={() => this.startBeatCorrelationNew()} />
+				<TransposeComponent keyUsed={this.state.key} notifyParent={(keyChosen) => this.transpose(keyChosen)}/> 
+					<a href={this.state.file} className="download btn btn-dark" download="music.xml">Download</a>
+				</div>
                    </div>)
 		} else if (this.state.pipelineIsThrough) {
 			return (<div>
@@ -64,17 +73,19 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 	getChosenAlgorithm(chosen: string) {
 		console.log("I just received " + chosen);
 		setChosenAlg(chosen);
-		continuePipeline(chosen, (url) => this.fetchFile(url), this.state.frameSize);
+		continuePipeline(chosen, (url, key) => this.fetchFile(url, key), this.state.frameSize);
 	}
-	fetchFile(url: string) {
+	fetchFile(url: string, key: Key) {
 		let state = this.state;
 		this.setState({
 			referenceFrequency: state.referenceFrequency,
 			referenceBeat: state.referenceBeat,
 			pipelineIsThrough: state.pipelineIsThrough,
 			file: url,
-			frameSize: state.frameSize
+			frameSize: state.frameSize, 
+			key : key
 		});
+		setKey(key);
 	}
 	updateChosenFrameSize(frameAdaption: number) {
 		let state = this.state;
@@ -83,13 +94,18 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 			referenceBeat: state.referenceBeat,
 			pipelineIsThrough: state.pipelineIsThrough,
 			file: state.file,
-			frameSize: frameAdaption
+			frameSize: frameAdaption,
+			key : state.key
 		});
 	}
 	startBeatCorrelationNew() {
 		setFrameSize(this.state.frameSize);
-		continuePipeline(getChosenAlg() ?? "smoothed", (url) => this.fetchFile(url), this.state.frameSize);
-    }
+		continuePipeline(getChosenAlg() ?? "smoothed", (url, key) => this.fetchFile(url, key), this.state.frameSize);
+	}
+
+	transpose(key: Key) {
+		transposeFundamental(getChosenAlg() ?? "smoothed", key, this.state.key ?? key, this.state.frameSize, (url, key) => this.fetchFile(url, key))
+	}
 }
 	ReactDOM.render(
     <Main />,

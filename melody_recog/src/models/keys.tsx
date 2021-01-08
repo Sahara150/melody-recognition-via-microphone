@@ -1,8 +1,8 @@
 import { Note, Sign, SignedNote } from "./notes";
 
 export enum Mode {
-    MINOR,
-    MAJOR
+    MINOR = "Moll",
+    MAJOR = "Dur"
 }
 export class Key {
     base_note: SignedNote;
@@ -40,7 +40,7 @@ export const CIRCLE_OF_FIFTHS = [
 ];
 export const MINOR_KEY_SHIFT = 6;
 export const MAJOR_KEY_SHIFT = 3;
-export const CIRCLE_SIZE = 8;
+export const CIRCLE_SIZE = 9;
 export const FLATS = [
     Note.B,
     Note.E,

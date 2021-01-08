@@ -1,11 +1,13 @@
 import {Beat} from "../models/beats"
 import { STANDARD_FRAME_SIZE } from "../models/config";
-import { FrameNote } from "../models/notes";
+import { Key, Mode } from "../models/keys";
+import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 var frequencyKey = "frequencyRef";
 var beatKey = "beatRef";
 var xmlKey = "sheet";
 var frameSizeKey = "frameSize";
 var chosenAlgKey = "chosenAlg";
+var keyKey = "key";
 export function saveReferenceFrequency(frequency: number) {
     let myStorage = window.sessionStorage;
     myStorage.setItem(frequencyKey, `${frequency}`);
@@ -63,4 +65,16 @@ export function getChosenAlg(): string | null {
 export function setChosenAlg(chosen: string) {
     let myStorage = window.sessionStorage;
     myStorage.setItem(chosenAlgKey, chosen);
+}
+export function setKey(key: Key) {
+    let myStorage = window.sessionStorage;
+    myStorage.setItem(keyKey, JSON.stringify(key));
+}
+export function getKey(): Key {
+    let myStorage = window.sessionStorage;
+    let key = myStorage.getItem(keyKey);
+    if (key) {
+        return JSON.parse(key) as Key;
+    }
+    return new Key(new SignedNote(Note.C, Sign.NONE), Mode.MAJOR);
 }

@@ -28,7 +28,7 @@ export class MusicSheetDisplay extends React.Component<{ autoResize: boolean | u
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', this.resize)
+        window.removeEventListener('resize', ()=>this.resize())
     }
 
     componentDidUpdate(prevProps : any) {
@@ -37,7 +37,7 @@ export class MusicSheetDisplay extends React.Component<{ autoResize: boolean | u
         } else {
             this.osmd?.load(this.props.file).then(() => this.osmd?.render());
         }
-        window.addEventListener('resize', this.resize)
+        window.addEventListener('resize', () => this.resize())
     }
 
     // Called after render

@@ -35,6 +35,9 @@ body {
     align-items: center;
     flex-direction: column;
 }
+.flex-row {
+    flex-direction: row;
+}
 
 .btn-dark {
     background-color: #555555;
