@@ -95,3 +95,27 @@ test('Transpose A minor to F minor', () => {
         ]
     );
 });
+test('Transpose D major to A major', () => {
+    debugger;
+    let input = [
+        new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.F, Sign.SHARP)),
+        new FrameNote(4, 60, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.B, Sign.NONE)),
+        new FrameNote(5, 60, new SignedNote(Note.C, Sign.SHARP)),
+        new FrameNote(5, 60, new SignedNote(Note.D, Sign.NONE))
+    ];
+    TransposeFundamentalNote(input, new SignedNote(Note.D, Sign.NONE), new SignedNote(Note.A, Sign.NONE), Mode.MAJOR);
+    expect(input).toEqual([
+        new FrameNote(3, 60, new SignedNote(Note.A, Sign.NONE)),
+        new FrameNote(3, 60, new SignedNote(Note.B, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.C, Sign.SHARP)),
+        new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.E, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.F, Sign.SHARP)),
+        new FrameNote(4, 60, new SignedNote(Note.G, Sign.SHARP)),
+        new FrameNote(4, 60, new SignedNote(Note.A, Sign.NONE))
+    ]);
+});

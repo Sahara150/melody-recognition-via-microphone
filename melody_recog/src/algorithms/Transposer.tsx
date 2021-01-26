@@ -16,7 +16,7 @@ export function TransposeFundamentalNote(input: FrameNote[], prevBase: SignedNot
         val.value = SCALE[(newIndex + SCALE.length)%SCALE.length]
         let isHigherThanC = val.value.value >= Note.C;
         //if it passed the octave border of C, octave has to be increased
-        if(wasLowerThanC && isHigherThanC) {
+        if(wasLowerThanC && isHigherThanC && halfSteps > 0) {
             val.octave++;
         //if the melody got transposed to a lower melody and the note passed the octave border
         //octave has to be decreased
