@@ -36,7 +36,7 @@ export function continuePipeline(chosen: string, callbackFunction: (url: string,
 export function transposeFundamental(chosenAlg : string, chosenKey: Key, beforeKey: Key, frameSize: number, callbackFunction: (url: string, key: Key) => void) {
 	let chosenAlgo: FrameNote[] = getFrameArray(chosenAlg);
 	let key = TransposeFundamentalNote(chosenAlgo, beforeKey.base_note, chosenKey.base_note, chosenKey.mode);
-	//Saves the transposed version, so when a rhythm adaption is made afterwards, it doesn´t jump back to the original.
+	//Saves the transposed version, so when a rhythm adaption is made afterwards, it doesnï¿½t jump back to the original.
 	saveFrameArray(chosenAlgo, chosenAlg);
 	let xml = ConvertFrameNotesToXML(chosenAlgo, frameSize, key)
 	let url = createBlobOfXML(xml);

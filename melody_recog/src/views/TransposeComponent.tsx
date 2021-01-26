@@ -1,10 +1,7 @@
 import * as React from "react";
-import { Beat } from "../models/beats";
-import { saveReferenceBeat } from "../helper/sessionStorageHelper";
 import { Key, Mode } from "../models/keys";
 import { KeyTranslationMajor, KeyTranslationMinor } from "../models/transpone";
 import { SignedNote } from "../models/notes";
-import { transpile } from "typescript";
 
 export class TransposeComponent extends React.Component<{ keyUsed: Key, notifyParent : (keyUsed: Key) => void }, { keyChosen : Key }> {
     //TODO: Update key chosen, when changed

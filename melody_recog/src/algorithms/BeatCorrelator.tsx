@@ -1,13 +1,13 @@
 import { Bar, BarBorders, MetricalBar } from "../models/bars";
 import { Beat, getAmountOfBeats, getLengthValueDenominator, getNumerator, getPositionShift } from "../models/beats";
 import { ErrorMappingListStandard, LOG_2 } from "../models/calculationData";
-import { GetFrameTreshold, MAX_DIFF, QUANTISIZE, RING_SIZE } from "../models/config";
+import { MAX_DIFF, QUANTISIZE, RING_SIZE } from "../models/config";
 import { ErrorMapping } from "../models/errorCorrection";
 import { Extension, getLengthValue, Metric, MetricalNote, NoteLength, Triole } from "../models/metric";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize: number): BarBorders{
-    
+    frameSize = Number.parseFloat(`${frameSize}`);
     const MIN_FRAME_BORDER = frameSize - (frameSize / MAX_DIFF);
     const MAX_FRAME_BORDER = frameSize + (frameSize / MAX_DIFF);
     let frameSizes: number[] = [];
