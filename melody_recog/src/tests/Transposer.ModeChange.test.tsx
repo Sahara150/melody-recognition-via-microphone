@@ -135,3 +135,52 @@ test('Douze petite duettes No. 5, F major to minor', () => {
         new FrameNote(5, 60, new SignedNote(Note.C, Sign.NONE))
     ]);
 });
+
+test('E-flat major to minor', () => {
+    debugger;
+    let input = [
+        new FrameNote(4, 60, new SignedNote(Note.A, Sign.FLAT)),
+        new FrameNote(4, 60, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.E, Sign.FLAT)),
+        new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.C, Sign.NONE)),
+        new FrameNote(3, 60, new SignedNote(Note.B, Sign.FLAT))
+    ];
+    let key = TransposeMode(input, Mode.MAJOR, Mode.MINOR, new SignedNote(Note.D, Sign.SHARP));
+    expect(key.fifths).toBe(-6);
+    expect(key.key).toEqual(new Key(new SignedNote(Note.D, Sign.SHARP), Mode.MINOR));
+    expect(input).toEqual([
+        new FrameNote(4, 60, new SignedNote(Note.A, Sign.FLAT)),
+        new FrameNote(4, 60, new SignedNote(Note.G, Sign.FLAT)),
+        new FrameNote(4, 60, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.E, Sign.FLAT)),
+        new FrameNote(4, 60, new SignedNote(Note.D, Sign.FLAT)),
+        new FrameNote(4, 60, new SignedNote(Note.C, Sign.FLAT)),
+        new FrameNote(3, 60, new SignedNote(Note.B, Sign.FLAT))
+    ]);
+});
+test('E-flat minor to major', () => {
+    debugger;
+    let input = [
+        new FrameNote(4, 60, new SignedNote(Note.A, Sign.FLAT)),
+        new FrameNote(4, 60, new SignedNote(Note.G, Sign.FLAT)),
+        new FrameNote(4, 60, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.E, Sign.FLAT)),
+        new FrameNote(4, 60, new SignedNote(Note.D, Sign.FLAT)),
+        new FrameNote(4, 60, new SignedNote(Note.C, Sign.FLAT)),
+        new FrameNote(3, 60, new SignedNote(Note.B, Sign.FLAT))
+    ];
+    let key = TransposeMode(input, Mode.MINOR, Mode.MAJOR, new SignedNote(Note.D, Sign.SHARP));
+    expect(key.fifths).toBe(-3);
+    expect(key.key).toEqual(new Key(new SignedNote(Note.D, Sign.SHARP), Mode.MAJOR));
+    expect(input).toEqual([
+        new FrameNote(4, 60, new SignedNote(Note.A, Sign.FLAT)),
+        new FrameNote(4, 60, new SignedNote(Note.G, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.F, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.E, Sign.FLAT)),
+        new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
+        new FrameNote(4, 60, new SignedNote(Note.C, Sign.NONE)),
+        new FrameNote(3, 60, new SignedNote(Note.B, Sign.FLAT))
+    ]);
+});

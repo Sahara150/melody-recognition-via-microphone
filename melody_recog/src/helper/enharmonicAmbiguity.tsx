@@ -21,6 +21,11 @@ export function ConvertFlatsToSharps(input: FrameNote[]) {
         if (val.value.sign == Sign.FLAT) {
             let index = ENHARMONIC_AMBIGUITY_AFTER.findIndex(note => note.equals(val.value));
             let shouldBe = ENHARMONIC_AMBIGUITY_BEFORE[index];
+            //When a C flat is converted to a B it needs to be an octave lower, 
+            //even though musically it is almost the same.
+            if(shouldBe.value < Note.C && val.value.value >= Note.C) {
+                val.octave--;
+            }
             val.value = shouldBe;
         }
     });
