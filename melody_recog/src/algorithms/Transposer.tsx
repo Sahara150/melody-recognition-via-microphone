@@ -75,7 +75,7 @@ export function TransposeMode(input: FrameNote[], prevMode: Mode, currMode: Mode
                     }
                     let currIndex = SCALE.findIndex(note => note.equals(val.value));
                     let change = currMode == Mode.MAJOR ? 1 : -1;
-                    val.value = SCALE[(currIndex + change) % SCALE.length];
+                    val.value = SCALE[(currIndex + change + SCALE.length) % SCALE.length];
                 }
             });
         let circleIndex = CIRCLE_OF_FIFTHS.findIndex(val => val.equals(baseNote));
