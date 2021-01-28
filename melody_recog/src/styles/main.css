@@ -71,7 +71,13 @@ body {
     text-decoration: none;
     color: black;
     margin-right: 2em;
+    box-sizing: border-box;
+    border-width: 2px;
+    border-style: outset;
 }
 .float-left {
     float: left;
+}
+.simple-padding {
+    padding: 1em;
 }

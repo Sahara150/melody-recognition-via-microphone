@@ -9,7 +9,7 @@ import { MusicSheetDisplay } from "./views/MusicSheetDisplay";
 import { Beat } from "./models/beats";
 import { TestingAlgorithm } from "./views/TestingAlgorithm";
 import { ChoosingAlgorithm } from "./views/ChooseAlgorithm";
-import { continuePipeline, transposeFundamental } from "./Pipeline";
+import { continuePipeline, transpose } from "./Pipeline";
 import { FrameRateAdaption } from "./views/FrameRateAdaption";
 import { Key } from "./models/keys";
 import { TransposeComponent } from "./views/TransposeComponent";
@@ -104,7 +104,7 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 	}
 
 	transpose(key: Key) {
-		transposeFundamental(getChosenAlg() ?? "smoothed", key, this.state.key ?? key, this.state.frameSize, (url, key) => this.fetchFile(url, key))
+		transpose(getChosenAlg() ?? "smoothed", key, this.state.key ?? key, this.state.frameSize, (url, key) => this.fetchFile(url, key))
 	}
 }
 	ReactDOM.render(

@@ -9,7 +9,7 @@ import { FrequencyFrames } from "./models/frequencyframes";
 import { FrameNote } from "./models/notes";
 import { getFrameArray, getRefs, saveFileURL, saveFrameArray } from "./helper/sessionStorageHelper";
 import { Key } from "./models/keys";
-import { TransposeFundamentalNote } from "./algorithms/Transposer";
+import { TransposeFundamentalNote, TransposeMode } from "./algorithms/Transposer";
 
 export function startPipeline(input: number[], refFrequency: number) {
 	let summedFrequencies: FrequencyFrames[] = analyzeMelody(input);
@@ -33,9 +33,10 @@ export function continuePipeline(chosen: string, callbackFunction: (url: string,
 	let url = createBlobOfXML(xml);
 	callbackFunction(url, key.key);
 }
-export function transposeFundamental(chosenAlg : string, chosenKey: Key, beforeKey: Key, frameSize: number, callbackFunction: (url: string, key: Key) => void) {
+export function transpose(chosenAlg : string, chosenKey: Key, beforeKey: Key, frameSize: number, callbackFunction: (url: string, key: Key) => void) {
 	let chosenAlgo: FrameNote[] = getFrameArray(chosenAlg);
-	let key = TransposeFundamentalNote(chosenAlgo, beforeKey.base_note, chosenKey.base_note, chosenKey.mode);
+	let key = TransposeFundamentalNote(chosenAlgo, beforeKey.base_note, chosenKey.base_note, beforeKey.mode);
+	key = TransposeMode(chosenAlgo, beforeKey.mode, chosenKey.mode, chosenKey.base_note);
 	//Saves the transposed version, so when a rhythm adaption is made afterwards, it doesn�t jump back to the original.
 	saveFrameArray(chosenAlgo, chosenAlg);
 	let xml = ConvertFrameNotesToXML(chosenAlgo, frameSize, key)

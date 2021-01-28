@@ -17,22 +17,37 @@ export class TransposeComponent extends React.Component<{ keyUsed: Key, notifyPa
     }
     render() {
         return (<div className="flex">
-            <select size={1} defaultValue={this.keys.find(val => this.translation[val].equals(this.state.keyChosen.base_note))}
-                onChange={(e) => this.updateChosenKey(e) }>
-                {
-                    this.keys.map(val => {
-                        return <option key={val} value={val}>{val}</option>
-                    })
-                }
-            </select>
-            <span>{`- ${this.props.keyUsed.mode}`}</span>
+            <span className="simple-padding">Hinweis: Da die meisten Stücke nicht in reinem natürlichen Moll geschrieben werden, kann die Umwandlung von Moll zur Dur irreversibel sein.</span>
+            <div className="flex simple-padding flex-row">
+                <select size={1} defaultValue={this.keys.find(val => this.translation[val].equals(this.state.keyChosen.base_note))}
+                    onChange={(e) => this.updateChosenKey(e) }>
+                    {
+                        this.keys.map(val => {
+                            return <option key={val} value={val}>{val}</option>
+                        })
+                    }
+                </select>
+                <span>{` - `}</span>
+                <select onChange={(e) => this.modeChanged(e)} defaultValue={ this.state.keyChosen.mode}>
+                    <option value={ Mode.MINOR }>Moll</option>
+                    <option value={Mode.MAJOR}>Dur</option>
+                </select>
+            </div>
             <button onClick={() => this.transpose()} className="btn btn-dark">Transponieren</button>
             </div>
         );
     }
-    updateChosenKey(event : React.ChangeEvent<HTMLSelectElement>) {
+    updateChosenKey(event: React.ChangeEvent<HTMLSelectElement>) {
+        let currState = this.state;
         this.setState({
-            keyChosen: new Key(this.translation[event.target.value], this.props.keyUsed.mode)
+            keyChosen: new Key(this.translation[event.target.value], currState.keyChosen.mode)
+        });
+    }
+    modeChanged(event: React.ChangeEvent<HTMLSelectElement>) {
+        let value = event.target.value as Mode;
+        let currState = this.state;
+        this.setState({
+            keyChosen: new Key(currState.keyChosen.base_note, value)
         });
     }
     transpose() {
