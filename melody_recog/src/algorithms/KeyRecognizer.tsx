@@ -8,7 +8,7 @@ import { FrameNote, Note, Sign } from "../models/notes";
 
 //TODO: Find a solution for the Single-Responsibility-Problem here.
 export function GetKeyAndModifyNotes(input: FrameNote[]): { fifths: number, key: Key } {
-    let breaksExcluded = input.filter(val => val.value.value != Note.BREAK);
+    let breaksExcluded = input.filter(val => val.value.value !== Note.BREAK);
     let baseNote = breaksExcluded[breaksExcluded.length - 1];
     let index = CIRCLE_OF_FIFTHS.findIndex(val => val.equals(baseNote.value));
     let minorKey = index - MINOR_KEY_SHIFT;
@@ -31,9 +31,9 @@ function GetDiscorrelation(input: FrameNote[], signs: Note[]): number {
         let note = item as Note;
         let needsSign = signs.includes(note);
         if (needsSign) {
-            discorrelation += input.filter(val => val.value.value == note && val.value.sign == Sign.NONE).length;
+            discorrelation += input.filter(val => val.value.value === note && val.value.sign === Sign.NONE).length;
         } else {
-            discorrelation += input.filter(val => val.value.value == note && val.value.sign != Sign.NONE).length;
+            discorrelation += input.filter(val => val.value.value === note && val.value.sign !== Sign.NONE).length;
         }
     }
     return discorrelation;
