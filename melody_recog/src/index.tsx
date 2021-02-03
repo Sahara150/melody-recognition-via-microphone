@@ -1,7 +1,7 @@
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import './styles/main.css';
-import { getFileURL, getFrameSize, getFrameArray, getRefs, setFrameSize, setChosenAlg, getChosenAlg, getKey, setKey } from "./helper/sessionStorageHelper";
+import { getFileURL, getFrameSize, getFrameArray, getRefs, setFrameSize, setChosenAlg, getChosenAlg, getKey, setKey, clearStorage } from "./helper/sessionStorageHelper";
 import { Recorder } from "./views/Recorder";
 import { BeatSettings } from "./views/BeatSettings";
 //See below
@@ -14,6 +14,7 @@ import { FrameRateAdaption } from "./views/FrameRateAdaption";
 import { Key } from "./models/keys";
 import { TransposeComponent } from "./views/TransposeComponent";
 import { SignedNote } from "./models/notes";
+import { STANDARD_FRAME_SIZE } from "./models/config";
 
 class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean, file: string |null, frameSize: number, key : Key }> {
 	constructor(props: any) {
@@ -55,6 +56,7 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 				<FrameRateAdaption onChange={(size) => this.updateChosenFrameSize(size)} frameSize={this.state.frameSize} onSubmit={() => this.startBeatCorrelationNew()} />
 				<TransposeComponent keyUsed={this.state.key} notifyParent={(keyChosen) => this.transpose(keyChosen)}/> 
 					<a href={this.state.file} className="download btn btn-dark" download="music.xml">Download</a>
+					<button className="btn btn-dark" onClick={() => this.resetProgram()}>Singe/Spiele neue Melodie</button>
 				</div>
                    </div>)
 		} else if (this.state.pipelineIsThrough) {
@@ -70,6 +72,17 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 				</div>)
 		}
 	}
+	resetProgram() {
+		clearStorage();
+		this.setState({
+			referenceFrequency: null,
+			referenceBeat: null,
+			pipelineIsThrough: false,
+			file: null,
+			frameSize: STANDARD_FRAME_SIZE,
+			key: getKey()
+		});
+    }
 	getChosenAlgorithm(chosen: string) {
 		console.log("I just received " + chosen);
 		setChosenAlg(chosen);

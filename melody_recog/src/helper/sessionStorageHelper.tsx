@@ -78,3 +78,7 @@ export function getKey(): Key {
     }
     return new Key(new SignedNote(Note.C, Sign.NONE), Mode.MAJOR);
 }
+export function clearStorage() {
+    let myStorage = window.sessionStorage;
+    myStorage.clear();
+}
