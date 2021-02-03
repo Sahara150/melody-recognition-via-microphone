@@ -11,8 +11,8 @@ export function CalculateFrameNotes(input: FrequencyFrames[], refFreq: number) :
     //Shouldn´t get to have any dependency to StorageHelper
     let FRAME_TRESHOLD = GetFrameTreshold(Beat.FourFourths);
     for (let i = 0; i < input.length; i++) {
-        if (input[i].frequency == undefined) {
-            if (frameNotes.length > 0 && frameNotes[frameNotes.length - 1].value.value == Note.BREAK) {
+        if (input[i].frequency === undefined) {
+            if (frameNotes.length > 0 && frameNotes[frameNotes.length - 1].value.value === Note.BREAK) {
                 frameNotes[frameNotes.length - 1].frames += input[i].amountOfFrames;
             } else {
                 let note = new FrameNote(0, input[i].amountOfFrames, new SignedNote(Note.BREAK, Sign.NONE));
@@ -31,7 +31,7 @@ export function CalculateFrameNotes(input: FrequencyFrames[], refFreq: number) :
                 octaves++;
             }
             //Checks if before frameNote has same value, and if so, adds itself to it
-            if (frameNotes.length > 0 && frameNotes[frameNotes.length - 1].octave == octaves && frameNotes[frameNotes.length - 1].value.equals(value)) {
+            if (frameNotes.length > 0 && frameNotes[frameNotes.length - 1].octave === octaves && frameNotes[frameNotes.length - 1].value.equals(value)) {
                 frameNotes[frameNotes.length - 1].frames += input[i].amountOfFrames;
             } else {
                 let note = new FrameNote(octaves, input[i].amountOfFrames, value);
@@ -43,11 +43,11 @@ export function CalculateFrameNotes(input: FrequencyFrames[], refFreq: number) :
     let i = 0; 
     while (i < frameNotes.length && frameNotes[i].frames < SMOOTHING_TRESHOLD) {
         i++;
-        if (frameNotes.length > i && frameNotes[i].value.value == Note.BREAK && frameNotes[i].frames > FRAME_TRESHOLD) {
+        if (frameNotes.length > i && frameNotes[i].value.value === Note.BREAK && frameNotes[i].frames > FRAME_TRESHOLD) {
             break;
         }
     }
-    return frameNotes.slice(i == 0? i : i+1, frameNotes.length);
+    return frameNotes.slice(i === 0? i : i+1, frameNotes.length);
 }
 //First all notes are described with none or sharp. Flats are used, when the calculator identifies a corresponding key.
 //Therefore also the signs exist instead of adding enharmonic ambiguity notes in the noteEnum.
@@ -55,7 +55,7 @@ function getMusicalValue(halfTones: number): SignedNote {
     return SCALE[Math.round(halfTones+12)%12]
 }
 function mathematicallyCorrectModulo(dividend: number, divisor: number) {
-    if (dividend >= 0 || dividend%divisor == 0) {
+    if (dividend >= 0 || dividend%divisor === 0) {
         return dividend % divisor;
     } else {
         let a = Math.floor(-dividend / divisor) + 1;

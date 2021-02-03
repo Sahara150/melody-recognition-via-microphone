@@ -12,8 +12,8 @@ export class TransposeComponent extends React.Component<{ keyUsed: Key, notifyPa
         this.state = {
             keyChosen : this.props.keyUsed
         }
-        this.keys = this.props.keyUsed.mode == Mode.MINOR ? Object.keys(KeyTranslationMinor) : Object.keys(KeyTranslationMajor);
-        this.translation = this.props.keyUsed.mode == Mode.MINOR ? KeyTranslationMinor : KeyTranslationMajor;
+        this.keys = this.props.keyUsed.mode === Mode.MINOR ? Object.keys(KeyTranslationMinor) : Object.keys(KeyTranslationMajor);
+        this.translation = this.props.keyUsed.mode === Mode.MINOR ? KeyTranslationMinor : KeyTranslationMajor;
     }
     render() {
         return (<div className="flex">

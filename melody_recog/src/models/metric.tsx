@@ -44,7 +44,7 @@ export class Triole extends MetricalNote {
 //Value is always given in multiple of fourths
 export function getLengthValue(note : MetricalNote) : number {
     let base = Math.exp(note.length*LOG_2)/4;
-    if (note.metric == Metric.TRIOLE) {
+    if (note.metric === Metric.TRIOLE) {
         base *= 2 / 3;
     }
     switch (note.extension) {

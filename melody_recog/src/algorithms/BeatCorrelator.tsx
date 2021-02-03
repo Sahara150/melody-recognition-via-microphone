@@ -36,7 +36,7 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
             if (thisFramesSize < MAX_FRAME_BORDER) {
                 //The input is over, but the last beat not yet filled.
                 if (thisFramesSize < MIN_FRAME_BORDER) {
-                    let actualFrameSize = frameSizes.length == 0 ? frameSize : frameSizes.reduce((a, b) => a + b) / frameSizes.length;
+                    let actualFrameSize = frameSizes.length === 0 ? frameSize : frameSizes.reduce((a, b) => a + b) / frameSizes.length;
                     let newNote = new FrameNote(0, Math.round(actualFrameSize*beatsLeft-thisFramesSize), new SignedNote(Note.BREAK, Sign.NONE));
                     notesForBar.push(newNote);
                     beatsLeft = 0;
@@ -46,7 +46,7 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
                     frameNum++;
                 }
             } else {
-                let actualFrameSize = frameSizes.length == 0 ? frameSize : frameSizes.reduce((a, b) => a + b) / frameSizes.length;
+                let actualFrameSize = frameSizes.length === 0 ? frameSize : frameSizes.reduce((a, b) => a + b) / frameSizes.length;
                 let beatsFilled = thisFramesSize / actualFrameSize;
                 //Accept a little bit of inaccuracy 
                 //(less than an 8th of a frame, since every syncope is at least a 6th)
@@ -74,7 +74,7 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
                         newNote = new FrameNote(oldNote.octave, framesUsed, oldNote.value);
                         overFrames-= framesUsed;
                         let bar = new Bar([newNote]);
-                        if(newNote.value.value != Note.BREAK) {
+                        if(newNote.value.value !== Note.BREAK) {
                             ties.push(tieCount);
                         }
                         fillerBars.push(bar); 
@@ -83,7 +83,7 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
                     if(overFrames>0) {
                         newNote = new FrameNote(oldNote.octave, overFrames, oldNote.value);
                         fillerForNextBar.push(newNote);
-                        if(newNote.value.value != Note.BREAK) {
+                        if(newNote.value.value !== Note.BREAK) {
                             ties.push(tieCount);
                         }   
                     }
@@ -98,7 +98,7 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
         bars = bars.concat(fillerBars);
         fillerBars = [];
     }
-    if(fillerForNextBar.length!=0) {
+    if(fillerForNextBar.length!==0) {
         let bar = new Bar(fillerForNextBar);
         bars.push(bar);
     }
@@ -119,7 +119,7 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
             while (!CheckFillTriole(trioles).isFull && i<input.notes.length) {
                 let newNote = GetMetricalNote(input.notes[i], beats, metric, totalLength, isTriole);
                 i++;
-                if (newNote.metric == Metric.TRIOLE) {
+                if (newNote.metric === Metric.TRIOLE) {
                     trioles.push(newNote);
                 } else {
                     break;
@@ -127,7 +127,7 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
             }
             let filledTriole = CheckFillTriole(trioles);
             if(filledTriole.isFull) {
-                let mappedTrioles : MetricalNote[] = trioles.map((val, index) => new Triole(val, filledTriole.type, index == 0, index == trioles.length - 1));
+                let mappedTrioles : MetricalNote[] = trioles.map((val, index) => new Triole(val, filledTriole.type, index === 0, index === trioles.length - 1));
                 notes.pop();
                 for(let o= 0; o<mappedTrioles.length; o++) {
                     notes.push(mappedTrioles[o]);
@@ -144,13 +144,13 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
             let newNote = GetMetricalNote(input.notes[i], beats, metric, totalLength, false);
             if (newNote.length <NoteLength.SIXTEENTH) {
                 AssignToNeighbor(input, metric, totalLength, i, notes);
-            } else if (newNote.length == NoteLength.SIXTEENTH && (newNote.extension == Extension.ONEDOT || newNote.extension == Extension.TWODOTS)
-                    || newNote.length == NoteLength.EIGHTH && newNote.extension == Extension.TWODOTS) {
+            } else if ((newNote.length === NoteLength.SIXTEENTH && (newNote.extension === Extension.ONEDOT || newNote.extension === Extension.TWODOTS))
+                    || (newNote.length === NoteLength.EIGHTH && newNote.extension === Extension.TWODOTS)) {
                 //Dotted and double dotted sixteenths as double dotted eighths themself might be theoretically allowed,
                 //though they imply, that a 32th or even 64th needs to exist and lead to invalid bars,
                 //because the program is not able to fix that gap
                 //Therefore due to styling decisions a double dotted sixteenth can be seen as approximately an eight
-                if (newNote.extension == Extension.TWODOTS) {
+                if (newNote.extension === Extension.TWODOTS) {
                     newNote.extension = Extension.NODOT;
                     newNote.length += 1;
                 } else {
@@ -164,8 +164,8 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
             } else {
             notes.push(newNote);
             }
-            isTriole = notes.length > 0 && notes[notes.length - 1].metric == Metric.TRIOLE;
-            if(isTriole && i == input.notes.length-1) {
+            isTriole = notes.length > 0 && notes[notes.length - 1].metric === Metric.TRIOLE;
+            if(isTriole && i === input.notes.length-1) {
                 //If the last note is recognized as triolic in this branch, 
                 //beforehand note has to be not triolic and therefore this
                 //has to be a misassumption.
@@ -192,7 +192,7 @@ function UndoErrornousTriole(input: Bar, notes: MetricalNote[], index: number, m
         //When somebody plays a note the whole 5/4s bar, there�s no possibility to represent it with one note,
         //so it is split into a full and a quarter note, which then easily can be connected in later editing to 
         //still ensure a valid bar in this special case.
-        if (metric == Beat.FiveFourths) {
+        if (metric === Beat.FiveFourths) {
             let newNote = new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, startNote.note, startNote.octave);
             notes.push(newNote);
         }
@@ -237,16 +237,16 @@ function RoundAdapted(scaledLength: number, isTriole: boolean): [number, Metric,
 }
 function CheckSameType(input: MetricalNote[]) : boolean {
     let lastLength = input[0].length;
-    return input.every(val => val.length == lastLength);
+    return input.every(val => val.length === lastLength);
 }
 function CheckFillTriole(input: MetricalNote[]) : {isFull: boolean, type: NoteLength} {
     let noteTypeEqual = CheckSameType(input);
     if(noteTypeEqual) {
-        let isFull = input.length == 3;
+        let isFull = input.length === 3;
         let type = input[0].length;
         return {isFull: isFull, type: type};
     } else {
-        if(input.length == 2 && Math.abs(input[0].length - input[1].length) == 1) {
+        if(input.length === 2 && Math.abs(input[0].length - input[1].length) === 1) {
             let type = Math.min(input[0].length, input[1].length);
             return {isFull: true, type: type};
         } else {
@@ -270,7 +270,7 @@ export function CheckForMusicalValidity(input: MetricalNote[], metric: Beat): Me
         for (let n = 0; n < errornousValue.length; n++) {
                 let currError = shouldBe > isCurr ? errornousValue[n].lowerValue : errornousValue[n].higherValue;
                 let wouldBe = shouldBe > isCurr ? errornousValue[n].higherValue : errornousValue[n].lowerValue;
-                let errornous = input.filter(val => val.extension == currError.extension && val.length == currError.length && val.metric == currError.metric);
+                let errornous = input.filter(val => val.extension === currError.extension && val.length === currError.length && val.metric === currError.metric);
                 let index = 0;
                 while (errornous.length>index) {
                     let wrongNote = errornous[0];
@@ -280,7 +280,7 @@ export function CheckForMusicalValidity(input: MetricalNote[], metric: Beat): Me
                     isCurr = input.map(x => getLengthValue(x)).reduce((a, b) => a + b);
                     amountOfErrors--;
                     index++;
-                    if (amountOfErrors == 0) {
+                    if (amountOfErrors === 0) {
                         break;
                     }
                 }
@@ -302,10 +302,10 @@ function GetProbableError(diff: number) : ErrorMapping[]{
                 || value.lowerValue.length < NoteLength.SIXTEENTH
                 || value.higherValue.length > NoteLength.FULL
                 || value.lowerValue.length > NoteLength.FULL
-                || (value.lowerValue.length == NoteLength.SIXTEENTH && value.lowerValue.extension != Extension.NODOT)
-                || (value.higherValue.length == NoteLength.SIXTEENTH && value.higherValue.extension != Extension.NODOT)
-                || (value.lowerValue.length == NoteLength.EIGHTH && value.lowerValue.extension == Extension.TWODOTS)
-                || (value.higherValue.length == NoteLength.EIGHTH && value.higherValue.extension == Extension.TWODOTS)));
+                || (value.lowerValue.length === NoteLength.SIXTEENTH && value.lowerValue.extension !== Extension.NODOT)
+                || (value.higherValue.length === NoteLength.SIXTEENTH && value.higherValue.extension !== Extension.NODOT)
+                || (value.lowerValue.length === NoteLength.EIGHTH && value.lowerValue.extension === Extension.TWODOTS)
+                || (value.higherValue.length === NoteLength.EIGHTH && value.higherValue.extension === Extension.TWODOTS)));
         if (diff < 0) {
             return errorMapping;
         } else {

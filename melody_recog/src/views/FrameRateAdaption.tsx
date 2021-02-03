@@ -19,7 +19,7 @@ export class FrameRateAdaption extends React.Component<{ onChange: (update: numb
     }
     onValueChange(event: React.ChangeEvent<HTMLInputElement>) {
         let frameSize: number;
-        if (event.target.id == "frames") {
+        if (event.target.id === "frames") {
             frameSize = event.target.value as unknown as number;
         } else {
             frameSize = 3600 / (event.target.value as unknown as number);

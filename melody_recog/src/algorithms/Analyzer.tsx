@@ -13,7 +13,7 @@ const FRAME_TRESHOLD = GetFrameTreshold(BEAT);
 export function analyzeMelody(input: number[]) : FrequencyFrames[]{
 	let firstDefined = getFirstDefined(input);
 	let lastDefined = getLastDefined(input);
-	if (firstDefined == lastDefined) {
+	if (firstDefined === lastDefined) {
 		console.log("Nichts eingesungen.");
 		return [];
 	} else if (lastDefined > firstDefined) {
@@ -27,7 +27,7 @@ export function analyzeMelody(input: number[]) : FrequencyFrames[]{
 
 function getFirstDefined(input: number[]) : number {
 	for (let i = 0; i < input.length; i++) {
-		if (input[i] != undefined) {
+		if (input[i] !== undefined) {
 			return i;
         }
 	}
@@ -35,7 +35,7 @@ function getFirstDefined(input: number[]) : number {
 }
 function getLastDefined(input: number[]) : number {
 	for (let i = input.length - 1; i >= 0; i--) {
-		if (input[i] != undefined) {
+		if (input[i] !== undefined) {
 			return i;
         }
 	}
@@ -50,13 +50,13 @@ function sumMinorMovements(input: number[]): FrequencyFrames[]{
 		let sumOfNums = input[currentIndex];
 		let amountOfFrames = 1;
 		let averageNum : number | undefined = firstNum;
-		while (currentIndex < input.length - 1 && ((averageNum == undefined && input[currentIndex + 1] == undefined) || Math.abs(input[currentIndex + 1] - averageNum!) < (referenceFrequency / 100.0))) {
+		while (currentIndex < input.length - 1 && ((averageNum === undefined && input[currentIndex + 1] === undefined) || Math.abs(input[currentIndex + 1] - averageNum!) < (referenceFrequency / 100.0))) {
 			currentIndex++;
 			amountOfFrames++;
-			if (input[currentIndex] != undefined) {
+			if (input[currentIndex] !== undefined) {
 				sumOfNums += input[currentIndex];
 			}
-			averageNum = sumOfNums == undefined ? undefined : sumOfNums / amountOfFrames;
+			averageNum = sumOfNums === undefined ? undefined : sumOfNums / amountOfFrames;
 		}
 		let frequencyFrame = new FrequencyFrames(averageNum, amountOfFrames);
 		result.push(frequencyFrame);
@@ -66,13 +66,13 @@ function sumMinorMovements(input: number[]): FrequencyFrames[]{
 export function smoothSmallGaps(frames : FrequencyFrames[]) : FrequencyFrames[] {
 	let result : FrequencyFrames[] = [];
 	for (let i = 0; i < frames.length; i++) {
-		if (frames[i].amountOfFrames < SMOOTHING_TRESHOLD || frames[i].frequency == undefined && frames[i].amountOfFrames < FRAME_TRESHOLD) {
+		if (frames[i].amountOfFrames < SMOOTHING_TRESHOLD || (frames[i].frequency === undefined && frames[i].amountOfFrames < FRAME_TRESHOLD)) {
 			//If last saved as relevant note exists
 			if (result.length > 0) {
 				//And this frame is some minor undefinement
-				if (frames[i].frequency == undefined
+				if (frames[i].frequency === undefined
 					//or if this frames frequency is kinda cool with the last relevant ones
-					|| (result[result.length - 1].frequency != undefined && Math.abs(result[result.length - 1].frequency! - frames[i].frequency!) < FREQUENCY_TRESHOLD)) {
+					|| (result[result.length - 1].frequency !== undefined && Math.abs(result[result.length - 1].frequency! - frames[i].frequency!) < FREQUENCY_TRESHOLD)) {
 					//just add it to the last frame
 					result[result.length - 1].amountOfFrames += frames[i].amountOfFrames;
 					continue;
@@ -81,14 +81,14 @@ export function smoothSmallGaps(frames : FrequencyFrames[]) : FrequencyFrames[] 
 			//If this is reached, above case decided not to add it to the last frame.
 			if (i < frames.length - 1) {
 				//If the frame is some minor undefinement and the next frame is not a loner anyway
-				if ((frames[i].frequency == undefined && frames[i + 1].amountOfFrames > SMOOTHING_TRESHOLD)
+				if ((frames[i].frequency === undefined && frames[i + 1].amountOfFrames > SMOOTHING_TRESHOLD)
 					//or if the next frame is relevant
-					|| (frames[i + 1].amountOfFrames > SMOOTHING_TRESHOLD && frames[i+1].frequency!=undefined)) {
+					|| (frames[i + 1].amountOfFrames > SMOOTHING_TRESHOLD && frames[i+1].frequency!==undefined)) {
 					//add this frames amount to the next one
 					frames[i + 1].amountOfFrames += frames[i].amountOfFrames;
 					continue;
 					//If the next frame is not getting any more relevant, even if I add this one
-				} else if (frames[i + 1].amountOfFrames + frames[i].amountOfFrames < FRAME_TRESHOLD && frames[i+1].frequency!=undefined) {
+				} else if (frames[i + 1].amountOfFrames + frames[i].amountOfFrames < FRAME_TRESHOLD && frames[i+1].frequency!==undefined) {
 					let firstFreq = frames[i].frequency!;
 					let nextFreq = frames[i + 1].frequency!;
 					while (firstFreq / nextFreq > 2.0) {
@@ -112,7 +112,7 @@ export function smoothSmallGaps(frames : FrequencyFrames[]) : FrequencyFrames[] 
 export function smoothUndefinedGaps(frames: FrequencyFrames[]): FrequencyFrames[] {
 	let result: FrequencyFrames[] = [];
 	for (let i = 0; i < frames.length; i++) {
-		if (frames[i].amountOfFrames < FRAME_TRESHOLD && frames[i].frequency == undefined) {
+		if (frames[i].amountOfFrames < FRAME_TRESHOLD && frames[i].frequency === undefined) {
 			//If last saved as relevant note exists
 			if (result.length > 0) {
 				//just add it to the last frame
@@ -134,7 +134,7 @@ export function equalAllocAlgorithm(frames: FrequencyFrames[]): FrequencyFrames[
 	for (let i = 0; i < frames.length; i++) {
 		if (frames[i].amountOfFrames > FRAME_TRESHOLD) {
 			let frame = frames[i];
-			if (relevantFrames.length == 0) {
+			if (relevantFrames.length === 0) {
 				frame.amountOfFrames += amountOfFrames;
 				amountOfFrames = 0;
 				relevantFrames.push(frame);

@@ -29,7 +29,7 @@ export class Recorder extends React.Component {
 			<div id="microphone_container">
 				<span>{window.tuner.pitch} Hz</span>
 			</div>
-			<button className="centered btn-dark" id="RecordButton" onClick={() => this.changeRecordStatus()}>{this.state.recording == true ? "STOP RECORDING" : "RECORD"}</button>
+			<button className="centered btn-dark" id="RecordButton" onClick={() => this.changeRecordStatus()}>{this.state.recording === true ? "STOP RECORDING" : "RECORD"}</button>
 			<button className={this.state.referenceFrequency == null ? "hidden" : "centered btn-dark"} onClick={() => this.deleteOldReferenceFreq()}>Referenzton neu aufnehmen</button>
 		</div>)
 	}
@@ -130,7 +130,7 @@ export class Recorder extends React.Component {
 		// If you sing into your microphone, your pitch will be saved into an array in real time. */
 	}
 	outputTick() {
-		if (window.ticksLeft == 0) {
+		if (window.ticksLeft === 0) {
 			clearInterval(window.metronomeID);
 		} else {
 			let ticker = window.audioContext.createOscillator();

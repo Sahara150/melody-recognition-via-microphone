@@ -1,7 +1,6 @@
 import { MetricalBar } from "../models/bars";
 import { Beat, getDenominator, getNumerator } from "../models/beats";
 import { NOTELENGTHSTRINGS } from "../models/config";
-import { Key } from "../models/keys";
 import { Extension, getLengthValue, Metric, MetricalNote, Triole } from "../models/metric";
 import { Note } from "../models/notes";
 
@@ -25,7 +24,7 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat, key:
     for (let i = 0; i < bars.length; i++) {
         result += `<measure number="${i + 1}">`
         //First measure needs to contain key information
-        if (i == 0) {
+        if (i === 0) {
             result += "<attributes>"
                 //We tell the duration in sixteenths.
                         + "<divisions>4</divisions>"
@@ -49,8 +48,8 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat, key:
         for (let o = 0; o < barNotes.length; o++) {
             let note = barNotes[o];
             result += "<note>";
-            if (note.note.value == Note.BREAK) {
-                result += `<rest measure="${barNotes.length == 1? "yes": "no"}"/>`;
+            if (note.note.value === Note.BREAK) {
+                result += `<rest measure="${barNotes.length === 1? "yes": "no"}"/>`;
             } else {
                 result += "<pitch>"
                             + `<step>${note.note.value}</step>`
@@ -75,7 +74,7 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat, key:
                 case Extension.ONEDOT: result += "<dot/>"; break;
                 default: break;
             }
-            if (note.metric == Metric.TRIOLE && note instanceof Triole) {
+            if (note.metric === Metric.TRIOLE && note instanceof Triole) {
                 let trioleNote = note as Triole;
                 result += "<time-modification>"
                             + "<actual-notes>3</actual-notes>"
@@ -91,7 +90,7 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat, key:
                 } else if (GetTieEnd(ties, i, o, barNotes)) {
                     result += "<tied type=\"stop\" />";
                 }
-                if (note.metric == Metric.TRIOLE && note instanceof Triole && (note as Triole).isStart || (note as Triole).isEnd) {
+                if (note.metric === Metric.TRIOLE && note instanceof Triole && ((note as Triole).isStart || (note as Triole).isEnd)) {
                     result += `<tuplet placement="above" type="${((note as Triole).isStart ? "start": "stop")}" />`
                 }
                 result += "</notations>";
@@ -105,8 +104,8 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat, key:
     return result;
 }
 function GetTieStart(ties: number[], barIndex: number, noteIndex: number, notes: MetricalNote[]): boolean {
-    return noteIndex == notes.length - 1 && ties.contains(barIndex) && (!ties.contains(barIndex - 1) || notes.length > 1) && notes[noteIndex].note.value != Note.BREAK;
+    return noteIndex === notes.length - 1 && ties.contains(barIndex) && (!ties.contains(barIndex - 1) || notes.length > 1) && notes[noteIndex].note.value !== Note.BREAK;
 }
 function GetTieEnd(ties: number[], barIndex: number, noteIndex: number, notes: MetricalNote[]): boolean {
-    return noteIndex == 0 && ties.contains(barIndex - 1) && (!ties.contains(barIndex) || notes.length > 1) && notes[noteIndex].note.value != Note.BREAK;
+    return noteIndex === 0 && ties.contains(barIndex - 1) && (!ties.contains(barIndex) || notes.length > 1) && notes[noteIndex].note.value !== Note.BREAK;
 }

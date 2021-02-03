@@ -44,7 +44,7 @@ export class TestingAlgorithm extends React.Component<{}, { playing: boolean }> 
             let refFreq = getRefs().frequency ?? 0;
             const playNote = () => {
                 let actualNote = frameNotes[i];
-                if (actualNote.value.value != Note.BREAK) {
+                if (actualNote.value.value !== Note.BREAK) {
                     let osc = audioContext.createOscillator();
                     let halfTones = SCALE.findIndex(val => val.equals(actualNote.value));
                     let octaves = actualNote.octave

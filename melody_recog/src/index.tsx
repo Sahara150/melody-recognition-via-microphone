@@ -13,7 +13,6 @@ import { continuePipeline, transpose } from "./Pipeline";
 import { FrameRateAdaption } from "./views/FrameRateAdaption";
 import { Key } from "./models/keys";
 import { TransposeComponent } from "./views/TransposeComponent";
-import { SignedNote } from "./models/notes";
 import { STANDARD_FRAME_SIZE } from "./models/config";
 
 class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean, file: string |null, frameSize: number, key : Key }> {
@@ -21,7 +20,7 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 		//TODO: Save key beforehand and fetch key here
 		super(props);
 		let references = getRefs();
-		let pipelineIsThrough = getFrameArray("smoothed").length != 0;
+		let pipelineIsThrough = getFrameArray("smoothed").length !== 0;
 		let file = getFileURL();
 		let frameAdaptions = getFrameSize();
 		let key = getKey();
@@ -37,7 +36,7 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 	updateReferences() {
 		console.log("Update parent");
 		let references = getRefs();
-		let pipelineIsThrough = getFrameArray("smoothed").length != 0;
+		let pipelineIsThrough = getFrameArray("smoothed").length !== 0;
 		this.setState({
 			referenceFrequency: references.frequency,
 			referenceBeat: references.beat,
