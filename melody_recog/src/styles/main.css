@@ -1,5 +1,6 @@
 body {
-    background-color: slategray;
+    background-color: #333333;
+    margin: 3em;
 }
 
 .field {
@@ -26,9 +27,15 @@ body {
 }
 
 .big {
-    font-size: large;
+    font-size: larger;
 }
-
+.bright {
+    color:antiquewhite;
+}
+span, label {
+    font-size: 17px;
+    color: antiquewhite;
+}
 .flex {
     display: flex;
     justify-content: center;
@@ -40,7 +47,7 @@ body {
 }
 
 .btn-dark {
-    background-color: #555555;
+    background-color: #6E6E6E;
     font-size: medium;
     border-radius: 8px;
     padding: 1.2em;

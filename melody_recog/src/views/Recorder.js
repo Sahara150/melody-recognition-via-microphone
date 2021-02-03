@@ -23,11 +23,11 @@ export class Recorder extends React.Component {
 	render() {
 
 		return (<div className="flex">
-			<div className="centered upper-third no-background"><span className="bold big">
+			<div className="centered upper-third no-background"><span className="bold big bright">
 				{this.state.referenceFrequency != null && this.state.referenceBeat != null ? `Bitte singe die Melodie ein. Das Metronom wird dir ${returnStringForSingingInfo(this.state.referenceBeat)} angeben.` : "Bitte singe ein A"}
 			</span></div>
 			<div id="microphone_container">
-				<span>{window.tuner.pitch} Hz</span>
+				<span className="bright">{window.tuner.pitch} Hz</span>
 			</div>
 			<button className="centered btn-dark" id="RecordButton" onClick={() => this.changeRecordStatus()}>{this.state.recording === true ? "STOP RECORDING" : "RECORD"}</button>
 			<button className={this.state.referenceFrequency == null ? "hidden" : "centered btn-dark"} onClick={() => this.deleteOldReferenceFreq()}>Referenzton neu aufnehmen</button>

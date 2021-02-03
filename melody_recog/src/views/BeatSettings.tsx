@@ -10,7 +10,7 @@ export class BeatSettings extends React.Component<{ notifyParent: Function }, { 
         }
     }
     render() {
-        return (<div className="flex">
+        return (<div className="flex bright">
             <span className="centered bold big">Bitte wähle die Taktart, die dein Stück haben soll.</span>
             <div className="align-horizontal container flex">
                 <input type="radio" id="ThreeHalfs" name="beat" value={Beat.ThreeHalfs} checked={this.state.beatChosen === Beat.ThreeHalfs} onChange={(event)=>this.onValueChange(event) }/>

@@ -61,7 +61,7 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 		} else if (this.state.pipelineIsThrough) {
 			return (<div>
 				<Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
-				<span className="centered">Du kannst dir die verschiedenen Ergebnisse anhören und dann wählen, welches du verwenden willst oder neu aufnehmen.</span>
+				<span className="centered bright">Du kannst dir die verschiedenen Ergebnisse anhören und dann wählen, welches du verwenden willst oder neu aufnehmen.</span>
 				<TestingAlgorithm />
 				<ChoosingAlgorithm onChange={(chosen)=>this.getChosenAlgorithm(chosen)}/>
 			</div>)

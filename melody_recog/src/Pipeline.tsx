@@ -10,6 +10,7 @@ import { FrameNote } from "./models/notes";
 import { getFrameArray, getRefs, saveFileURL, saveFrameArray } from "./helper/sessionStorageHelper";
 import { Key } from "./models/keys";
 import { TransposeFundamentalNote, TransposeMode } from "./algorithms/Transposer";
+import { STANDARD_FREQ } from "./models/config";
 
 export function startPipeline(input: number[], refFrequency: number) {
 	let summedFrequencies: FrequencyFrames[] = analyzeMelody(input);
@@ -17,9 +18,9 @@ export function startPipeline(input: number[], refFrequency: number) {
 	let smoothed: FrequencyFrames[] = smoothSmallGaps(summedFrequencies);
 	let unsmoothed: FrequencyFrames[] = smoothUndefinedGaps(summedFrequencies);
 	let equalAlloc: FrequencyFrames[] = equalAllocAlgorithm(summedFrequencies);
-	let calculatedSmoothed = CalculateFrameNotes(smoothed, refFrequency);
-	let calculateUnsmoothed = CalculateFrameNotes(unsmoothed, refFrequency);
-	let calculateEqualAlloc = CalculateFrameNotes(equalAlloc, refFrequency);
+	let calculatedSmoothed = CalculateFrameNotes(smoothed, refFrequency ?? STANDARD_FREQ);
+	let calculateUnsmoothed = CalculateFrameNotes(unsmoothed, refFrequency ?? STANDARD_FREQ);
+	let calculateEqualAlloc = CalculateFrameNotes(equalAlloc, refFrequency ?? STANDARD_FREQ);
 	//And saving them in sessionStorage.
 	saveFrameArray(calculatedSmoothed, "smoothed");
 	saveFrameArray(calculateUnsmoothed, "unsmoothed");
