@@ -1,13 +1,15 @@
 import {Beat} from "../models/beats"
-import { STANDARD_FRAME_SIZE } from "../models/config";
+import { CONTINUOUS_METRONOME, NOICE_CANCELLING, STANDARD_FRAME_SIZE } from "../models/config";
 import { Key, Mode } from "../models/keys";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
-var frequencyKey = "frequencyRef";
-var beatKey = "beatRef";
-var xmlKey = "sheet";
-var frameSizeKey = "frameSize";
-var chosenAlgKey = "chosenAlg";
-var keyKey = "key";
+const frequencyKey = "frequencyRef";
+const beatKey = "beatRef";
+const xmlKey = "sheet";
+const frameSizeKey = "frameSize";
+const chosenAlgKey = "chosenAlg";
+const keyKey = "key";
+const metronomeKey = "metronome";
+const noiceKey = "noice_treshold";
 export function saveReferenceFrequency(frequency: number) {
     let myStorage = window.sessionStorage;
     myStorage.setItem(frequencyKey, `${frequency}`);
@@ -57,6 +59,32 @@ export function getFrameSize(): number {
 export function setFrameSize(size: number) {
     let myStorage = window.sessionStorage;
     myStorage.setItem(frameSizeKey, size.toString());
+}
+export function getContinuosMetronome() : boolean {
+    let myStorage = window.sessionStorage;
+    let result = myStorage.getItem(metronomeKey);
+    if (result) {
+        return result === "true";
+    } else {
+        return CONTINUOUS_METRONOME;
+    }
+}
+export function setContinuosMetronome(continuos: boolean) {
+    let myStorage = window.sessionStorage;
+    myStorage.setItem(metronomeKey, `${continuos}`);
+}
+export function getNoiceCancelling() : number {
+    let myStorage = window.sessionStorage;
+    let result = myStorage.getItem(noiceKey);
+    if (result) {
+        return result as unknown as number;
+    } else {
+        return NOICE_CANCELLING;
+    }
+}
+export function setNoiceCancelling(frequency: number) {
+    let myStorage = window.sessionStorage;
+    myStorage.setItem(noiceKey, frequency.toString());
 }
 export function getChosenAlg(): string | null {
     let myStorage = window.sessionStorage;

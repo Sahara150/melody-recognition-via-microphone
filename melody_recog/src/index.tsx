@@ -48,7 +48,7 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
     }
 	render() {
 		if (this.state.onSettingsPage) {
-			return <SettingsPage />
+			return <SettingsPage informParent={() => this.showSettings() } />
         } else if (this.state.referenceFrequency == null) {
 			return <><Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
                 <SettingsButton onClick={() => this.showSettings()} /></>
@@ -92,7 +92,6 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 		});
     }
 	getChosenAlgorithm(chosen: string) {
-		console.log("I just received " + chosen);
 		setChosenAlg(chosen);
 		continuePipeline(chosen, (url, key) => this.fetchFile(url, key), this.state.frameSize);
 	}
@@ -134,7 +133,7 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 			referenceBeat: currState.referenceBeat,
 			pipelineIsThrough: currState.pipelineIsThrough,
 			file: currState.file,
-			frameSize: currState.frameSize,
+			frameSize: currState.onSettingsPage? getFrameSize() : currState.frameSize,
 			key: currState.key,
 			onSettingsPage: !currState.onSettingsPage
 		});
