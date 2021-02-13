@@ -1,6 +1,6 @@
 import * as React from "react";
 import Wad from "web-audio-daw";
-import { getContinuosMetronome, getNoiceCancelling, saveReferenceFrequency } from "../helper/sessionStorageHelper";
+import { getContinuosMetronome, getFrameSize, getNoiceCancelling, saveReferenceFrequency } from "../helper/sessionStorageHelper";
 import { getAmountOfBeats, returnStringForSingingInfo } from "../models/beats";
 import { startPipeline } from "../Pipeline";
 
@@ -16,7 +16,8 @@ export class Recorder extends React.Component {
 			referenceFrequency: props.parentState.referenceFrequency,
 			referenceBeat: props.parentState.referenceBeat,
 			input: [],
-			noiceCancelling: getNoiceCancelling()
+			noiceCancelling: getNoiceCancelling(),
+			frameSize: getFrameSize()
 		};
 	}
 
@@ -41,7 +42,9 @@ export class Recorder extends React.Component {
 			referenceBeat: refState.referenceBeat,
 			referenceFrequency: null,
 			//Deletes old pitches, if reset.
-			input: []
+			input: [],
+			noiceCancelling: refState.noiceCancelling,
+			frameSize: refState.frameSize
 		})
 		this.props.notifyParent();
 	}
@@ -73,7 +76,9 @@ export class Recorder extends React.Component {
 			//Checks, if referenceFrequency exists, else uses just sang pitch
 			referenceFrequency: refState.referenceFrequency == null || undefined ? window.tuner.pitch : refState.referenceFrequency,
 			//If the referenceTone was sung, deletes input, so it is not reused in the melody
-			input: refState.referenceFrequency == null || undefined ? [] : refState.input
+			input: refState.referenceFrequency == null || undefined ? [] : refState.input,
+			noiceCancelling: refState.noiceCancelling,
+			frameSize: refState.frameSize
 		});
 		//If there was no referenceFrequency before it now is saved in sessionStorage.
 		if (refState.referenceFrequency == null) {
@@ -87,7 +92,9 @@ export class Recorder extends React.Component {
 				recording: false,
 				referenceFrequency: refState.referenceFrequency,
 				referenceBeat: refState.referenceBeat,
-				input : []
+				input: [],
+				noiceCancelling: refState.noiceCancelling,
+				frameSize: refState.frameSize
             })
 			this.props.notifyParent();
         }
@@ -100,13 +107,17 @@ export class Recorder extends React.Component {
 			recording: true,
 			referenceBeat: refState.referenceBeat,
 			referenceFrequency: refState.referenceFrequency,
-			input: refState.input
+			input: refState.input,
+			noiceCancelling: refState.noiceCancelling,
+			frameSize: refState.frameSize
 		});
 		if (this.state.referenceBeat != null && this.state.referenceFrequency != null) {
 			window.tuner.pitch = undefined;
 			window.ticksLeft = getAmountOfBeats(this.state.referenceBeat);
 			window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-			window.metronomeID = setInterval(this.outputTick, 1000);
+			//One minute times frameSize divided by amount of frames per minute
+			let interval = 600 * this.state.frameSize / 36;
+			window.metronomeID = setInterval(this.outputTick, interval);
         }
 		window.voice.play(); // You must give your browser permission to access your microphone before calling play().
 
@@ -124,7 +135,9 @@ export class Recorder extends React.Component {
 				recording: true,
 				referenceFrequency: refState.referenceFrequency,
 				referenceBeat: refState.referenceBeat,
-				input: input
+				input: input,
+				noiceCancelling: refState.noiceCancelling,
+				frameSize: refState.frameSize
 			});
 			window.refreshId = requestAnimationFrame(savePitch);
 		};
