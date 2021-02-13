@@ -1,9 +1,8 @@
 import * as React from "react";
 import Wad from "web-audio-daw";
-import { saveReferenceFrequency } from "../helper/sessionStorageHelper";
+import { getContinuosMetronome, getNoiceCancelling, saveReferenceFrequency } from "../helper/sessionStorageHelper";
 import { getAmountOfBeats, returnStringForSingingInfo } from "../models/beats";
 import { startPipeline } from "../Pipeline";
-import { NOICE_CANCELLING } from "../models/config"
 
 export class Recorder extends React.Component {
 	constructor(props /*any*/) {
@@ -16,7 +15,8 @@ export class Recorder extends React.Component {
 			recording: false,
 			referenceFrequency: props.parentState.referenceFrequency,
 			referenceBeat: props.parentState.referenceBeat,
-			input: []
+			input: [],
+			noiceCancelling: getNoiceCancelling()
 		};
 	}
 
@@ -61,6 +61,9 @@ export class Recorder extends React.Component {
 			cancelAnimationFrame(window.refreshId);
 		}
 		window.tuner.stopUpdatingPitch(); // Stop calculating the pitch if you don't need to know it anymore.
+		if (getContinuosMetronome()) {
+			clearInterval(window.metronomeID);
+        }
 		console.log(this.state);
 		//Stops recording
 		let refState = this.state;
@@ -77,7 +80,6 @@ export class Recorder extends React.Component {
 			saveReferenceFrequency(window.tuner.pitch);
 			this.props.notifyParent();
 		} else {
-			console.log("Raw input: " + this.state.input);
 			startPipeline(this.state.input, this.state.referenceFrequency);
 			let refState = this.state;
 			//Clearing the input array in case recording is redone.
@@ -113,7 +115,7 @@ export class Recorder extends React.Component {
 		var savePitch = () => {
 			let refState = this.state;
 			let input = this.state.input;
-			input.push(window.tuner.pitch > NOICE_CANCELLING? undefined: window.tuner.pitch);
+			input.push(window.tuner.pitch > this.state.noiceCancelling? undefined: window.tuner.pitch);
 			//Setting pitch for melody on undefined again, so breaks are seen as undefined, instead of repeating the last frequency
 			if (refState.referenceFrequency != null) {
 				window.tuner.pitch = undefined;
@@ -130,7 +132,7 @@ export class Recorder extends React.Component {
 		// If you sing into your microphone, your pitch will be saved into an array in real time. */
 	}
 	outputTick() {
-		if (window.ticksLeft === 0) {
+		if (window.ticksLeft === 0 && !getContinuosMetronome()) {
 			clearInterval(window.metronomeID);
 		} else {
 			let ticker = window.audioContext.createOscillator();
