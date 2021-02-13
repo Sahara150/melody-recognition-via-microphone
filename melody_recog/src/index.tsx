@@ -14,8 +14,10 @@ import { FrameRateAdaption } from "./views/FrameRateAdaption";
 import { Key } from "./models/keys";
 import { TransposeComponent } from "./views/TransposeComponent";
 import { STANDARD_FRAME_SIZE } from "./models/config";
+import { SettingsButton } from "./views/SettingsButton";
+import { SettingsPage } from "./views/SettingsPage";
 
-class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean, file: string |null, frameSize: number, key : Key }> {
+class Main extends React.Component<{}, { referenceFrequency: number | null, referenceBeat: Beat | null, pipelineIsThrough: boolean, file: string |null, frameSize: number, key : Key, onSettingsPage: boolean }> {
 	constructor(props: any) {
 		//TODO: Save key beforehand and fetch key here
 		super(props);
@@ -30,7 +32,8 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 			pipelineIsThrough: pipelineIsThrough,
 			file: file,
 			frameSize: frameAdaptions,
-			key : key
+			key: key,
+			onSettingsPage: false
 		};
 	}
 	updateReferences() {
@@ -44,10 +47,14 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 		});
     }
 	render() {
-		if (this.state.referenceFrequency == null) {
-			return <Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
+		if (this.state.onSettingsPage) {
+			return <SettingsPage />
+        } else if (this.state.referenceFrequency == null) {
+			return <><Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
+                <SettingsButton onClick={() => this.showSettings()} /></>
 		} else if (this.state.referenceBeat == null) {
-			return <BeatSettings notifyParent={() => this.updateReferences()} />
+			return <><BeatSettings notifyParent={() => this.updateReferences()} />
+                <SettingsButton onClick={() => this.showSettings()} /></>
 		} else if (this.state.file != null) {
             return (<div>
 				<MusicSheetDisplay file={this.state.file} autoResize={true} drawTitle={false} />
@@ -63,11 +70,13 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 				<Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
 				<span className="centered bright">Du kannst dir die verschiedenen Ergebnisse anhören und dann wählen, welches du verwenden willst oder neu aufnehmen.</span>
 				<TestingAlgorithm />
-				<ChoosingAlgorithm onChange={(chosen)=>this.getChosenAlgorithm(chosen)}/>
+				<ChoosingAlgorithm onChange={(chosen) => this.getChosenAlgorithm(chosen)} />
+				<SettingsButton onClick={() => this.showSettings()} />
 			</div>)
 		} else {
 			return (<div>
 				<Recorder parentState={this.state} notifyParent={() => this.updateReferences()} />
+				<SettingsButton onClick={() => this.showSettings()} />
 				</div>)
 		}
 	}
@@ -118,6 +127,18 @@ class Main extends React.Component<{}, { referenceFrequency: number | null, refe
 	transpose(key: Key) {
 		transpose(getChosenAlg() ?? "smoothed", key, this.state.key ?? key, this.state.frameSize, (url, key) => this.fetchFile(url, key))
 	}
+	showSettings() {
+		let currState = this.state;
+		this.setState({
+			referenceFrequency: currState.referenceFrequency,
+			referenceBeat: currState.referenceBeat,
+			pipelineIsThrough: currState.pipelineIsThrough,
+			file: currState.file,
+			frameSize: currState.frameSize,
+			key: currState.key,
+			onSettingsPage: !currState.onSettingsPage
+		});
+    }
 }
 	ReactDOM.render(
     <Main />,

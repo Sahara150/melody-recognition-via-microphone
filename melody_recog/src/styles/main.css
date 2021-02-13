@@ -88,3 +88,24 @@ span, label {
 .simple-padding {
     padding: 1em;
 }
+.upperRight {
+    position: absolute;
+    top: 5em;
+    right: 5em;
+    border: none;
+    background: #333333;
+}
+.settings {
+    width: 3em;
+    height: 3em;
+}
+.settingsPage {
+    display: flex;
+    flex-direction: column;
+}
+.settingsPage>* {
+    padding: 1em;
+}
+.settingsPage>* * {
+    padding: 0.3em;
+}
