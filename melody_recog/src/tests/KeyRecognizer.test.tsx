@@ -1,4 +1,4 @@
-import { GetKeyAndModifyNotes } from "../algorithms/KeyRecognizer"
+import { getKeyAndModifyNotes } from "../algorithms/KeyRecognizer"
 import { Key, Mode } from "../models/keys"
 import { Extension, Metric, NoteLength } from "../models/metric";
 import { SignedNote, Note, Sign, FrameNote } from "../models/notes"
@@ -13,7 +13,7 @@ test('a minor', () => {
         new FrameNote(4, 60, new SignedNote(Note.A, Sign.NONE)),
         new FrameNote(0, 120, new SignedNote(Note.BREAK, Sign.NONE))
     ];
-    let result = GetKeyAndModifyNotes(input);
+    let result = getKeyAndModifyNotes(input);
     expect(result.fifths).toBe(0);
     expect(result.key).toEqual(new Key(new SignedNote(Note.A, Sign.NONE), Mode.MINOR));
 });
@@ -40,7 +40,7 @@ test('d minor', () => {
             new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
             new FrameNote(0, 120,new SignedNote(Note.BREAK, Sign.NONE))
     ];
-    let result = GetKeyAndModifyNotes(input);
+    let result = getKeyAndModifyNotes(input);
     expect(result.fifths).toBe(-1);
     expect(result.key).toEqual(new Key(new SignedNote(Note.D, Sign.NONE), Mode.MINOR));
     //A sharp should get converted to B flat.
@@ -90,7 +90,7 @@ test('c minor', () => {
             new FrameNote(4, 60, new SignedNote(Note.C, Sign.NONE)),
             new FrameNote(0, 120, new SignedNote(Note.BREAK, Sign.NONE))
     ];
-    let result = GetKeyAndModifyNotes(input);
+    let result = getKeyAndModifyNotes(input);
     expect(result.fifths).toBe(-3);
     expect(result.key).toEqual(new Key(new SignedNote(Note.C, Sign.NONE), Mode.MINOR));
     //A sharp should get converted to B flat. D sharp should become E flat. G sharp A flat.
@@ -128,7 +128,7 @@ test('e major', () => {
             new FrameNote(5, 60, new SignedNote(Note.D, Sign.SHARP)),
             new FrameNote(5, 60, new SignedNote(Note.E, Sign.NONE))
     ];
-    let result = GetKeyAndModifyNotes(input);
+    let result = getKeyAndModifyNotes(input);
     expect(result.fifths).toEqual(4);
     expect(result.key).toEqual(new Key(new SignedNote(Note.E, Sign.NONE), Mode.MAJOR));
 });
@@ -144,7 +144,7 @@ test('b major', () => {
         new FrameNote(5, 60, new SignedNote(Note.A, Sign.SHARP)),
         new FrameNote(5, 60, new SignedNote(Note.B, Sign.NONE))
     ];
-    let result = GetKeyAndModifyNotes(input);
+    let result = getKeyAndModifyNotes(input);
     expect(result.fifths).toEqual(5);
     expect(result.key).toEqual(new Key(new SignedNote(Note.B, Sign.NONE), Mode.MAJOR));
 });
@@ -160,7 +160,7 @@ test('f# major', () => {
         new FrameNote(5, 60, new SignedNote(Note.F, Sign.NONE)),
         new FrameNote(5, 60, new SignedNote(Note.F, Sign.SHARP))
     ];
-let result = GetKeyAndModifyNotes(input);
+let result = getKeyAndModifyNotes(input);
 expect(result.fifths).toEqual(-6);
 expect(result.key).toEqual(new Key(new SignedNote(Note.F, Sign.SHARP), Mode.MAJOR));
 });

@@ -74,7 +74,7 @@ export class Recorder extends React.Component {
 			recording: false,
 			referenceBeat: refState.referenceBeat,
 			//Checks, if referenceFrequency exists, else uses just sang pitch
-			referenceFrequency: refState.referenceFrequency == null || undefined ? window.tuner.pitch : refState.referenceFrequency,
+			referenceFrequency: (refState.referenceFrequency === null || refState.referenceFrequency === undefined) ? window.tuner.pitch : refState.referenceFrequency,
 			//If the referenceTone was sung, deletes input, so it is not reused in the melody
 			input: refState.referenceFrequency == null || undefined ? [] : refState.input,
 			noiceCancelling: refState.noiceCancelling,

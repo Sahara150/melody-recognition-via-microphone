@@ -4,7 +4,7 @@ import { NOTELENGTHSTRINGS } from "../models/config";
 import { Extension, getLengthValue, Metric, MetricalNote, Triole } from "../models/metric";
 import { Note } from "../models/notes";
 
-export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat, key: number): string {
+export function writeToXML(bars: MetricalBar[], ties: number[], beat: Beat, key: number): string {
     for (let i = 0; i < bars.length; i++) {
         console.log(`Bar ${i + 1}: ${JSON.stringify(bars[i].notes)}`);
     }
@@ -59,10 +59,10 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat, key:
             }
             result += `<duration>${getLengthValue(note) * 4}</duration>`;
             let notationNeeded = false;
-            if (GetTieEnd(ties, i, o, barNotes)) {
+            if (getTieEnd(ties, i, o, barNotes)) {
                 result += "<tie type=\"stop\"/>";
                 notationNeeded = true;
-            } else if (GetTieStart(ties, i, o, barNotes)) {
+            } else if (getTieStart(ties, i, o, barNotes)) {
                 result += "<tie type=\"start\"/>";
                 notationNeeded = true;
             }
@@ -85,9 +85,9 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat, key:
             }
             if (notationNeeded) {
                 result += "<notations>";
-                if (GetTieStart(ties, i, o, barNotes)) {
+                if (getTieStart(ties, i, o, barNotes)) {
                     result += "<tied type=\"start\" />";
-                } else if (GetTieEnd(ties, i, o, barNotes)) {
+                } else if (getTieEnd(ties, i, o, barNotes)) {
                     result += "<tied type=\"stop\" />";
                 }
                 if (note.metric === Metric.TRIOLE && note instanceof Triole && ((note as Triole).isStart || (note as Triole).isEnd)) {
@@ -103,9 +103,9 @@ export function WriteToXML(bars: MetricalBar[], ties: number[], beat: Beat, key:
     result += "</score-partwise>";
     return result;
 }
-function GetTieStart(ties: number[], barIndex: number, noteIndex: number, notes: MetricalNote[]): boolean {
+function getTieStart(ties: number[], barIndex: number, noteIndex: number, notes: MetricalNote[]): boolean {
     return noteIndex === notes.length - 1 && ties.contains(barIndex) && (!ties.contains(barIndex - 1) || notes.length > 1) && notes[noteIndex].note.value !== Note.BREAK;
 }
-function GetTieEnd(ties: number[], barIndex: number, noteIndex: number, notes: MetricalNote[]): boolean {
+function getTieEnd(ties: number[], barIndex: number, noteIndex: number, notes: MetricalNote[]): boolean {
     return noteIndex === 0 && ties.contains(barIndex - 1) && (!ties.contains(barIndex) || notes.length > 1) && notes[noteIndex].note.value !== Note.BREAK;
 }

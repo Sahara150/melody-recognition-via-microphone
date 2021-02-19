@@ -1,4 +1,4 @@
-import { ConvertFlatsToSharps, ConvertSharpsToFlats } from "../helper/enharmonicAmbiguity";
+import { convertFlatsToSharps, convertSharpsToFlats } from "../helper/enharmonicAmbiguity";
 import { SCALE } from "../models/calculationData";
 import { CIRCLE_OF_FIFTHS, CIRCLE_SIZE, FLATS, Key, MAJOR_KEY_SHIFT, MINOR_KEY_SHIFT, Mode } from "../models/keys";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
@@ -7,10 +7,10 @@ const THIRD_HALF_STEPS = 3;
 const SIXTH_HALF_STEPS = 8;
 const SEPT_HALF_STEPS = 10;
 
-export function TransposeFundamentalNote(input: FrameNote[], prevBase: SignedNote, newBase: SignedNote, mode: Mode): { fifths: number, key: Key }{
+export function transposeFundamentalNote(input: FrameNote[], prevBase: SignedNote, newBase: SignedNote, mode: Mode): { fifths: number, key: Key }{
     let halfSteps = SCALE.findIndex(val => val.equals(newBase)) - SCALE.findIndex(val => val.equals(prevBase));
     if (input.some(note => note.value.sign === Sign.FLAT)) {
-        ConvertFlatsToSharps(input);
+        convertFlatsToSharps(input);
     }
     input
     .filter(val => val.value.value !== Note.BREAK)
@@ -42,11 +42,11 @@ export function TransposeFundamentalNote(input: FrameNote[], prevBase: SignedNot
     let key = mode === Mode.MINOR ? (index - MINOR_KEY_SHIFT) : ((index < CIRCLE_SIZE ? index - MAJOR_KEY_SHIFT : index - CIRCLE_OF_FIFTHS.length - MAJOR_KEY_SHIFT));
     if (key < 0) {
         let signArray = FLATS.slice(0, Math.abs(key));
-        ConvertSharpsToFlats(input, signArray);
+        convertSharpsToFlats(input, signArray);
     }
     return { fifths: key, key: new Key(newBase, mode) };
 }
-export function TransposeMode(input: FrameNote[], prevMode: Mode, currMode: Mode, baseNote: SignedNote): { fifths: number, key: Key } {
+export function transposeMode(input: FrameNote[], prevMode: Mode, currMode: Mode, baseNote: SignedNote): { fifths: number, key: Key } {
     if (prevMode === currMode) {
         let key = new Key(baseNote, currMode);
         let index = CIRCLE_OF_FIFTHS.findIndex(val => val.equals(baseNote));
@@ -55,7 +55,7 @@ export function TransposeMode(input: FrameNote[], prevMode: Mode, currMode: Mode
     } else {
         let index = SCALE.findIndex(val => val.equals(baseNote));
         if (input.some(note => note.value.sign === Sign.FLAT)) {
-            ConvertFlatsToSharps(input);
+            convertFlatsToSharps(input);
         }
         let addOn = currMode === Mode.MAJOR? 0 : 1
         let third = SCALE[(index + THIRD_HALF_STEPS + addOn) % SCALE.length];
@@ -82,11 +82,11 @@ export function TransposeMode(input: FrameNote[], prevMode: Mode, currMode: Mode
         let fifths = currMode === Mode.MINOR ? (circleIndex - MINOR_KEY_SHIFT) : ((circleIndex < CIRCLE_SIZE ? circleIndex - MAJOR_KEY_SHIFT : circleIndex - CIRCLE_OF_FIFTHS.length - MAJOR_KEY_SHIFT));
         if (fifths < 0) {
             let signArray = FLATS.slice(0, Math.abs(fifths))
-            ConvertSharpsToFlats(input, signArray);
+            convertSharpsToFlats(input, signArray);
         }
         return { fifths: fifths, key: new Key(baseNote, currMode) };
     }
 }
-export function MoveOctave(input: FrameNote[], octaves: number) {
+export function moveOctave(input: FrameNote[], octaves: number) {
     input.forEach(val => val.octave += octaves);
 }

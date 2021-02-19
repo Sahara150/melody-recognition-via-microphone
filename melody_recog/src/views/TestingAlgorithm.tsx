@@ -39,33 +39,33 @@ export class TestingAlgorithm extends React.Component<{}, { playing: boolean }> 
         }
     }
     play(frameNotes: FrameNote[]) {
-            let audioContext = new (window.AudioContext)();
-            let i = 0;
-            let refFreq = getRefs().frequency ?? 0;
-            const playNote = () => {
-                let actualNote = frameNotes[i];
-                if (actualNote.value.value !== Note.BREAK) {
-                    let osc = audioContext.createOscillator();
-                    let halfTones = SCALE.findIndex(val => val.equals(actualNote.value));
-                    let octaves = actualNote.octave
-                    if (actualNote.value.value >= Note.C) {
-                        octaves--;
-                    }
-                    halfTones += (octaves - 4) * 12;
-                    console.log(`The note is ${actualNote.value.value} ${actualNote.value.sign} ${actualNote.octave} and is ${halfTones} above A4.`);
-                    let diff = Math.pow(Math.E, LOG_2 * halfTones / 12);
-                    osc.frequency.value = refFreq * diff;
-                    osc.connect(audioContext.destination);
-                    osc.start(audioContext.currentTime);
-                    osc.stop(audioContext.currentTime + actualNote.frames / 60);
+        let audioContext = new (window.AudioContext)();
+        let i = 0;
+        let refFreq = getRefs().frequency ?? 0;
+        const playNote = () => {
+            let actualNote = frameNotes[i];
+            if (actualNote.value.value !== Note.BREAK) {
+                let osc = audioContext.createOscillator();
+                let halfTones = SCALE.findIndex(val => val.equals(actualNote.value));
+                let octaves = actualNote.octave
+                if (actualNote.value.value >= Note.C) {
+                    octaves--;
                 }
-                i++;
-                if (i < frameNotes.length && this.state.playing) {
-                    setTimeout(playNote, actualNote.frames * 1000 / 60);
-                } else {
-                    this.setState({ playing: false });
-                }
+                halfTones += (octaves - 4) * 12;
+                console.log(`The note is ${actualNote.value.value} ${actualNote.value.sign} ${actualNote.octave} and is ${halfTones} above A4.`);
+                let diff = Math.pow(Math.E, LOG_2 * halfTones / 12);
+                osc.frequency.value = refFreq * diff;
+                osc.connect(audioContext.destination);
+                osc.start(audioContext.currentTime);
+                osc.stop(audioContext.currentTime + actualNote.frames / 60);
             }
-            playNote();
+            i++;
+            if (i < frameNotes.length && this.state.playing) {
+                setTimeout(playNote, actualNote.frames * 1000 / 60);
+            } else {
+                this.setState({ playing: false });
+            }
+        }
+        playNote();
     }
 }

@@ -1,4 +1,4 @@
-import { CheckForMusicalValidity, GetBarBorders, GetMusicalBar } from "../algorithms/BeatCorrelator";
+import { checkForMusicalValidity, getMusicalBar } from "../algorithms/BeatCorrelator";
 import { Bar, MetricalBar } from "../models/bars";
 import { Beat } from "../models/beats";
 import { Extension, Metric, MetricalNote, NoteLength, Triole } from "../models/metric";
@@ -10,7 +10,7 @@ test('ThreeHalfNotes', () => {
         new FrameNote(4, 64, new SignedNote(Note.E, Sign.NONE)),
         new FrameNote(4, 66, new SignedNote(Note.F, Sign.SHARP))
     ]);
-    let result = GetMusicalBar(bar, Beat.ThreeHalfs);
+    let result = getMusicalBar(bar, Beat.ThreeHalfs);
     expect(result).toEqual(new MetricalBar([
         new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4),
         new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4),
@@ -26,7 +26,7 @@ test('TrioleEightsDottedEigthSixteenth', () => {
         new FrameNote(4, 39, new SignedNote(Note.G, Sign.NONE)),
         new FrameNote(4, 13, new SignedNote(Note.F, Sign.SHARP))
     ]);
-    let result = GetMusicalBar(bar, Beat.TwoFourths);
+    let result = getMusicalBar(bar, Beat.TwoFourths);
     expect(result).toEqual(new MetricalBar([
         new Triole(new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4), NoteLength.EIGHTH, true),
         new Triole(new MetricalNote(NoteLength.EIGHTH, Metric.TRIOLE, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4), NoteLength.EIGHTH),
@@ -41,7 +41,7 @@ test('One dotted got to two dotted', () => {
         new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4),
         new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4)
     ]);
-    let result = CheckForMusicalValidity(bar.notes, Beat.FiveFourths);
+    let result = checkForMusicalValidity(bar.notes, Beat.FiveFourths);
     expect(result).toEqual([
         new MetricalNote(NoteLength.HALF, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.D, Sign.NONE), 4),
         new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4),
@@ -55,7 +55,7 @@ test('Two times one dotted quarter got double dotted', () => {
         new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.TWODOTS, new SignedNote(Note.F, Sign.SHARP),4),
         new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.G, Sign.NONE),4)
     ]);
-    let result = CheckForMusicalValidity(bar.notes, Beat.FourFourths);
+    let result = checkForMusicalValidity(bar.notes, Beat.FourFourths);
     expect(result).toEqual([
         new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.D, Sign.NONE), 4),
         new MetricalNote(NoteLength.EIGHTH, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.E, Sign.NONE), 4),
@@ -174,7 +174,7 @@ test('Real data test', () => {
     let bars = allBars as Bar[];
     let result : MetricalBar[] = [];
     bars.forEach(val => {
-        result.push(GetMusicalBar(val, Beat.FourFourths));
+        result.push(getMusicalBar(val, Beat.FourFourths));
     });
     expect(result[0].notes).toEqual([
         new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.ONEDOT, new SignedNote(Note.D, Sign.NONE), 4),
@@ -215,7 +215,7 @@ test('Real data test', () => {
 test('Note bigger than a full note, but too small for dotted', () => {
     debugger;
     let input = new Bar([new FrameNote(4, 300, new SignedNote(Note.D, Sign.NONE))]);
-    let result = GetMusicalBar(input, Beat.FiveFourths);
+    let result = getMusicalBar(input, Beat.FiveFourths);
     expect(result.notes).toEqual([
         new MetricalNote(NoteLength.FULL, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4),
         new MetricalNote(NoteLength.QUARTER, Metric.STANDARD, Extension.NODOT, new SignedNote(Note.D, Sign.NONE), 4)

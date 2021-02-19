@@ -1,4 +1,4 @@
-import { GetBarBorders } from "../algorithms/BeatCorrelator";
+import { getBarBorders } from "../algorithms/BeatCorrelator";
 import { Bar } from "../models/bars";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
@@ -27,7 +27,7 @@ test('ThreeHalfsCorrectFraming', () => {
         new FrameNote(4, 60, new SignedNote(Note.E, Sign.NONE)),
         new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE))
     ];
-    let result = GetBarBorders(notes, 3, 60);
+    let result = getBarBorders(notes, 3, 60);
     expect(result.bars).toEqual([
         new Bar([
             new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
@@ -86,7 +86,7 @@ test('ThreeHalfsTooShortFraming', () => {
         new FrameNote(4, 54, new SignedNote(Note.E, Sign.NONE)),
         new FrameNote(4, 56, new SignedNote(Note.D, Sign.NONE))
     ];
-    let result = GetBarBorders(notes, 3, 60);
+    let result = getBarBorders(notes, 3, 60);
     expect(result.bars).toEqual([
         new Bar([
             new FrameNote(4, 53, new SignedNote(Note.D, Sign.NONE)),
@@ -146,7 +146,7 @@ test('ThreeHalfsTooLongFraming', () => {
         new FrameNote(4, 65, new SignedNote(Note.E, Sign.NONE)),
         new FrameNote(4, 63, new SignedNote(Note.D, Sign.NONE))
     ];
-    let result = GetBarBorders(notes, 3, 60);
+    let result = getBarBorders(notes, 3, 60);
     expect(result.bars).toEqual([
         new Bar([
             new FrameNote(4, 65, new SignedNote(Note.D, Sign.NONE)),
@@ -187,7 +187,7 @@ test('NoteOverMultipleBarsCorrectFramingEasy', () => {
         //Bar 2 to 4
         new FrameNote(4, 360, new SignedNote(Note.F, Sign.NONE))
     ];
-    let result = GetBarBorders(notes, 2, 60);
+    let result = getBarBorders(notes, 2, 60);
     expect(result.bars).toEqual([
         new Bar([
             new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
@@ -213,7 +213,7 @@ test('NoteOverMultipleBarsTooShortFramingEasy', () => {
         //Bar 2 to 4
         new FrameNote(4, 330, new SignedNote(Note.F, Sign.NONE))
     ];
-    let result = GetBarBorders(notes, 2, 60);
+    let result = getBarBorders(notes, 2, 60);
     expect(result.bars).toEqual([
         new Bar([
             new FrameNote(4, 55, new SignedNote(Note.D, Sign.NONE)),
@@ -241,7 +241,7 @@ test('NoteOverMultipleBarsTooShortFramingEasy', () => {
         //Bar 2 to 4
         new FrameNote(4, 378, new SignedNote(Note.F, Sign.NONE))
     ];
-    let result = GetBarBorders(notes, 2, 60);
+    let result = getBarBorders(notes, 2, 60);
     expect(result.bars).toEqual([
         new Bar([
             new FrameNote(4, 64, new SignedNote(Note.D, Sign.NONE)),
@@ -301,7 +301,7 @@ test('FourFourthsCorrectFramingLastBarNotFilled', () => {
         //Bar 5
         new FrameNote(4, 120, new SignedNote(Note.E, Sign.NONE))
     ];
-    let result = GetBarBorders(notes, 4, 60);
+    let result = getBarBorders(notes, 4, 60);
     expect(result.bars).toEqual([
         new Bar([
             new FrameNote(4, 60, new SignedNote(Note.D, Sign.NONE)),
@@ -388,7 +388,7 @@ test('FourFourthsTooShortFramingLastBarNotFilled', () => {
         //Bar 5
         new FrameNote(4, 110, new SignedNote(Note.E, Sign.NONE))
     ];
-    let result = GetBarBorders(notes, 4, 60);
+    let result = getBarBorders(notes, 4, 60);
     expect(result.bars).toEqual([
         new Bar([
             new FrameNote(4, 56, new SignedNote(Note.D, Sign.NONE)),
@@ -467,7 +467,7 @@ test('All my little ducks real input', () => {
         new FrameNote(4, 25, new SignedNote(Note.D, Sign.NONE)),
         new FrameNote(0, 30, new SignedNote(Note.BREAK, Sign.NONE)),
         new FrameNote(4, 24, new SignedNote(Note.D, Sign.NONE))];
-    let result = GetBarBorders(notes, 4, 60);
+    let result = getBarBorders(notes, 4, 60);
     expect(result.bars).toEqual([
         new Bar([
             new FrameNote(4, 36, new SignedNote(Note.D, Sign.NONE)),
@@ -529,9 +529,9 @@ test('All my little ducks real input', () => {
 test('Stück mit Veränderungen, real input', () => {
     let input = [{"value":{"value":"A","sign":0},"octave":4,"frames":100},{"value":{"value":"B","sign":0},"octave":4,"frames":46},{"value":{"value":"C","sign":0},"octave":5,"frames":47.5},{"value":{"value":"B","sign":0},"octave":4,"frames":162.5},{"value":{"value":"BREAK","sign":0},"octave":0,"frames":152},{"value":{"value":"A","sign":0},"octave":4,"frames":38.5},{"value":{"value":"BREAK","sign":0},"octave":0,"frames":201.5},{"value":{"value":"G","sign":0},"octave":6,"frames":20},{"value":{"value":"BREAK","sign":0},"octave":0,"frames":32.5},{"value":{"value":"C","sign":0},"octave":5,"frames":57.5},{"value":{"value":"E","sign":0},"octave":5,"frames":34.5},{"value":{"value":"F","sign":0},"octave":5,"frames":83},{"value":{"value":"E","sign":0},"octave":6,"frames":48.5},{"value":{"value":"BREAK","sign":0},"octave":0,"frames":39},{"value":{"value":"D","sign":0},"octave":6,"frames":55.5},{"value":{"value":"E","sign":0},"octave":6,"frames":50},{"value":{"value":"C","sign":0},"octave":5,"frames":51.5},{"value":{"value":"BREAK","sign":0},"octave":0,"frames":69.5},{"value":{"value":"G","sign":0},"octave":4,"frames":82},{"value":{"value":"F","sign":1},"octave":4,"frames":35},{"value":{"value":"F","sign":0},"octave":4,"frames":26.5},{"value":{"value":"BREAK","sign":0},"octave":0,"frames":239},{"value":{"value":"D","sign":1},"octave":4,"frames":24},{"value":{"value":"F","sign":1},"octave":6,"frames":27.5},{"value":{"value":"E","sign":0},"octave":4,"frames":24.5},{"value":{"value":"G","sign":1},"octave":7,"frames":25.5},{"value":{"value":"G","sign":1},"octave":6,"frames":25},{"value":{"value":"BREAK","sign":0},"octave":0,"frames":26.5},{"value":{"value":"A","sign":0},"octave":4,"frames":158},{"value":{"value":"A","sign":0},"octave":5,"frames":38.5},{"value":{"value":"BREAK","sign":0},"octave":0,"frames":56.5},{"value":{"value":"G","sign":0},"octave":4,"frames":56.5},{"value":{"value":"F","sign":1},"octave":4,"frames":21.5},{"value":{"value":"E","sign":0},"octave":4,"frames":38.5},{"value":{"value":"G","sign":0},"octave":4,"frames":51.5}]
     debugger;
-    let resultOne = GetBarBorders(input as FrameNote[], 3, 60);
+    let resultOne = getBarBorders(input as FrameNote[], 3, 60);
     console.log(resultOne);
-    let resultTwo = GetBarBorders(input as FrameNote[], 3, 65);
-    let resultThree = GetBarBorders(input as FrameNote[], 3, 30);
+    let resultTwo = getBarBorders(input as FrameNote[], 3, 65);
+    let resultThree = getBarBorders(input as FrameNote[], 3, 30);
 
 });

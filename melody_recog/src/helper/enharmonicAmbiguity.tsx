@@ -1,7 +1,7 @@
 import { ENHARMONIC_AMBIGUITY_AFTER, ENHARMONIC_AMBIGUITY_BEFORE } from "../models/keys";
 import { FrameNote, Note, Sign } from "../models/notes";
 
-export function ConvertSharpsToFlats(input: FrameNote[], signs: Note[]) {
+export function convertSharpsToFlats(input: FrameNote[], signs: Note[]) {
     for (let i = 0; i < signs.length; i++) {
         let ambiguity = ENHARMONIC_AMBIGUITY_BEFORE[i];
         let resolved = ENHARMONIC_AMBIGUITY_AFTER[i];
@@ -16,7 +16,7 @@ export function ConvertSharpsToFlats(input: FrameNote[], signs: Note[]) {
         });
     }
 }
-export function ConvertFlatsToSharps(input: FrameNote[]) {
+export function convertFlatsToSharps(input: FrameNote[]) {
     input.forEach(val => {
         if (val.value.sign === Sign.FLAT) {
             let index = ENHARMONIC_AMBIGUITY_AFTER.findIndex(note => note.equals(val.value));

@@ -11,7 +11,7 @@ export const NOICE_CANCELLING = 3200;
 //Aligns a sixteenth to 0
 export const QUANTISIZE = 8;
 export const CONTINUOUS_METRONOME = false;
-export function GetFrameTreshold(beat: Beat) {
+export function getFrameTreshold(beat: Beat) {
     switch(beat) {
         case Beat.SixEights: case Beat.NineEights: return 10;
         default: return 15;

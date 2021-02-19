@@ -1,5 +1,5 @@
 import { FrequencyFrames } from "../models/frequencyframes";
-import { CalculateFrameNotes } from "../algorithms/Calculator";
+import { calculateFrameNotes } from "../algorithms/Calculator";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 test('EveryFrameNewNoteSimpleScale', () => {
@@ -13,7 +13,7 @@ test('EveryFrameNewNoteSimpleScale', () => {
         new FrequencyFrames(438, 10),
         new FrequencyFrames(490, 10)
     ]
-    let result = CalculateFrameNotes(freqFrames, 440);
+    let result = calculateFrameNotes(freqFrames, 440);
     expect(result).toEqual([
         new FrameNote(4, 10, new SignedNote(Note.C, Sign.NONE)),
         new FrameNote(4, 10, new SignedNote(Note.D, Sign.NONE)),
@@ -45,7 +45,7 @@ test('Breaks included', () => {
         new FrequencyFrames(490, 10),
         new FrequencyFrames(440, 20)
     ];
-    let result = CalculateFrameNotes(freqFrames, 440);
+    let result = calculateFrameNotes(freqFrames, 440);
     expect(result).toEqual([
         new FrameNote(4, 10, new SignedNote(Note.D, Sign.NONE)),
         new FrameNote(4, 10, new SignedNote(Note.E, Sign.NONE)),
@@ -71,7 +71,7 @@ test('Multiple frames same note, no breaks', () => {
         new FrequencyFrames(288, 10),
         new FrequencyFrames(290, 10)
     ];
-    let result = CalculateFrameNotes(freqFrames, 440);
+    let result = calculateFrameNotes(freqFrames, 440);
     expect(result).toEqual([
         new FrameNote(4, 40, new SignedNote(Note.D, Sign.NONE))
     ]);
@@ -95,7 +95,7 @@ test('Breaks included, different octaves', () => {
         new FrequencyFrames(830, 10),
         new FrequencyFrames(27, 10)
     ]
-    let result = CalculateFrameNotes(freqFrames, 440);
+    let result = calculateFrameNotes(freqFrames, 440);
     expect(result).toEqual([
         new FrameNote(1, 20, new SignedNote(Note.G, Sign.NONE)),
         new FrameNote(0, 10, new SignedNote(Note.BREAK, Sign.NONE)),
@@ -128,7 +128,7 @@ test('Hungarian Dance', () => {
         new FrequencyFrames(218, 60),
         new FrequencyFrames(222, 60)
     ];
-    let result = CalculateFrameNotes(notes, 440);
+    let result = calculateFrameNotes(notes, 440);
     expect(result).toEqual([
         new FrameNote(4, 45, new SignedNote(Note.E, Sign.NONE)),
         new FrameNote(4, 15, new SignedNote(Note.D, Sign.NONE)),

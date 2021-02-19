@@ -6,7 +6,7 @@ import { ErrorMapping } from "../models/errorCorrection";
 import { Extension, getLengthValue, Metric, MetricalNote, NoteLength, Triole } from "../models/metric";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
-export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize: number): BarBorders{
+export function getBarBorders(input: FrameNote[], beatsPerBar: number, frameSize: number): BarBorders{
     frameSize = Number.parseFloat(`${frameSize}`);
     const MIN_FRAME_BORDER = frameSize - (frameSize / MAX_DIFF);
     const MAX_FRAME_BORDER = frameSize + (frameSize / MAX_DIFF);
@@ -105,7 +105,7 @@ export function GetBarBorders(input: FrameNote[], beatsPerBar: number, frameSize
     return new BarBorders(bars, ties);
 }
 
-export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
+export function getMusicalBar(input: Bar, metric: Beat): MetricalBar{
     let beats = getNumerator(metric);
     let totalLength = input.notes.map(a => a.frames).reduce((a, b) => a + b);
     let notes: MetricalNote[] = [];
@@ -116,8 +116,8 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
             trioleIndex = notes.length - 1;
             let start = i;
             let trioles: MetricalNote[] = [notes[trioleIndex]];
-            while (!CheckFillTriole(trioles).isFull && i<input.notes.length) {
-                let newNote = GetMetricalNote(input.notes[i], beats, metric, totalLength, isTriole);
+            while (!checkFillTriole(trioles).isFull && i<input.notes.length) {
+                let newNote = getMetricalNote(input.notes[i], beats, metric, totalLength, isTriole);
                 i++;
                 if (newNote.metric === Metric.TRIOLE) {
                     trioles.push(newNote);
@@ -125,7 +125,7 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
                     break;
                 }
             }
-            let filledTriole = CheckFillTriole(trioles);
+            let filledTriole = checkFillTriole(trioles);
             if(filledTriole.isFull) {
                 let mappedTrioles : MetricalNote[] = trioles.map((val, index) => new Triole(val, filledTriole.type, index === 0, index === trioles.length - 1));
                 notes.pop();
@@ -137,13 +137,13 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
             } else {
                 i = --start;
                 isTriole = false;
-                UndoErrornousTriole(input, notes, i, metric, totalLength);
+                undoErrornousTriole(input, notes, i, metric, totalLength);
             }
         } else {
             //Scaling length up, so that with log2 it starts with 0.
-            let newNote = GetMetricalNote(input.notes[i], beats, metric, totalLength, false);
+            let newNote = getMetricalNote(input.notes[i], beats, metric, totalLength, false);
             if (newNote.length <NoteLength.SIXTEENTH) {
-                AssignToNeighbor(input, metric, totalLength, i, notes);
+                assignToNeighbor(input, metric, totalLength, i, notes);
             } else if ((newNote.length === NoteLength.SIXTEENTH && (newNote.extension === Extension.ONEDOT || newNote.extension === Extension.TWODOTS))
                     || (newNote.length === NoteLength.EIGHTH && newNote.extension === Extension.TWODOTS)) {
                 //Dotted and double dotted sixteenths as double dotted eighths themself might be theoretically allowed,
@@ -169,15 +169,15 @@ export function GetMusicalBar(input: Bar, metric: Beat): MetricalBar{
                 //If the last note is recognized as triolic in this branch, 
                 //beforehand note has to be not triolic and therefore this
                 //has to be a misassumption.
-                UndoErrornousTriole(input, notes, i, metric, totalLength);
+                undoErrornousTriole(input, notes, i, metric, totalLength);
             }
         }
     }
-    notes = CheckForMusicalValidity(notes, metric);
+    notes = checkForMusicalValidity(notes, metric);
     let result: MetricalBar = new MetricalBar(notes);
     return result;
 }
-function UndoErrornousTriole(input: Bar, notes: MetricalNote[], index: number, metric: Beat, totalLength: number) {
+function undoErrornousTriole(input: Bar, notes: MetricalNote[], index: number, metric: Beat, totalLength: number) {
     let startNote = notes[notes.length - 1];
     startNote.metric = Metric.STANDARD;
     startNote.length--;
@@ -185,7 +185,7 @@ function UndoErrornousTriole(input: Bar, notes: MetricalNote[], index: number, m
         startNote.extension = startNote.length < NoteLength.EIGHTH ? Extension.NODOT : Extension.ONEDOT;
         if (startNote.length < NoteLength.SIXTEENTH) {
             notes.pop();
-            AssignToNeighbor(input, metric, totalLength, index, notes);
+            assignToNeighbor(input, metric, totalLength, index, notes);
         }
     } else {
         startNote.extension = Extension.NODOT;
@@ -198,22 +198,22 @@ function UndoErrornousTriole(input: Bar, notes: MetricalNote[], index: number, m
         }
     }
 }
-function GetMetricalNote(note: FrameNote, beats: number, metric: Beat, totalLength: number, isTriole: boolean) : MetricalNote{
+function getMetricalNote(note: FrameNote, beats: number, metric: Beat, totalLength: number, isTriole: boolean) : MetricalNote{
     let length = (note.frames * beats * QUANTISIZE) / totalLength;
     let scaledLength = Math.log2(length);
-    let assumption = RoundAdapted(scaledLength, isTriole);
+    let assumption = roundAdapted(scaledLength, isTriole);
     let shift = getPositionShift(metric);
     return new MetricalNote(assumption[0] + shift, assumption[1], assumption[2], note.value, note.octave);
 }
-function AssignToNeighbor(input: Bar, metric: Beat, totalLength: number, index: number, notes: MetricalNote[]){
-        let dir = AssignmentProbable(input.notes, index, metric, totalLength / getAmountOfBeats(metric));
+function assignToNeighbor(input: Bar, metric: Beat, totalLength: number, index: number, notes: MetricalNote[]){
+        let dir = assignmentProbable(input.notes, index, metric, totalLength / getAmountOfBeats(metric));
         input.notes[index + dir].frames += input.notes[index].frames;
         if (dir < 0) {
             //If before note should have got this added, recalculate before note
-            notes[notes.length - 1] = GetMetricalNote(input.notes[index + dir], getNumerator(metric), metric, totalLength, false);
+            notes[notes.length - 1] = getMetricalNote(input.notes[index + dir], getNumerator(metric), metric, totalLength, false);
         }
 }
-function RoundAdapted(scaledLength: number, isTriole: boolean): [number, Metric, Extension] {
+function roundAdapted(scaledLength: number, isTriole: boolean): [number, Metric, Extension] {
     let lefti = scaledLength % 1;
     //When before note is a triole, the likeliness raises, that this one is also one, so the band is increased.
     let lowerHold = isTriole ? 0.25 : 0.3;
@@ -235,12 +235,12 @@ function RoundAdapted(scaledLength: number, isTriole: boolean): [number, Metric,
         return [Math.ceil(scaledLength), Metric.STANDARD, Extension.NODOT];
     }
 }
-function CheckSameType(input: MetricalNote[]) : boolean {
+function checkSameType(input: MetricalNote[]) : boolean {
     let lastLength = input[0].length;
     return input.every(val => val.length === lastLength);
 }
-function CheckFillTriole(input: MetricalNote[]) : {isFull: boolean, type: NoteLength} {
-    let noteTypeEqual = CheckSameType(input);
+function checkFillTriole(input: MetricalNote[]) : {isFull: boolean, type: NoteLength} {
+    let noteTypeEqual = checkSameType(input);
     if(noteTypeEqual) {
         let isFull = input.length === 3;
         let type = input[0].length;
@@ -261,35 +261,35 @@ function CheckFillTriole(input: MetricalNote[]) : {isFull: boolean, type: NoteLe
         }
     }
 }
-export function CheckForMusicalValidity(input: MetricalNote[], metric: Beat): MetricalNote[] {
+export function checkForMusicalValidity(input: MetricalNote[], metric: Beat): MetricalNote[] {
     let shouldBe = getNumerator(metric) * getLengthValueDenominator(metric);
     let isCurr = input.map(x => getLengthValue(x)).reduce((a, b) => a + b);
     let amountOfErrors = 1;
     while(Math.abs(shouldBe-isCurr)/amountOfErrors>0.02) {
-        let errornousValue = GetProbableError((shouldBe - isCurr)/amountOfErrors);
+        let errornousValue = getProbableError((shouldBe - isCurr)/amountOfErrors);
         for (let n = 0; n < errornousValue.length; n++) {
-                let currError = shouldBe > isCurr ? errornousValue[n].lowerValue : errornousValue[n].higherValue;
-                let wouldBe = shouldBe > isCurr ? errornousValue[n].higherValue : errornousValue[n].lowerValue;
-                let errornous = input.filter(val => val.extension === currError.extension && val.length === currError.length && val.metric === currError.metric);
-                let index = 0;
-                while (errornous.length>index) {
-                    let wrongNote = errornous[0];
-                    wrongNote.extension = wouldBe.extension;
-                    wrongNote.length = wouldBe.length;
-                    wrongNote.metric = wouldBe.metric;
-                    isCurr = input.map(x => getLengthValue(x)).reduce((a, b) => a + b);
-                    amountOfErrors--;
-                    index++;
-                    if (amountOfErrors === 0) {
-                        break;
-                    }
+            let currError = shouldBe > isCurr ? errornousValue[n].lowerValue : errornousValue[n].higherValue;
+            let wouldBe = shouldBe > isCurr ? errornousValue[n].higherValue : errornousValue[n].lowerValue;
+            let errornous = input.filter(val => val.extension === currError.extension && val.length === currError.length && val.metric === currError.metric);
+            let index = 0;
+            while (errornous.length>index) {
+                let wrongNote = errornous[0];
+                wrongNote.extension = wouldBe.extension;
+                wrongNote.length = wouldBe.length;
+                wrongNote.metric = wouldBe.metric;
+                isCurr = input.map(x => getLengthValue(x)).reduce((a, b) => a + b);
+                amountOfErrors--;
+                index++;
+                if (amountOfErrors === 0) {
+                    break;
                 }
+            }
         }
         amountOfErrors++;
     }
     return input;
 }
-function GetProbableError(diff: number) : ErrorMapping[]{
+function getProbableError(diff: number) : ErrorMapping[]{
     let abs = Math.abs(diff);
     let logVal = Math.log2(abs);
     logVal = Math.round(logVal);
@@ -312,7 +312,7 @@ function GetProbableError(diff: number) : ErrorMapping[]{
             return errorMapping.reverse();
         }
 }
-function AssignmentProbable(input : FrameNote[], index: number, metric: Beat, assumedFrameRate: number) : number {
+function assignmentProbable(input : FrameNote[], index: number, metric: Beat, assumedFrameRate: number) : number {
     let moduloDivisor : number = 1;
     switch(metric) {
         case Beat.SixEights: case Beat.NineEights: moduloDivisor = assumedFrameRate/6; break;

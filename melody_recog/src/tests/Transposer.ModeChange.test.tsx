@@ -1,4 +1,4 @@
-import { TransposeMode } from "../algorithms/Transposer";
+import { transposeMode } from "../algorithms/Transposer";
 import { Key, Mode } from "../models/keys";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
@@ -13,7 +13,7 @@ test('Transpose A natural minor to A major', () => {
         new FrameNote(4, 60, new SignedNote(Note.G, Sign.NONE)),
         new FrameNote(4, 60, new SignedNote(Note.A, Sign.NONE))
     ];
-    let key = TransposeMode(input, Mode.MINOR, Mode.MAJOR, new SignedNote(Note.A, Sign.NONE));
+    let key = transposeMode(input, Mode.MINOR, Mode.MAJOR, new SignedNote(Note.A, Sign.NONE));
     expect(key.fifths).toBe(3);
     expect(key.key).toEqual(new Key(new SignedNote(Note.A, Sign.NONE), Mode.MAJOR));
     expect(input).toEqual([
@@ -38,7 +38,7 @@ test('Transpose A melodic minor to A major', () => {
         new FrameNote(4, 60, new SignedNote(Note.G, Sign.SHARP)),
         new FrameNote(4, 60, new SignedNote(Note.A, Sign.NONE))
     ];
-    let key = TransposeMode(input, Mode.MINOR, Mode.MAJOR, new SignedNote(Note.A, Sign.NONE));
+    let key = transposeMode(input, Mode.MINOR, Mode.MAJOR, new SignedNote(Note.A, Sign.NONE));
     expect(key.fifths).toBe(3);
     expect(key.key).toEqual(new Key(new SignedNote(Note.A, Sign.NONE), Mode.MAJOR));
     expect(input).toEqual([
@@ -63,7 +63,7 @@ test('Transpose A harmonic minor to A major', () => {
         new FrameNote(4, 60, new SignedNote(Note.G, Sign.SHARP)),
         new FrameNote(4, 60, new SignedNote(Note.A, Sign.NONE))
     ];
-    let key = TransposeMode(input, Mode.MINOR, Mode.MAJOR, new SignedNote(Note.A, Sign.NONE));
+    let key = transposeMode(input, Mode.MINOR, Mode.MAJOR, new SignedNote(Note.A, Sign.NONE));
     expect(key.fifths).toBe(3);
     expect(key.key).toEqual(new Key(new SignedNote(Note.A, Sign.NONE), Mode.MAJOR));
     expect(input).toEqual([
@@ -105,7 +105,7 @@ test('Douze petite duettes No. 5, F major to minor', () => {
         new FrameNote(5, 30, new SignedNote(Note.C, Sign.NONE)),
         new FrameNote(5, 60, new SignedNote(Note.C, Sign.NONE))
     ];
-    let key = TransposeMode(input, Mode.MAJOR, Mode.MINOR, new SignedNote(Note.F, Sign.NONE));
+    let key = transposeMode(input, Mode.MAJOR, Mode.MINOR, new SignedNote(Note.F, Sign.NONE));
     expect(key.fifths).toBe(-4);
     expect(key.key).toEqual(new Key(new SignedNote(Note.F, Sign.NONE), Mode.MINOR));
     expect(input).toEqual([
@@ -147,7 +147,7 @@ test('E-flat major to minor', () => {
         new FrameNote(4, 60, new SignedNote(Note.C, Sign.NONE)),
         new FrameNote(3, 60, new SignedNote(Note.B, Sign.FLAT))
     ];
-    let key = TransposeMode(input, Mode.MAJOR, Mode.MINOR, new SignedNote(Note.D, Sign.SHARP));
+    let key = transposeMode(input, Mode.MAJOR, Mode.MINOR, new SignedNote(Note.D, Sign.SHARP));
     expect(key.fifths).toBe(-6);
     expect(key.key).toEqual(new Key(new SignedNote(Note.D, Sign.SHARP), Mode.MINOR));
     expect(input).toEqual([
@@ -171,7 +171,7 @@ test('E-flat minor to major', () => {
         new FrameNote(4, 60, new SignedNote(Note.C, Sign.FLAT)),
         new FrameNote(3, 60, new SignedNote(Note.B, Sign.FLAT))
     ];
-    let key = TransposeMode(input, Mode.MINOR, Mode.MAJOR, new SignedNote(Note.D, Sign.SHARP));
+    let key = transposeMode(input, Mode.MINOR, Mode.MAJOR, new SignedNote(Note.D, Sign.SHARP));
     expect(key.fifths).toBe(-3);
     expect(key.key).toEqual(new Key(new SignedNote(Note.D, Sign.SHARP), Mode.MAJOR));
     expect(input).toEqual([

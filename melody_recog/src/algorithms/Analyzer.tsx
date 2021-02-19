@@ -1,5 +1,5 @@
 import { Beat } from "../models/beats";
-import { GetFrameTreshold, SMOOTHING_TRESHOLD } from "../models/config";
+import { getFrameTreshold, SMOOTHING_TRESHOLD } from "../models/config";
 import { FrequencyFrames } from "../models/frequencyframes";
 import { getRefs } from "../helper/sessionStorageHelper";
 
@@ -8,7 +8,7 @@ import { getRefs } from "../helper/sessionStorageHelper";
 const FREQUENCY = getRefs().frequency ?? 0;
 const FREQUENCY_TRESHOLD = FREQUENCY / 40.0;
 const BEAT = getRefs().beat ?? Beat.FourFourths;
-const FRAME_TRESHOLD = GetFrameTreshold(BEAT);
+const FRAME_TRESHOLD = getFrameTreshold(BEAT);
 
 export function analyzeMelody(input: number[]) : FrequencyFrames[]{
 	let firstDefined = getFirstDefined(input);
@@ -66,13 +66,11 @@ function sumMinorMovements(input: number[]): FrequencyFrames[]{
 export function smoothSmallGaps(frames : FrequencyFrames[]) : FrequencyFrames[] {
 	let result : FrequencyFrames[] = [];
 	for (let i = 0; i < frames.length; i++) {
-		if (frames[i].amountOfFrames < SMOOTHING_TRESHOLD || (frames[i].frequency === undefined && frames[i].amountOfFrames < FRAME_TRESHOLD)) {
+		if (noteTooSmallForRelevance(frames[i].amountOfFrames, frames[i].frequency)) {
 			//If last saved as relevant note exists
 			if (result.length > 0) {
-				//And this frame is some minor undefinement
-				if (frames[i].frequency === undefined
-					//or if this frames frequency is kinda cool with the last relevant ones
-					|| (result[result.length - 1].frequency !== undefined && Math.abs(result[result.length - 1].frequency! - frames[i].frequency!) < FREQUENCY_TRESHOLD)) {
+				if (couldAddToLastOne(frames[i].frequency, result[result.length - 1].frequency))
+				{
 					//just add it to the last frame
 					result[result.length - 1].amountOfFrames += frames[i].amountOfFrames;
 					continue;
@@ -80,15 +78,12 @@ export function smoothSmallGaps(frames : FrequencyFrames[]) : FrequencyFrames[] 
 			}
 			//If this is reached, above case decided not to add it to the last frame.
 			if (i < frames.length - 1) {
-				//If the frame is some minor undefinement and the next frame is not a loner anyway
-				if ((frames[i].frequency === undefined && frames[i + 1].amountOfFrames > SMOOTHING_TRESHOLD)
-					//or if the next frame is relevant
-					|| (frames[i + 1].amountOfFrames > SMOOTHING_TRESHOLD && frames[i+1].frequency!==undefined)) {
+				if (couldAddToNextOne(frames[i].frequency, frames[i+1].amountOfFrames, frames[i+1].frequency)) {
 					//add this frames amount to the next one
 					frames[i + 1].amountOfFrames += frames[i].amountOfFrames;
 					continue;
 					//If the next frame is not getting any more relevant, even if I add this one
-				} else if (frames[i + 1].amountOfFrames + frames[i].amountOfFrames < FRAME_TRESHOLD && frames[i+1].frequency!==undefined) {
+				} else if (doesntChangeRelevanceOfNextOne(frames[i].amountOfFrames, frames[i+1].amountOfFrames, frames[i+1].frequency)) {
 					let firstFreq = frames[i].frequency!;
 					let nextFreq = frames[i + 1].frequency!;
 					while (firstFreq / nextFreq > 2.0) {
@@ -149,4 +144,22 @@ export function equalAllocAlgorithm(frames: FrequencyFrames[]): FrequencyFrames[
         }
     }
 	return relevantFrames;
+}
+function noteTooSmallForRelevance(amountOfFrames: number, frequency: number | undefined): boolean {
+	return amountOfFrames < SMOOTHING_TRESHOLD || (frequency === undefined && amountOfFrames < FRAME_TRESHOLD)
+}
+function couldAddToLastOne(currFrequency: number | undefined, lastFrequency: number | undefined): boolean {
+	//If this frame is some minor undefinement
+	return currFrequency === undefined
+	//or if this frames frequency is kinda cool with the last relevant ones
+	|| (lastFrequency !== undefined && Math.abs(lastFrequency! - currFrequency!) < FREQUENCY_TRESHOLD);
+}
+function couldAddToNextOne(currFrequency: number | undefined, nextAmountOfFrames: number, nextFrequency: number | undefined): boolean {
+	//If the frame is some minor undefinement and the next frame is not a loner anyway
+	return (currFrequency === undefined && nextAmountOfFrames > SMOOTHING_TRESHOLD)
+		//or if the next frame is relevant
+		|| (nextAmountOfFrames > SMOOTHING_TRESHOLD && nextFrequency !== undefined);
+}
+function doesntChangeRelevanceOfNextOne(currAmountOfFrames: number, nextAmountOfFrames: number, nextFrequency: number | undefined): boolean {
+	return (nextAmountOfFrames + currAmountOfFrames < FRAME_TRESHOLD && nextFrequency !== undefined)
 }

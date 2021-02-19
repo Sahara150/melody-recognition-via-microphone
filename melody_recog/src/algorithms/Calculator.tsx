@@ -1,15 +1,15 @@
 import { Beat } from "../models/beats";
 import { LOG_2, SCALE } from "../models/calculationData";
-import { GetFrameTreshold, SMOOTHING_TRESHOLD } from "../models/config";
+import { getFrameTreshold, SMOOTHING_TRESHOLD } from "../models/config";
 import { FrequencyFrames } from "../models/frequencyframes";
 import { FrameNote, Note, Sign, SignedNote } from "../models/notes";
 
 
-export function CalculateFrameNotes(input: FrequencyFrames[], refFreq: number) : FrameNote[] {
+export function calculateFrameNotes(input: FrequencyFrames[], refFreq: number) : FrameNote[] {
     let frameNotes: FrameNote[] = [];
     //Should get higher frame treshold, cause it just uses it to cut of the noice in the beginning
     //Shouldn´t get to have any dependency to StorageHelper
-    let FRAME_TRESHOLD = GetFrameTreshold(Beat.FourFourths);
+    let FRAME_TRESHOLD = getFrameTreshold(Beat.FourFourths);
     for (let i = 0; i < input.length; i++) {
         if (input[i].frequency === undefined) {
             if (frameNotes.length > 0 && frameNotes[frameNotes.length - 1].value.value === Note.BREAK) {
