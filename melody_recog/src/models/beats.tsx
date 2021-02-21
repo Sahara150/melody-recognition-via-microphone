@@ -13,7 +13,7 @@ export function returnStringForSingingInfo(beat: Beat): String {
     switch (beat) {
         case Beat.ThreeHalfs: string += " Halbe"; break;
         case Beat.TwoFourths: case Beat.ThreeFourths: case Beat.FourFourths: case Beat.FiveFourths: string += " Viertel"; break;
-        case Beat.SixEights: case Beat.NineEights: string += " Schläge (1 Schlag = 3 Achtel)";
+        case Beat.SixEights: case Beat.NineEights: string += " Schlaege (1 Schlag = 3 Achtel)";
     }
     return string;
 }

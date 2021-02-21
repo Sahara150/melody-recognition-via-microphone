@@ -17,7 +17,7 @@ export class TransposeComponent extends React.Component<{ keyUsed: Key, notifyPa
     }
     render() {
         return (<div className="flex">
-            <span className="simple-padding">Hinweis: Da die meisten Stücke nicht in reinem natürlichen Moll geschrieben werden, kann die Umwandlung von Moll zur Dur irreversibel sein.</span>
+            <span className="simple-padding">Hinweis: Da die meisten Stuecke nicht in reinem natuerlichen Moll geschrieben werden, kann die Umwandlung von Moll zur Dur irreversibel sein.</span>
             <div className="flex simple-padding flex-row">
                 <select size={1} defaultValue={this.keys.find(val => this.translation[val].equals(this.state.keyChosen.base_note))}
                     onChange={(e) => this.updateChosenKey(e) }>

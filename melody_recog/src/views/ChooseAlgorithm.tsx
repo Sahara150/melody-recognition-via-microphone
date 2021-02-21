@@ -11,9 +11,9 @@ export class ChoosingAlgorithm extends React.Component<{ onChange: (chosen: stri
         return (<div className="flex">
             <div className="flex align-horizontal container">
             <input type="radio" name="algorithm" id="smoothed" value="smoothed" checked={this.state.chosen === "smoothed"} onChange={(event) => this.onValueChange(event)} />
-            <label htmlFor="smoothed">geglättet</label>
+            <label htmlFor="smoothed">geglaettet</label>
             <input type="radio" name="algorithm" id="unsmoothed" value="unsmoothed" checked={this.state.chosen === "unsmoothed"} onChange={(event) => this.onValueChange(event) }/>
-            <label htmlFor="unsmoothed">ungeglättet</label>
+            <label htmlFor="unsmoothed">ungeglaettet</label>
             <input type="radio" name="algorithm" id="equalAlloc" value="equalAlloc" checked={this.state.chosen === "equalAlloc"} onChange={(event) => this.onValueChange(event)} />
                 <label htmlFor="equalAlloc">gleichverteilt</label>
             </div>
