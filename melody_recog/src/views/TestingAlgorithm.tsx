@@ -12,8 +12,8 @@ export class TestingAlgorithm extends React.Component<{}, { playing: boolean }> 
     }
     render() {
         return (<div className="flex align-horizontal">
-            <button onClick={() => this.playOrStopPreSmoothed()} className="btn-dark centered">Spiele/Stoppe vorgeglättete Version</button>
-            <button onClick={() => this.playOrStopNonSmoothed()} className="btn-dark centered">Spiele/Stoppe ungeglättete Version</button>
+            <button onClick={() => this.playOrStopPreSmoothed()} className="btn-dark centered">Spiele/Stoppe vorgeglaettete Version</button>
+            <button onClick={() => this.playOrStopNonSmoothed()} className="btn-dark centered">Spiele/Stoppe ungeglaettete Version</button>
             <button onClick={() => this.playOrStopEqualAlloc()} className="btn-dark centered">Spiele/Stoppe gleichverteilte Version</button>
             </div>)
     }
